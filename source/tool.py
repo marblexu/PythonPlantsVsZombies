@@ -118,24 +118,21 @@ def load_image_frames(directory, image_name, colorkey, accept):
         frame_list.append(tmp[i])
     return frame_list
 
-def load_all_gfx(directory, colorkey=(255,0,255), accept=('.png', '.jpg', '.bmp', '.gif')):
+def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.gif')):
     graphics = {}
     for name1 in os.listdir(directory):
         # subfolders under the folder resources\graphics
         dir1 = os.path.join(directory, name1)
-        print(dir1)
         if os.path.isdir(dir1):
             for name2 in os.listdir(dir1):
                 dir2 = os.path.join(dir1, name2)
-                print(dir2)
-                # e.g. subfolders under the folder resources\graphics\Plants
                 if os.path.isdir(dir2):
+                # e.g. subfolders under the folder resources\graphics\Zombies
                     for name3 in os.listdir(dir2):
                         dir3 = os.path.join(dir2, name3)
-                        print(dir3)
-                        # e.g. subfolders or pics under the folder resources\graphics\Plants\Peashooter
+                        # e.g. subfolders or pics under the folder resources\graphics\Zombies\ConeheadZombie
                         if os.path.isdir(dir3):
-                            # e.g. subfolders under the folder resources\graphics\Plants\WallNut
+                            # e.g. it's the folder resources\graphics\Zombies\ConeheadZombie\ConeheadZombieAttack
                             image_name, _ = os.path.splitext(name3)
                             graphics[image_name] = load_image_frames(dir3, image_name, colorkey, accept)
                         else:
@@ -144,7 +141,7 @@ def load_all_gfx(directory, colorkey=(255,0,255), accept=('.png', '.jpg', '.bmp'
                             graphics[image_name] = load_image_frames(dir2, image_name, colorkey, accept)
                             break
                 else:
-                # e.g. pics under the folder resources\graphics\Menubar
+                # e.g. pics under the folder resources\graphics\Screen
                     name, ext = os.path.splitext(name2)
                     if ext.lower() in accept:
                         img = pg.image.load(dir2)
