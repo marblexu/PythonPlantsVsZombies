@@ -206,7 +206,7 @@ class Level(tool.State):
                 if bullet.state == c.FLY:
                     zombie = pg.sprite.spritecollideany(bullet, self.zombie_groups[i], collided_func)
                     if zombie and zombie.state != c.DIE:
-                        zombie.setDamage(bullet.damage)
+                        zombie.setDamage(bullet.damage, bullet.ice)
                         bullet.setExplode()
     
     def checkZombieCollisions(self):

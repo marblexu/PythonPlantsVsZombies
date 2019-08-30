@@ -31,6 +31,8 @@ class Zombie(pg.sprite.Sprite):
         self.attack_timer = 0
         self.state = c.WALK
         self.animate_interval = 150
+        self.ice_slow_ratio = 1
+        self.ice_slow_timer = 0
     
     def loadFrames(self, frames, name, image_x):
         frame_list = tool.GFX[name]
@@ -44,6 +46,7 @@ class Zombie(pg.sprite.Sprite):
     def update(self, game_info):
         self.current_time = game_info[c.CURRENT_TIME]
         self.handleState()
+        self.updateIceSlow()
         self.animation()
 
     def handleState(self):
@@ -64,7 +67,7 @@ class Zombie(pg.sprite.Sprite):
             self.changeFrames(self.walk_frames)
             self.helmet = False
             
-        if (self.current_time - self.walk_timer) > c.ZOMBIE_WALK_INTERVAL:
+        if (self.current_time - self.walk_timer) > (c.ZOMBIE_WALK_INTERVAL * self.ice_slow_ratio):
             self.walk_timer = self.current_time
             self.rect.x -= 1
     
@@ -74,7 +77,7 @@ class Zombie(pg.sprite.Sprite):
         elif self.health <= c.LOSTHEAD_HEALTH and not self.losHead:
             self.changeFrames(self.losthead_attack_frames)
             self.setLostHead()
-        if (self.current_time - self.attack_timer) > c.ATTACK_INTERVAL:
+        if (self.current_time - self.attack_timer) > (c.ATTACK_INTERVAL * self.ice_slow_ratio):
             self.plant.setDamage(self.damage)
             self.attack_timer = self.current_time
 
@@ -104,7 +107,7 @@ class Zombie(pg.sprite.Sprite):
         self.rect.centerx = centerx
 
     def animation(self):
-        if (self.current_time - self.animate_timer) > self.animate_interval:
+        if (self.current_time - self.animate_timer) > (self.animate_interval * self.ice_slow_ratio):
             self.frame_index += 1
             if self.frame_index >= self.frame_num:
                 if self.state == c.DIE:
@@ -115,8 +118,20 @@ class Zombie(pg.sprite.Sprite):
         
         self.image = self.frames[self.frame_index]
     
-    def setDamage(self, damage):
+    def setIceSlow(self):
+        '''when get a ice bullet damage, slow the attack or walk speed of the zombie'''
+        self.ice_slow_timer = self.current_time
+        self.ice_slow_ratio = 2
+
+    def updateIceSlow(self):
+        if self.ice_slow_ratio > 1:
+            if (self.current_time - self.ice_slow_timer) > c.ICE_SLOW_TIME:
+                self.ice_slow_ratio = 1
+
+    def setDamage(self, damage, ice):
         self.health -= damage
+        if ice:
+            self.setIceSlow()
     
     def setWalk(self):
         self.state = c.WALK

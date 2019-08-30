@@ -5,7 +5,7 @@ from .. import tool
 from .. import constants as c
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, x, y, name, damage):
+    def __init__(self, x, y, name, damage, ice):
         pg.sprite.Sprite.__init__(self)
 
         self.name = name
@@ -18,6 +18,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect.y = y
         self.x_vel = 4
         self.damage = damage
+        self.ice = ice
         self.state = c.FLY
         self.current_time = 0
 
@@ -182,7 +183,7 @@ class PeaShooter(Plant):
         
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000:
-            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL))
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
     
     def setAttack(self):
@@ -195,7 +196,7 @@ class SnowPeaShooter(Plant):
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000:
-            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL))
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time
 
     def setAttack(self):
