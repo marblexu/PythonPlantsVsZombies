@@ -64,6 +64,7 @@ PEASHOOTER = 'Peashooter'
 SNOWPEASHOOTER = 'SnowPea'
 WALLNUT = 'WallNut'
 CHERRYBOMB = 'CherryBomb'
+THREEPEASHOOTER = 'Threepeater'
 CHERRY_BOOM_IMAGE = 'Boom'
 
 PLANT_HEALTH = 5
@@ -76,12 +77,15 @@ FLOWER_SUN_INTERVAL = 22000
 SUN_LIVE_TIME = 7000
 SUN_VALUE = 25
 
+ICE_SLOW_TIME = 2000
+
 #PLANT CARD INFO
 CARD_SUNFLOWER = 'card_sunflower'
 CARD_PEASHOOTER = 'card_peashooter'
 CARD_SNOWPEASHOOTER = 'card_snowpea'
 CARD_WALLNUT = 'card_wallnut'
 CARD_CHERRYBOMB = 'card_cherrybomb'
+CARD_THREEPEASHOOTER = 'card_threepeashooter'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'

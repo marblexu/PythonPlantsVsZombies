@@ -5,7 +5,7 @@ from .. import tool
 from .. import constants as c
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, x, y, name, damage, ice):
+    def __init__(self, x, start_y, dest_y, name, damage, ice):
         pg.sprite.Sprite.__init__(self)
 
         self.name = name
@@ -15,7 +15,9 @@ class Bullet(pg.sprite.Sprite):
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.x = x - 40
-        self.rect.y = y
+        self.rect.y = start_y
+        self.dest_y = dest_y
+        self.y_vel = 4 if (dest_y > start_y) else -4
         self.x_vel = 4
         self.damage = damage
         self.ice = ice
@@ -45,6 +47,8 @@ class Bullet(pg.sprite.Sprite):
     def update(self, game_info):
         self.current_time = game_info[c.CURRENT_TIME]
         if self.state == c.FLY:
+            if self.rect.y != self.dest_y:
+                self.rect.y += self.y_vel
             self.rect.x += self.x_vel
             if self.rect.x > c.SCREEN_WIDTH:
                 self.kill()
@@ -183,7 +187,29 @@ class PeaShooter(Plant):
         
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000:
-            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
+                                    c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
+            self.shoot_timer = self.current_time
+
+    def setAttack(self):
+        self.state = c.ATTACK
+
+class ThreePeaShooter(Plant):
+    def __init__(self, x, y, bullet_groups, map_y):
+        Plant.__init__(self, x, y, c.THREEPEASHOOTER, c.PLANT_HEALTH, None)
+        self.shoot_timer = 0
+        self.map_y = map_y
+        self.bullet_groups = bullet_groups
+
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 2000:
+            for i in range(3):
+                tmp_y = self.map_y + (i - 1)
+                if tmp_y < 0 or tmp_y >= c.GRID_Y_LEN:
+                    continue
+                dest_y = self.rect.y + (i - 1) * c.GRID_Y_SIZE
+                self.bullet_groups[tmp_y].add(Bullet(self.rect.right, self.rect.y, dest_y,
+                                        c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
     
     def setAttack(self):
@@ -196,7 +222,8 @@ class SnowPeaShooter(Plant):
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000:
-            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL, True))
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
+                                    c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time
 
     def setAttack(self):

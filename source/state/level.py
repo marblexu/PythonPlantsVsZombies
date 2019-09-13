@@ -155,6 +155,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.WallNut(x, y))
         elif self.plant_name == c.CHERRYBOMB:
             self.plant_groups[map_y].add(plant.CherryBomb(x, y))
+        elif self.plant_name == c.THREEPEASHOOTER:
+            self.plant_groups[map_y].add(plant.ThreePeaShooter(x, y, self.bullet_groups, map_y))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)
@@ -241,10 +243,26 @@ class Level(tool.State):
                         plant.setAttack()
                     if plant.health <= 0:
                         self.killPlant(plant)
+                if (i-1) >= 0:
+                    for plant in self.plant_groups[i-1]:
+                        if plant.name == c.THREEPEASHOOTER and plant.state == c.IDLE:
+                            plant.setAttack()
+                if (i+1) < self.map_y_len:
+                    for plant in self.plant_groups[i+1]:
+                        if plant.name == c.THREEPEASHOOTER and plant.state == c.IDLE:
+                            plant.setAttack()
             else:
                 for plant in self.plant_groups[i]:
                     if plant.state == c.ATTACK:
-                        plant.setIdle()
+                        if plant.name == c.THREEPEASHOOTER:
+                            if (i-1) >= 0 and len(self.zombie_groups[i-1]) > 0:
+                                pass
+                            elif (i+1) < self.map_y_len and len(self.zombie_groups[i+1]) > 0:
+                                pass
+                            else:
+                                plant.setIdle()
+                        else:
+                            plant.setIdle()
                     if plant.health <= 0:
                         self.killPlant(plant)
     

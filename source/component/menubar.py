@@ -4,10 +4,10 @@ import pygame as pg
 from .. import tool
 from .. import constants as c
 
-card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.CARD_WALLNUT, c.CARD_CHERRYBOMB]
-plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT, c.CHERRYBOMB]
-plant_sun_list = [50, 100, 175, 50, 150]
-card_list = [0, 1, 2, 3, 4]
+card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.CARD_WALLNUT, c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER]
+plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT, c.CHERRYBOMB, c.THREEPEASHOOTER]
+plant_sun_list = [50, 100, 175, 50, 150, 325]
+card_list = [0, 1, 2, 3, 4, 5]
 
 class Card():
     def __init__(self, x, y, name_index):
