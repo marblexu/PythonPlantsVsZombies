@@ -49,6 +49,8 @@ class Bullet(pg.sprite.Sprite):
         if self.state == c.FLY:
             if self.rect.y != self.dest_y:
                 self.rect.y += self.y_vel
+                if self.y_vel * (self.dest_y - self.rect.y) < 0:
+                    self.rect.y = self.dest_y
             self.rect.x += self.x_vel
             if self.rect.x > c.SCREEN_WIDTH:
                 self.kill()
@@ -203,11 +205,12 @@ class ThreePeaShooter(Plant):
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000:
+            offset_y = 9 # modify bullet in the same y position with bullets of other plants
             for i in range(3):
                 tmp_y = self.map_y + (i - 1)
                 if tmp_y < 0 or tmp_y >= c.GRID_Y_LEN:
                     continue
-                dest_y = self.rect.y + (i - 1) * c.GRID_Y_SIZE
+                dest_y = self.rect.y + (i - 1) * c.GRID_Y_SIZE + offset_y
                 self.bullet_groups[tmp_y].add(Bullet(self.rect.right, self.rect.y, dest_y,
                                         c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
