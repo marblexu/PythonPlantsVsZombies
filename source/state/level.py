@@ -48,7 +48,7 @@ class Level(tool.State):
 
         self.level = pg.Surface((self.bg_rect.w, self.bg_rect.h)).convert()
         self.viewport = tool.SCREEN.get_rect(bottom=self.bg_rect.bottom)
-        self.viewport.x += 230
+        self.viewport.x += c.BACKGROUND_OFFSET_X
     
     def setupGroups(self):
         self.sun_group = pg.sprite.Group()
@@ -76,7 +76,7 @@ class Level(tool.State):
         self.cars = []
         for i in range(self.map_y_len):
             _, y = self.map.getMapGridPos(0, i)
-            self.cars.append(plant.Car(-35, y, i))
+            self.cars.append(plant.Car(-25, y+20, i))
 
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
@@ -234,7 +234,7 @@ class Level(tool.State):
                     plant.setAttacked()
 
     def checkCarCollisions(self):
-        collided_func = pg.sprite.collide_circle_ratio(0.7)
+        collided_func = pg.sprite.collide_circle_ratio(0.8)
         for car in self.cars:
             zombies = pg.sprite.spritecollide(car, self.zombie_groups[car.map_y], False, collided_func)
             for zombie in zombies:
