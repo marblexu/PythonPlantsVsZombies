@@ -65,6 +65,7 @@ SNOWPEASHOOTER = 'SnowPea'
 WALLNUT = 'WallNut'
 CHERRYBOMB = 'CherryBomb'
 THREEPEASHOOTER = 'Threepeater'
+REPEATERPEA = 'RepeaterPea'
 CHERRY_BOOM_IMAGE = 'Boom'
 
 PLANT_HEALTH = 5
@@ -86,6 +87,7 @@ CARD_SNOWPEASHOOTER = 'card_snowpea'
 CARD_WALLNUT = 'card_wallnut'
 CARD_CHERRYBOMB = 'card_cherrybomb'
 CARD_THREEPEASHOOTER = 'card_threepeashooter'
+CARD_REPEATERPEA = 'card_repeaterpea'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'

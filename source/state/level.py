@@ -157,6 +157,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.CherryBomb(x, y))
         elif self.plant_name == c.THREEPEASHOOTER:
             self.plant_groups[map_y].add(plant.ThreePeaShooter(x, y, self.bullet_groups, map_y))
+        elif self.plant_name == c.REPEATERPEA:
+            self.plant_groups[map_y].add(plant.RepeaterPea(x, y, self.bullet_groups[map_y]))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)

@@ -14,7 +14,7 @@ class Bullet(pg.sprite.Sprite):
         self.load_images()
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
-        self.rect.x = x - 40
+        self.rect.x = x - 50
         self.rect.y = start_y
         self.dest_y = dest_y
         self.y_vel = 4 if (dest_y > start_y) else -4
@@ -190,6 +190,22 @@ class PeaShooter(Plant):
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000:
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
+                                    c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
+            self.shoot_timer = self.current_time
+
+    def setAttack(self):
+        self.state = c.ATTACK
+
+class RepeaterPea(Plant):
+    def __init__(self, x, y, bullet_group):
+        Plant.__init__(self, x, y, c.REPEATERPEA, c.PLANT_HEALTH, bullet_group)
+        self.shoot_timer = 0
+
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 2000:
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
+                                    c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
+            self.bullet_group.add(Bullet(self.rect.right + 40, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
 
