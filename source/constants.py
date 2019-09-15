@@ -58,6 +58,7 @@ MAP_OFFSET_Y = 100
 MENUBAR_BACKGROUND = 'ChooserBackground'
 
 #PLANT INFO
+CAR = 'car'
 SUN = 'Sun'
 SUNFLOWER = 'SunFlower'
 PEASHOOTER = 'Peashooter'

@@ -32,6 +32,7 @@ class Level(tool.State):
         self.setupBackground()
         self.setupGroups()
         self.setupZombies()
+        self.setupCars()
     
     def loadMap(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
@@ -70,6 +71,12 @@ class Level(tool.State):
             self.zombie_list.append((data['time'], data['name'], data['map_y']))
         self.zombie_start_time = 0
         self.zombie_list.sort(key=takeTime)
+
+    def setupCars(self):
+        self.cars = []
+        for i in range(self.map_y_len):
+            _, y = self.map.getMapGridPos(0, i)
+            self.cars.append(plant.Car(-35, y, i))
 
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
@@ -115,9 +122,13 @@ class Level(tool.State):
                     if sun.checkCollision(mouse_pos[0], mouse_pos[1]):
                         self.menubar.increaseSunValue(c.SUN_VALUE)
 
+        for car in self.cars:
+            car.update(self.game_info)
+
         self.checkBulletCollisions()
         self.checkZombieCollisions()
         self.checkPlants()
+        self.checkCarCollisions()
         self.checkGameState()
         self.draw(surface)
     
@@ -221,7 +232,18 @@ class Level(tool.State):
                 if plant and zombie.state == c.WALK:
                     zombie.setAttack(plant)
                     plant.setAttacked()
-    
+
+    def checkCarCollisions(self):
+        collided_func = pg.sprite.collide_circle_ratio(0.7)
+        for car in self.cars:
+            zombies = pg.sprite.spritecollide(car, self.zombie_groups[car.map_y], False, collided_func)
+            for zombie in zombies:
+                if zombie and zombie.state != c.DIE:
+                    car.setWalk()
+                    zombie.setDie()
+            if car.dead:
+                self.cars.remove(car)
+
     def boomZombies(self, x, map_y):
         for i in range(self.map_y_len):
             if abs(i - map_y) > 1:
@@ -308,6 +330,8 @@ class Level(tool.State):
             self.plant_groups[i].draw(surface)
             self.zombie_groups[i].draw(surface)
             self.bullet_groups[i].draw(surface)
+        for car in self.cars:
+            car.draw(surface)
         self.head_group.draw(surface)
         self.sun_group.draw(surface)
 

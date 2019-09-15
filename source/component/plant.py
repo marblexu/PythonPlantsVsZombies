@@ -4,6 +4,36 @@ import pygame as pg
 from .. import tool
 from .. import constants as c
 
+class Car(pg.sprite.Sprite):
+    def __init__(self, x, y, map_y):
+        pg.sprite.Sprite.__init__(self)
+
+        rect = tool.GFX[c.CAR].get_rect()
+        width, height = rect.w, rect.h
+        self.image = tool.get_image(tool.GFX[c.CAR], 0, 0, width, height)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.bottom = y
+        self.map_y = map_y
+        self.state = c.IDLE
+        self.dead = False
+
+    def update(self, game_info):
+        self.current_time = game_info[c.CURRENT_TIME]
+        if self.state == c.IDLE:
+            pass
+        elif self.state == c.WALK:
+            self.rect.x += 4
+        if self.rect.x > c.SCREEN_WIDTH:
+            self.dead = True
+
+    def setWalk(self):
+        if self.state == c.IDLE:
+            self.state = c.WALK
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
 class Bullet(pg.sprite.Sprite):
     def __init__(self, x, start_y, dest_y, name, damage, ice):
         pg.sprite.Sprite.__init__(self)
