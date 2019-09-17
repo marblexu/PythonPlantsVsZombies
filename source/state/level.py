@@ -154,7 +154,7 @@ class Level(tool.State):
 
         if self.hint_image is None:
             self.setupHintImage()
-        x, y = self.hint_rect.centerx, self.hint_rect.bottom
+        x, y = self.hint_rect.x, self.hint_rect.bottom
         map_x, map_y = self.map.getMapIndex(x, y)
         if self.plant_name == c.SUNFLOWER:
             self.plant_groups[map_y].add(plant.SunFlower(x, y, self.sun_group))
@@ -170,6 +170,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.ThreePeaShooter(x, y, self.bullet_groups, map_y))
         elif self.plant_name == c.REPEATERPEA:
             self.plant_groups[map_y].add(plant.RepeaterPea(x, y, self.bullet_groups[map_y]))
+        elif self.plant_name == c.CHOMPER:
+            self.plant_groups[map_y].add(plant.Chomper(x, y))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)
@@ -189,7 +191,7 @@ class Level(tool.State):
             image.set_alpha(128)
             self.hint_image = image
             self.hint_rect = image.get_rect()
-            self.hint_rect.centerx = pos[0]
+            self.hint_rect.x = pos[0]
             self.hint_rect.bottom = pos[1]
             self.hint_plant = True
         else:
@@ -259,37 +261,44 @@ class Level(tool.State):
             self.boomZombies(plant.rect.centerx, map_y)
         plant.kill()
 
+    def checkPlant(self, plant, i):
+        zombie_len = len(self.zombie_groups[i])
+        if plant.name == c.THREEPEASHOOTER:
+            if plant.state == c.IDLE:
+                if zombie_len > 0:
+                    plant.setAttack()
+                elif (i-1) >= 0 and len(self.zombie_groups[i-1]) > 0:
+                    plant.setAttack()
+                elif (i+1) < self.map_y_len and len(self.zombie_groups[i+1]) > 0:
+                    plant.setAttack()
+            elif plant.state == c.ATTACK:
+                if zombie_len > 0:
+                    pass
+                elif (i-1) >= 0 and len(self.zombie_groups[i-1]) > 0:
+                    pass
+                elif (i+1) < self.map_y_len and len(self.zombie_groups[i+1]) > 0:
+                    pass
+                else:
+                    plant.setIdle()
+        elif plant.name == c.CHOMPER:
+            for zombie in self.zombie_groups[i]:
+                if plant.canAttack(zombie):
+                    plant.setAttack(zombie, self.zombie_groups[i])
+                    break
+        else:
+            if (plant.state == c.IDLE and zombie_len > 0):
+                plant.setAttack()
+            elif (plant.state == c.ATTACK and zombie_len == 0):
+                plant.setIdle()
+
+        if plant.health <= 0:
+            self.killPlant(plant)
+
     def checkPlants(self):
         for i in range(self.map_y_len):
-            if len(self.zombie_groups[i]) > 0:
-                for plant in self.plant_groups[i]:
-                    if plant.state == c.IDLE:
-                        plant.setAttack()
-                    if plant.health <= 0:
-                        self.killPlant(plant)
-                if (i-1) >= 0:
-                    for plant in self.plant_groups[i-1]:
-                        if plant.name == c.THREEPEASHOOTER and plant.state == c.IDLE:
-                            plant.setAttack()
-                if (i+1) < self.map_y_len:
-                    for plant in self.plant_groups[i+1]:
-                        if plant.name == c.THREEPEASHOOTER and plant.state == c.IDLE:
-                            plant.setAttack()
-            else:
-                for plant in self.plant_groups[i]:
-                    if plant.state == c.ATTACK:
-                        if plant.name == c.THREEPEASHOOTER:
-                            if (i-1) >= 0 and len(self.zombie_groups[i-1]) > 0:
-                                pass
-                            elif (i+1) < self.map_y_len and len(self.zombie_groups[i+1]) > 0:
-                                pass
-                            else:
-                                plant.setIdle()
-                        else:
-                            plant.setIdle()
-                    if plant.health <= 0:
-                        self.killPlant(plant)
-    
+            for plant in self.plant_groups[i]:
+                self.checkPlant(plant, i)
+
     def checkVictory(self):
         if len(self.zombie_list) > 0:
             return False

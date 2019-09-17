@@ -68,6 +68,7 @@ WALLNUT = 'WallNut'
 CHERRYBOMB = 'CherryBomb'
 THREEPEASHOOTER = 'Threepeater'
 REPEATERPEA = 'RepeaterPea'
+CHOMPER = 'Chomper'
 CHERRY_BOOM_IMAGE = 'Boom'
 
 PLANT_HEALTH = 5
@@ -90,6 +91,7 @@ CARD_WALLNUT = 'card_wallnut'
 CARD_CHERRYBOMB = 'card_cherrybomb'
 CARD_THREEPEASHOOTER = 'card_threepeashooter'
 CARD_REPEATERPEA = 'card_repeaterpea'
+CARD_CHOMPER = 'card_chomper'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'
@@ -122,6 +124,7 @@ FLY = 'fly'
 EXPLODE = 'explode'
 ATTACK = 'attack'
 ATTACKED = 'attacked'
+DIGEST = 'digest'
 WALK = 'walk'
 DIE = 'die'
 

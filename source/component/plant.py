@@ -103,11 +103,11 @@ class Plant(pg.sprite.Sprite):
         
         self.frames = []
         self.frame_index = 0
-        self.loadFrames(self.frames, name, scale)
+        self.loadImages(name, scale)
         self.frame_num = len(self.frames)
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
-        self.rect.centerx = x
+        self.rect.x = x
         self.rect.bottom = y
         
         self.name = name
@@ -115,15 +115,23 @@ class Plant(pg.sprite.Sprite):
         self.state = c.IDLE
         self.bullet_group = bullet_group
         self.animate_timer = 0
-    
-    def loadFrames(self, frames, name, scale):
+        self.animate_interval = 100
+
+    def loadFrames(self, frames, name, scale, frame_rect=None):
         frame_list = tool.GFX[name]
-        rect = frame_list[0].get_rect()
-        width, height = rect.w, rect.h
+        if frame_rect == None:
+            x, y = 0, 0
+            rect = frame_list[0].get_rect()
+            width, height = rect.w, rect.h
+        else:
+            x, y, width, height = frame_rect[0], frame_rect[1], frame_rect[2], frame_rect[3]
 
         for frame in frame_list:
             frames.append(tool.get_image(frame, 0, 0, width, height, c.BLACK, scale))
-    
+
+    def loadImages(self, name, scale):
+        self.loadFrames(self.frames, name, scale)
+
     def update(self, game_info):
         self.current_time = game_info[c.CURRENT_TIME]
         self.handleState()
@@ -134,8 +142,8 @@ class Plant(pg.sprite.Sprite):
             self.idling()
         elif self.state == c.ATTACK:
             self.attacking()
-        elif self.state == c.ATTACKED:
-            self.attacked()
+        elif self.state == c.DIGEST:
+            self.digest()
     
     def idling(self):
         pass
@@ -143,11 +151,11 @@ class Plant(pg.sprite.Sprite):
     def attacking(self):
         pass
 
-    def attacked(self):
-        self.attacking()
+    def digest(self):
+        pass
 
     def animation(self):
-        if (self.current_time - self.animate_timer) > 100:
+        if (self.current_time - self.animate_timer) > self.animate_interval:
             self.frame_index += 1
             if self.frame_index >= self.frame_num:
                 self.frame_index = 0
@@ -162,8 +170,7 @@ class Plant(pg.sprite.Sprite):
         self.state = c.IDLE
 
     def setAttacked(self):
-        self.state = c.ATTACKED
-        self.frame_index = 0
+        pass
     
     def setDamage(self, damage):
         self.health -= damage
@@ -343,3 +350,77 @@ class CherryBomb(Plant):
             
             self.image = self.frames[self.frame_index]
 
+class Chomper(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.CHOMPER, c.PLANT_HEALTH, None)
+        self.animate_interval = 250
+        self.digest_timer = 0
+        self.digest_interval = 15000
+        self.attack_zombie = None
+        self.zombie_group = None
+
+    def loadImages(self, name, scale):
+        self.idle_frames = []
+        self.attack_frames = []
+        self.digest_frames = []
+
+        idle_name = name
+        attack_name = name + 'Attack'
+        digest_name = name + 'Digest'
+
+        frame_list = [self.idle_frames, self.attack_frames, self.digest_frames]
+        name_list = [idle_name, attack_name, digest_name]
+        scale_list = [1, 1, 1]
+        rect_list = [(0, 0, 100, 114), None, None]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, scale_list[i], rect_list[i])
+
+        self.frames = self.idle_frames
+
+    def canAttack(self, zombie):
+        if (self.state == c.IDLE and zombie.state != c.DIGEST and
+            (self.rect.right + c.GRID_X_SIZE//3 * 2 >= zombie.rect.x)):
+            return True
+        return False
+
+    def setIdle(self):
+        self.state = c.IDLE
+        self.changeFrames(self.idle_frames)
+
+    def setAttack(self, zombie, zombie_group):
+        self.attack_zombie = zombie
+        self.zombie_group = zombie_group
+        self.state = c.ATTACK
+        self.changeFrames(self.attack_frames)
+
+    def setDigest(self):
+        self.state = c.DIGEST
+        self.changeFrames(self.digest_frames)
+
+    def attacking(self):
+        if self.frame_index == (self.frame_num - 3):
+            self.zombie_group.remove(self.attack_zombie)
+        if (self.frame_index + 1) == self.frame_num:
+            self.setDigest()
+
+    def digest(self):
+        if self.digest_timer == 0:
+            self.digest_timer = self.current_time
+        elif (self.current_time - self.digest_timer) > self.digest_interval:
+            self.digest_timer = 0
+            self.attack_zombie.kill()
+            self.setIdle()
+
+    def changeFrames(self, frames):
+        '''change image frames and modify rect position'''
+        self.frames = frames
+        self.frame_num = len(self.frames)
+        self.frame_index = 0
+        
+        bottom = self.rect.bottom
+        centerx = self.rect.centerx
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.bottom = bottom
+        self.rect.centerx = centerx

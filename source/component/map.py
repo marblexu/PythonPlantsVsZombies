@@ -26,7 +26,7 @@ class Map():
         return (x // c.GRID_X_SIZE, y // c.GRID_Y_SIZE)
     
     def getMapGridPos(self, map_x, map_y):
-        return (map_x * c.GRID_X_SIZE + c.GRID_X_SIZE//2 + c.MAP_OFFSET_X, 
+        return (map_x * c.GRID_X_SIZE + c.GRID_X_SIZE//8 + c.MAP_OFFSET_X,
                 map_y * c.GRID_Y_SIZE + c.GRID_Y_SIZE//5 * 3 + c.MAP_OFFSET_Y)
     
     def setMapGridType(self, map_x, map_y, type):

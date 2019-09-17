@@ -5,11 +5,11 @@ from .. import tool
 from .. import constants as c
 
 card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.CARD_WALLNUT,
-                  c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA]
+                  c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA, c.CARD_CHOMPER]
 plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
-                   c.CHERRYBOMB, c.THREEPEASHOOTER, c.REPEATERPEA]
-plant_sun_list = [50, 100, 175, 50, 150, 325, 200]
-card_list = [0, 1, 2, 3, 4, 5, 6]
+                   c.CHERRYBOMB, c.THREEPEASHOOTER, c.REPEATERPEA, c.CHOMPER]
+plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150]
+card_list = [0, 1, 2, 3, 4, 5, 7]
 
 class Card():
     def __init__(self, x, y, name_index):
