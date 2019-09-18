@@ -380,7 +380,8 @@ class Chomper(Plant):
 
     def canAttack(self, zombie):
         if (self.state == c.IDLE and zombie.state != c.DIGEST and
-            (self.rect.right + c.GRID_X_SIZE//3 * 2 >= zombie.rect.x)):
+            self.rect.x <= zombie.rect.right and
+            (self.rect.right + c.GRID_X_SIZE//3 >= zombie.rect.x)):
             return True
         return False
 
@@ -419,8 +420,8 @@ class Chomper(Plant):
         self.frame_index = 0
         
         bottom = self.rect.bottom
-        centerx = self.rect.centerx
+        x = self.rect.x
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.bottom = bottom
-        self.rect.centerx = centerx
+        self.rect.x = x
