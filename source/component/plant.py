@@ -116,6 +116,7 @@ class Plant(pg.sprite.Sprite):
         self.bullet_group = bullet_group
         self.animate_timer = 0
         self.animate_interval = 100
+        self.is_attacked = False
 
     def loadFrames(self, frames, name, scale, frame_rect=None):
         frame_list = tool.GFX[name]
@@ -144,7 +145,10 @@ class Plant(pg.sprite.Sprite):
             self.attacking()
         elif self.state == c.DIGEST:
             self.digest()
-    
+
+        if self.is_attacked:
+            self.attacked()
+
     def idling(self):
         pass
 
@@ -152,6 +156,9 @@ class Plant(pg.sprite.Sprite):
         pass
 
     def digest(self):
+        pass
+
+    def attacked():
         pass
 
     def animation(self):
@@ -168,9 +175,10 @@ class Plant(pg.sprite.Sprite):
     
     def setIdle(self):
         self.state = c.IDLE
+        self.is_attacked = False
 
     def setAttacked(self):
-        pass
+        self.is_attacked = True
     
     def setDamage(self, damage):
         self.health -= damage
