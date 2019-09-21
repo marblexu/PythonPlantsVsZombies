@@ -158,7 +158,7 @@ class Plant(pg.sprite.Sprite):
     def digest(self):
         pass
 
-    def attacked():
+    def attacked(self):
         pass
 
     def animation(self):
