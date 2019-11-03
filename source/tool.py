@@ -160,9 +160,17 @@ def loadZombieImageRect():
     f.close()
     return data[c.ZOMBIE_IMAGE_RECT]
 
+def loadPlantImageRect():
+    file_path = os.path.join('source', 'data', 'entity', 'plant.json')
+    f = open(file_path)
+    data = json.load(f)
+    f.close()
+    return data[c.PLANT_IMAGE_RECT]
+
 pg.init()
 pg.display.set_caption(c.ORIGINAL_CAPTION)
 SCREEN = pg.display.set_mode(c.SCREEN_SIZE)
 
 GFX = load_all_gfx(os.path.join("resources","graphics"))
 ZOMBIE_RECT = loadZombieImageRect()
+PLANT_RECT = loadPlantImageRect()

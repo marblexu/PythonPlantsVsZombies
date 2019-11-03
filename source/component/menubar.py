@@ -5,11 +5,14 @@ from .. import tool
 from .. import constants as c
 
 card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.CARD_WALLNUT,
-                  c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA, c.CARD_CHOMPER]
+                  c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA, c.CARD_CHOMPER,
+                  c.CARD_PUFFMUSHROOM]
 plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
-                   c.CHERRYBOMB, c.THREEPEASHOOTER, c.REPEATERPEA, c.CHOMPER]
-plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150]
-card_list = [0, 1, 2, 3, 4, 5, 7]
+                   c.CHERRYBOMB, c.THREEPEASHOOTER, c.REPEATERPEA, c.CHOMPER,
+                   c.PUFFMUSHROOM]
+plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0]
+plant_frozen_time_list = [0, 0, 0, 0, 0, 0, 0, 0, 8000]
+card_list = [0, 1, 2, 3, 4, 8, 7]
 
 class Card():
     def __init__(self, x, y, name_index):
@@ -20,6 +23,8 @@ class Card():
         
         self.name_index = name_index
         self.sun_cost = plant_sun_list[name_index]
+        self.frozen_time = plant_frozen_time_list[name_index]
+        self.frozen_timer = -self.frozen_time
 
     def loadFrame(self, name):
         frame = tool.GFX[name]
@@ -34,6 +39,21 @@ class Card():
            y >= self.rect.y and y <= self.rect.bottom):
             return True
         return False
+
+    def canClick(self, sun_value, current_time):
+        if self.sun_cost <= sun_value and (current_time - self.frozen_timer) > self.frozen_time:
+            return True
+        return False
+
+    def setFrozenTime(self, current_time):
+        self.frozen_timer = current_time
+
+    def update(self, sun_value, current_time):
+        if (self.sun_cost > sun_value or
+            (current_time - self.frozen_timer) <= self.frozen_time):
+            self.image.set_alpha(128)
+        else:
+            self.image.set_alpha(255)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -57,6 +77,11 @@ class MenuBar():
         width, height = rect.w, rect.h
 
         self.image = tool.get_image(tool.GFX[name], *frame_rect, c.BLACK, 0.8)
+
+    def update(self, current_time):
+        self.current_time = current_time
+        for card in self.card_list:
+            card.update(self.sun_value, self.current_time)
 
     def createImage(self, x, y, num):
         if num == 1:
@@ -86,7 +111,7 @@ class MenuBar():
         result = None
         for card in self.card_list:
             if card.checkMouseClick(mouse_pos):
-                if card.sun_cost <= self.sun_value:
+                if card.canClick(self.sun_value, self.current_time):
                     result = (plant_name_list[card.name_index], card.sun_cost)
                 break
         return result
@@ -103,7 +128,13 @@ class MenuBar():
 
     def increaseSunValue(self, value):
         self.sun_value += value
-    
+
+    def setCardFrozenTime(self, plant_name):
+        for card in self.card_list:
+            if plant_name_list[card.name_index] == plant_name:
+                card.setFrozenTime(self.current_time)
+                break
+
     def drawSunValue(self):
         width = 30
         msg_image = self.font.render(str(self.sun_value), True, c.NAVYBLUE, c.LIGHTYELLOW)

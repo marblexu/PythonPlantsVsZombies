@@ -44,7 +44,7 @@ class Bullet(pg.sprite.Sprite):
         self.load_images()
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
-        self.rect.x = x - 50
+        self.rect.x = x
         self.rect.y = start_y
         self.dest_y = dest_y
         self.y_vel = 4 if (dest_y > start_y) else -4
@@ -56,18 +56,26 @@ class Bullet(pg.sprite.Sprite):
 
     def loadFrames(self, frames, name):
         frame_list = tool.GFX[name]
-        rect = frame_list[0].get_rect()
-        width, height = rect.w, rect.h
+        if name in tool.PLANT_RECT:
+            data = tool.PLANT_RECT[name]
+            x, y, width, height = data['x'], data['y'], data['width'], data['height']
+        else:
+            x, y = 0, 0
+            rect = frame_list[0].get_rect()
+            width, height = rect.w, rect.h
         
         for frame in frame_list:
-            frames.append(tool.get_image(frame, 0, 0, width, height))
+            frames.append(tool.get_image(frame, x, y, width, height))
     
     def load_images(self):
         self.fly_frames = []
         self.explode_frames = []
         
         fly_name = self.name
-        explode_name = 'PeaNormalExplode'
+        if self.name == c.BULLET_MUSHROOM:
+            explode_name = 'BulletMushRoomExplode'
+        else:
+            explode_name = 'PeaNormalExplode'
         
         self.loadFrames(self.fly_frames, fly_name)
         self.loadFrames(self.explode_frames, explode_name)
@@ -118,17 +126,18 @@ class Plant(pg.sprite.Sprite):
         self.animate_interval = 100
         self.is_attacked = False
 
-    def loadFrames(self, frames, name, scale, frame_rect=None):
+    def loadFrames(self, frames, name, scale):
         frame_list = tool.GFX[name]
-        if frame_rect == None:
+        if name in tool.PLANT_RECT:
+            data = tool.PLANT_RECT[name]
+            x, y, width, height = data['x'], data['y'], data['width'], data['height']
+        else:
             x, y = 0, 0
             rect = frame_list[0].get_rect()
             width, height = rect.w, rect.h
-        else:
-            x, y, width, height = frame_rect[0], frame_rect[1], frame_rect[2], frame_rect[3]
 
         for frame in frame_list:
-            frames.append(tool.get_image(frame, 0, 0, width, height, c.BLACK, scale))
+            frames.append(tool.get_image(frame, x, y, width, height, c.BLACK, scale))
 
     def loadImages(self, name, scale):
         self.loadFrames(self.frames, name, scale)
@@ -169,7 +178,12 @@ class Plant(pg.sprite.Sprite):
             self.animate_timer = self.current_time
         
         self.image = self.frames[self.frame_index]
-    
+
+    def canAttack(self, zombie):
+        if (self.rect.x <= zombie.rect.right):
+            return True
+        return False
+
     def setAttack(self):
         pass
     
@@ -382,7 +396,7 @@ class Chomper(Plant):
         rect_list = [(0, 0, 100, 114), None, None]
 
         for i, name in enumerate(name_list):
-            self.loadFrames(frame_list[i], name, scale_list[i], rect_list[i])
+            self.loadFrames(frame_list[i], name, scale_list[i])
 
         self.frames = self.idle_frames
 
@@ -433,3 +447,26 @@ class Chomper(Plant):
         self.rect = self.image.get_rect()
         self.rect.bottom = bottom
         self.rect.x = x
+
+class PuffMushroom(Plant):
+    def __init__(self, x, y, bullet_group):
+        Plant.__init__(self, x, y, c.PUFFMUSHROOM, c.PLANT_HEALTH, bullet_group)
+        self.shoot_timer = 0
+
+    def loadImages(self, name, scale):
+        self.loadFrames(self.frames, name, 1)
+
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 3000:
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
+                                    c.BULLET_MUSHROOM, c.BULLET_DAMAGE_NORMAL, True))
+            self.shoot_timer = self.current_time
+
+    def canAttack(self, zombie):
+        if (self.rect.x <= zombie.rect.right and
+            (self.rect.right + c.GRID_X_SIZE * 4 >= zombie.rect.x)):
+            return True
+        return False
+
+    def setAttack(self):
+        self.state = c.ATTACK

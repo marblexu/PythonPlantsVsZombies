@@ -59,6 +59,7 @@ MAP_OFFSET_Y = 100
 MENUBAR_BACKGROUND = 'ChooserBackground'
 
 #PLANT INFO
+PLANT_IMAGE_RECT = 'plant_image_rect'
 CAR = 'car'
 SUN = 'Sun'
 SUNFLOWER = 'SunFlower'
@@ -70,6 +71,8 @@ THREEPEASHOOTER = 'Threepeater'
 REPEATERPEA = 'RepeaterPea'
 CHOMPER = 'Chomper'
 CHERRY_BOOM_IMAGE = 'Boom'
+PUFFMUSHROOM = 'PuffMushroom'
+SPIKEWEED = 'Spikeweed'
 
 PLANT_HEALTH = 5
 WALLNUT_HEALTH = 30
@@ -92,10 +95,13 @@ CARD_CHERRYBOMB = 'card_cherrybomb'
 CARD_THREEPEASHOOTER = 'card_threepeashooter'
 CARD_REPEATERPEA = 'card_repeaterpea'
 CARD_CHOMPER = 'card_chomper'
+CARD_PUFFMUSHROOM = 'card_puffmushroom'
+CARD_SPIKEWEED = 'card_spikeweed'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'
 BULLET_PEA_ICE = 'PeaIce'
+BULLET_MUSHROOM = 'BulletMushRoom'
 BULLET_DAMAGE_NORMAL = 1
 
 #ZOMBIE INFO
@@ -105,6 +111,7 @@ NORMAL_ZOMBIE = 'Zombie'
 CONEHEAD_ZOMBIE = 'ConeheadZombie'
 BUCKETHEAD_ZOMBIE = 'BucketheadZombie'
 FLAG_ZOMBIE = 'FlagZombie'
+NEWSPAPER_ZOMBIE = 'NewspaperZombie'
 BOOMDIE = 'BoomDie'
 
 LOSTHEAD_HEALTH = 5
@@ -112,6 +119,7 @@ NORMAL_HEALTH = 10
 FLAG_HEALTH = 15
 CONEHEAD_HEALTH = 20
 BUCKETHEAD_HEALTH = 30
+NEWSPAPER_HEALTH = 15
 
 ATTACK_INTERVAL = 1000
 ZOMBIE_WALK_INTERVAL = 70

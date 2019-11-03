@@ -125,6 +125,8 @@ class Level(tool.State):
         for car in self.cars:
             car.update(self.game_info)
 
+        self.menubar.update(self.current_time)
+
         self.checkBulletCollisions()
         self.checkZombieCollisions()
         self.checkPlants()
@@ -142,6 +144,8 @@ class Level(tool.State):
             self.zombie_groups[map_y].add(zombie.BucketHeadZombie(c.ZOMBIE_START_X, y, self.head_group))
         elif name == c.FLAG_ZOMBIE:
             self.zombie_groups[map_y].add(zombie.FlagZombie(c.ZOMBIE_START_X, y, self.head_group))
+        elif name == c.NEWSPAPER_ZOMBIE:
+            self.zombie_groups[map_y].add(zombie.NewspaperZombie(c.ZOMBIE_START_X, y, self.head_group))
 
     def canSeedPlant(self):
         x, y = pg.mouse.get_pos()
@@ -172,8 +176,11 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.RepeaterPea(x, y, self.bullet_groups[map_y]))
         elif self.plant_name == c.CHOMPER:
             self.plant_groups[map_y].add(plant.Chomper(x, y))
+        elif self.plant_name == c.PUFFMUSHROOM:
+            self.plant_groups[map_y].add(plant.PuffMushroom(x, y, self.bullet_groups[map_y]))
 
         self.menubar.decreaseSunValue(self.plant_cost)
+        self.menubar.setCardFrozenTime(self.plant_name)
         self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)
         self.removeMouseImage()
         #print('addPlant map[%d,%d], grid pos[%d, %d] pos[%d, %d]' % (map_x, map_y, x, y, pos[0], pos[1]))
@@ -191,7 +198,7 @@ class Level(tool.State):
             image.set_alpha(128)
             self.hint_image = image
             self.hint_rect = image.get_rect()
-            self.hint_rect.x = pos[0]
+            self.hint_rect.centerx = pos[0]
             self.hint_rect.bottom = pos[1]
             self.hint_plant = True
         else:
@@ -199,10 +206,15 @@ class Level(tool.State):
 
     def setupMouseImage(self, plant_name, plant_cost):
         frame_list = tool.GFX[plant_name]
-        rect = frame_list[0].get_rect()
-        width, height = rect.w, rect.h
+        if plant_name in tool.PLANT_RECT:
+            data = tool.PLANT_RECT[plant_name]
+            x, y, width, height = data['x'], data['y'], data['width'], data['height']
+        else:
+            x, y = 0, 0
+            rect = frame_list[0].get_rect()
+            width, height = rect.w, rect.h
 
-        self.mouse_image = tool.get_image(frame_list[0], 0, 0, width, height, c.BLACK, 1)
+        self.mouse_image = tool.get_image(frame_list[0], x, y, width, height, c.BLACK, 1)
         self.mouse_rect = self.mouse_image.get_rect()
         pg.mouse.set_visible(False)
         self.drag_plant = True
@@ -287,7 +299,10 @@ class Level(tool.State):
                     break
         else:
             if (plant.state == c.IDLE and zombie_len > 0):
-                plant.setAttack()
+                for zombie in self.zombie_groups[i]:
+                    if plant.canAttack(zombie):
+                        plant.setAttack()
+                        break
             elif (plant.state == c.ATTACK and zombie_len == 0):
                 plant.setIdle()
 
