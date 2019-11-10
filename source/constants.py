@@ -72,6 +72,7 @@ REPEATERPEA = 'RepeaterPea'
 CHOMPER = 'Chomper'
 CHERRY_BOOM_IMAGE = 'Boom'
 PUFFMUSHROOM = 'PuffMushroom'
+POTATOMINE = 'PotatoMine'
 SPIKEWEED = 'Spikeweed'
 
 PLANT_HEALTH = 5
@@ -96,6 +97,7 @@ CARD_THREEPEASHOOTER = 'card_threepeashooter'
 CARD_REPEATERPEA = 'card_repeaterpea'
 CARD_CHOMPER = 'card_chomper'
 CARD_PUFFMUSHROOM = 'card_puffmushroom'
+CARD_POTATOMINE = 'card_potatomine'
 CARD_SPIKEWEED = 'card_spikeweed'
 
 #BULLET INFO

@@ -6,13 +6,13 @@ from .. import constants as c
 
 card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.CARD_WALLNUT,
                   c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA, c.CARD_CHOMPER,
-                  c.CARD_PUFFMUSHROOM]
+                  c.CARD_PUFFMUSHROOM, c.CARD_POTATOMINE]
 plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
                    c.CHERRYBOMB, c.THREEPEASHOOTER, c.REPEATERPEA, c.CHOMPER,
-                   c.PUFFMUSHROOM]
-plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0]
-plant_frozen_time_list = [0, 0, 0, 0, 0, 0, 0, 0, 8000]
-card_list = [0, 1, 2, 3, 4, 8, 7]
+                   c.PUFFMUSHROOM, c.POTATOMINE]
+plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25]
+plant_frozen_time_list = [5000, 5000, 5000, 10000, 5000, 5000, 5000, 5000, 8000, 8000]
+card_list = [0, 1, 2, 3, 4, 8, 9]
 
 class Card():
     def __init__(self, x, y, name_index):

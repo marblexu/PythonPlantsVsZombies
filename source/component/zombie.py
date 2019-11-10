@@ -348,6 +348,10 @@ class NewspaperZombie(Zombie):
                      losthead_attack_name, die_name, boomdie_name]
 
         for i, name in enumerate(name_list):
-            self.loadFrames(frame_list[i], name, tool.ZOMBIE_RECT[name]['x'], c.WHITE)
+            if name == c.BOOMDIE:
+                color = c.BLACK
+            else:
+                color = c.WHITE
+            self.loadFrames(frame_list[i], name, tool.ZOMBIE_RECT[name]['x'], color)
 
         self.frames = self.helmet_walk_frames

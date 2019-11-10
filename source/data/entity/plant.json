@@ -4,6 +4,7 @@
         "PeaIce":{"x":26, "y":0, "width":30, "height":34},
         "Chomper":{"x":0, "y":0, "width":100, "height":114},
         "PuffMushroom":{"x":0, "y":28, "width":35, "height":38},
-        "BulletMushRoom":{"x":0, "y":1, "width":55, "height":21}
+        "BulletMushRoom":{"x":0, "y":1, "width":55, "height":21},
+        "PotatoMine":{"x":0, "y":0, "width":75, "height":55}
     }
 }

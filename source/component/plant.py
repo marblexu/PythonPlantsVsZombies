@@ -126,7 +126,7 @@ class Plant(pg.sprite.Sprite):
         self.animate_interval = 100
         self.is_attacked = False
 
-    def loadFrames(self, frames, name, scale):
+    def loadFrames(self, frames, name, scale, color=c.BLACK):
         frame_list = tool.GFX[name]
         if name in tool.PLANT_RECT:
             data = tool.PLANT_RECT[name]
@@ -137,10 +137,23 @@ class Plant(pg.sprite.Sprite):
             width, height = rect.w, rect.h
 
         for frame in frame_list:
-            frames.append(tool.get_image(frame, x, y, width, height, c.BLACK, scale))
+            frames.append(tool.get_image(frame, x, y, width, height, color, scale))
 
     def loadImages(self, name, scale):
         self.loadFrames(self.frames, name, scale)
+
+    def changeFrames(self, frames):
+        '''change image frames and modify rect position'''
+        self.frames = frames
+        self.frame_num = len(self.frames)
+        self.frame_index = 0
+        
+        bottom = self.rect.bottom
+        x = self.rect.x
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.bottom = bottom
+        self.rect.x = x
 
     def update(self, game_info):
         self.current_time = game_info[c.CURRENT_TIME]
@@ -185,8 +198,8 @@ class Plant(pg.sprite.Sprite):
         return False
 
     def setAttack(self):
-        pass
-    
+        self.state = c.ATTACK
+
     def setIdle(self):
         self.state = c.IDLE
         self.is_attacked = False
@@ -252,9 +265,6 @@ class PeaShooter(Plant):
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
 
-    def setAttack(self):
-        self.state = c.ATTACK
-
 class RepeaterPea(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.REPEATERPEA, c.PLANT_HEALTH, bullet_group)
@@ -267,9 +277,6 @@ class RepeaterPea(Plant):
             self.bullet_group.add(Bullet(self.rect.right + 40, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
-
-    def setAttack(self):
-        self.state = c.ATTACK
 
 class ThreePeaShooter(Plant):
     def __init__(self, x, y, bullet_groups, map_y):
@@ -289,9 +296,6 @@ class ThreePeaShooter(Plant):
                 self.bullet_groups[tmp_y].add(Bullet(self.rect.right, self.rect.y, dest_y,
                                         c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
-    
-    def setAttack(self):
-        self.state = c.ATTACK
 
 class SnowPeaShooter(Plant):
     def __init__(self, x, y, bullet_group):
@@ -303,9 +307,6 @@ class SnowPeaShooter(Plant):
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time
-
-    def setAttack(self):
-        self.state = c.ATTACK
 
 class WallNut(Plant):
     def __init__(self, x, y):
@@ -342,6 +343,8 @@ class CherryBomb(Plant):
         self.state = c.ATTACK
         self.start_boom = False
         self.bomb_timer = 0
+        self.explode_y_range = 1
+        self.explode_x_range = c.GRID_X_SIZE
     
     def setBoom(self):
         frame = tool.GFX[c.CHERRY_BOOM_IMAGE]
@@ -435,19 +438,6 @@ class Chomper(Plant):
             self.attack_zombie.kill()
             self.setIdle()
 
-    def changeFrames(self, frames):
-        '''change image frames and modify rect position'''
-        self.frames = frames
-        self.frame_num = len(self.frames)
-        self.frame_index = 0
-        
-        bottom = self.rect.bottom
-        x = self.rect.x
-        self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_rect()
-        self.rect.bottom = bottom
-        self.rect.x = x
-
 class PuffMushroom(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.PUFFMUSHROOM, c.PLANT_HEALTH, bullet_group)
@@ -468,5 +458,49 @@ class PuffMushroom(Plant):
             return True
         return False
 
-    def setAttack(self):
-        self.state = c.ATTACK
+class PotatoMine(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.POTATOMINE, c.PLANT_HEALTH, None)
+        self.animate_interval = 300
+        self.is_init = True
+        self.init_timer = 0
+        self.bomb_timer = 0
+        self.explode_y_range = 0
+        self.explode_x_range = c.GRID_X_SIZE//2
+
+    def loadImages(self, name, scale):
+        self.init_frames = []
+        self.idle_frames = []
+        self.explode_frames = []
+        
+        init_name = name + 'Init'
+        idle_name = name
+        explode_name = name + 'Explode'
+        
+        frame_list = [self.init_frames, self.idle_frames, self.explode_frames]
+        name_list = [init_name, idle_name, explode_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, 1, c.WHITE)
+
+        self.frames = self.init_frames
+
+    def idling(self):
+        if self.is_init:
+            if self.init_timer == 0:
+                self.init_timer = self.current_time
+            elif (self.current_time - self.init_timer) > 15000:
+                self.changeFrames(self.idle_frames)
+                self.is_init = False
+
+    def canAttack(self, zombie):
+        if not self.is_init and abs(zombie.rect.x - self.rect.x) <= self.explode_x_range:
+            return True
+        return False
+
+    def attacking(self):
+        if self.bomb_timer == 0:
+            self.bomb_timer = self.current_time
+            self.changeFrames(self.explode_frames)
+        elif (self.current_time - self.bomb_timer) > 500:
+            self.health = 0

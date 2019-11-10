@@ -178,6 +178,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.Chomper(x, y))
         elif self.plant_name == c.PUFFMUSHROOM:
             self.plant_groups[map_y].add(plant.PuffMushroom(x, y, self.bullet_groups[map_y]))
+        elif self.plant_name == c.POTATOMINE:
+            self.plant_groups[map_y].add(plant.PotatoMine(x, y))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
@@ -214,7 +216,11 @@ class Level(tool.State):
             rect = frame_list[0].get_rect()
             width, height = rect.w, rect.h
 
-        self.mouse_image = tool.get_image(frame_list[0], x, y, width, height, c.BLACK, 1)
+        if plant_name == c.POTATOMINE:
+            color = c.WHITE
+        else:
+            color = c.BLACK
+        self.mouse_image = tool.get_image(frame_list[0], x, y, width, height, color, 1)
         self.mouse_rect = self.mouse_image.get_rect()
         pg.mouse.set_visible(False)
         self.drag_plant = True
@@ -258,19 +264,21 @@ class Level(tool.State):
             if car.dead:
                 self.cars.remove(car)
 
-    def boomZombies(self, x, map_y):
+    def boomZombies(self, x, map_y, y_range, x_range):
         for i in range(self.map_y_len):
-            if abs(i - map_y) > 1:
+            if abs(i - map_y) > y_range:
                 continue
             for zombie in self.zombie_groups[i]:
-                if abs(zombie.rect.x - x) <= c.GRID_X_SIZE:
+                if abs(zombie.rect.x - x) <= x_range:
                     zombie.setBoomDie()
 
     def killPlant(self, plant):
         map_x, map_y = self.map.getMapIndex(plant.rect.centerx, plant.rect.bottom)
         self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
-        if plant.name == c.CHERRYBOMB:
-            self.boomZombies(plant.rect.centerx, map_y)
+        if (plant.name == c.CHERRYBOMB or
+            (plant.name == c.POTATOMINE and not plant.is_init)):
+            self.boomZombies(plant.rect.centerx, map_y, plant.explode_y_range,
+                            plant.explode_x_range)
         plant.kill()
 
     def checkPlant(self, plant, i):
@@ -296,6 +304,11 @@ class Level(tool.State):
             for zombie in self.zombie_groups[i]:
                 if plant.canAttack(zombie):
                     plant.setAttack(zombie, self.zombie_groups[i])
+                    break
+        elif plant.name == c.POTATOMINE:
+            for zombie in self.zombie_groups[i]:
+                if plant.canAttack(zombie):
+                    plant.setAttack()
                     break
         else:
             if (plant.state == c.IDLE and zombie_len > 0):
