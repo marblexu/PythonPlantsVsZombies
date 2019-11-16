@@ -12,7 +12,7 @@ plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
                    c.PUFFMUSHROOM, c.POTATOMINE, c.SQUASH]
 plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25, 50]
 plant_frozen_time_list = [0, 5000, 5000, 10000, 5000, 5000, 5000, 5000, 8000, 8000, 8000]
-card_list = [0, 1, 8, 3, 4, 10, 9]
+card_list = [0, 1, 3, 4, 7, 8, 9, 10]
 
 class Card():
     def __init__(self, x, y, name_index):
@@ -31,7 +31,7 @@ class Card():
         rect = frame.get_rect()
         width, height = rect.w, rect.h
 
-        self.image = tool.get_image(frame, 0, 0, width, height, c.BLACK, 0.8)
+        self.image = tool.get_image(frame, 0, 0, width, height, c.BLACK, 0.78)
     
     def checkMouseClick(self, mouse_pos):
         x, y = mouse_pos
@@ -66,17 +66,16 @@ class MenuBar():
         self.rect.y = 0
         
         self.sun_value = sun_value
-        self.card_offset_x = 38
+        self.card_offset_x = 32
         self.setupCards(card_list)
         self.font = pg.font.SysFont(None, 20)
 
     def loadFrame(self, name):
-        frame_rect = [11, 0, 560, 108]
         frame = tool.GFX[name]
         rect = frame.get_rect()
-        width, height = rect.w, rect.h
+        frame_rect = (rect.x, rect.y, rect.w, rect.h)
 
-        self.image = tool.get_image(tool.GFX[name], *frame_rect, c.BLACK, 0.8)
+        self.image = tool.get_image(tool.GFX[name], *frame_rect, c.WHITE, 1)
 
     def update(self, current_time):
         self.current_time = current_time
@@ -102,9 +101,9 @@ class MenuBar():
     def setupCards(self, card_list):
         self.card_list = []
         x = self.card_offset_x
-        y = 7
+        y = 8
         for index in card_list:
-            x += 51
+            x += 55
             self.card_list.append(Card(x, y, index))
 
     def checkCardClick(self, mouse_pos):
@@ -136,7 +135,7 @@ class MenuBar():
                 break
 
     def drawSunValue(self):
-        width = 30
+        width = 32
         msg_image = self.font.render(str(self.sun_value), True, c.NAVYBLUE, c.LIGHTYELLOW)
         msg_rect = msg_image.get_rect()
         msg_w = msg_rect.width
@@ -151,7 +150,7 @@ class MenuBar():
         self.value_image = image
         self.value_rect = self.value_image.get_rect()
         self.value_rect.x = 18
-        self.value_rect.y = self.rect.bottom - 20
+        self.value_rect.y = self.rect.bottom - 21
         
         self.image.blit(self.value_image, self.value_rect)
 
