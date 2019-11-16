@@ -180,6 +180,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.PuffMushroom(x, y, self.bullet_groups[map_y]))
         elif self.plant_name == c.POTATOMINE:
             self.plant_groups[map_y].add(plant.PotatoMine(x, y))
+        elif self.plant_name == c.SQUASH:
+            self.plant_groups[map_y].add(plant.Squash(x, y))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
@@ -216,7 +218,7 @@ class Level(tool.State):
             rect = frame_list[0].get_rect()
             width, height = rect.w, rect.h
 
-        if plant_name == c.POTATOMINE:
+        if plant_name == c.POTATOMINE or plant_name == c.SQUASH:
             color = c.WHITE
         else:
             color = c.BLACK
@@ -273,7 +275,8 @@ class Level(tool.State):
                     zombie.setBoomDie()
 
     def killPlant(self, plant):
-        map_x, map_y = self.map.getMapIndex(plant.rect.centerx, plant.rect.bottom)
+        x, y = plant.getPosition()
+        map_x, map_y = self.map.getMapIndex(x, y)
         self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
         if (plant.name == c.CHERRYBOMB or
             (plant.name == c.POTATOMINE and not plant.is_init)):
@@ -309,6 +312,11 @@ class Level(tool.State):
             for zombie in self.zombie_groups[i]:
                 if plant.canAttack(zombie):
                     plant.setAttack()
+                    break
+        elif plant.name == c.SQUASH:
+            for zombie in self.zombie_groups[i]:
+                if plant.canAttack(zombie):
+                    plant.setAttack(zombie, self.zombie_groups[i])
                     break
         else:
             if (plant.state == c.IDLE and zombie_len > 0):

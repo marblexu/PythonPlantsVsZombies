@@ -210,6 +210,9 @@ class Plant(pg.sprite.Sprite):
     def setDamage(self, damage):
         self.health -= damage
 
+    def getPosition(self):
+        return self.rect.centerx, self.rect.bottom
+
 class Sun(Plant):
     def __init__(self, x, y, dest_x, dest_y):
         Plant.__init__(self, x, y, c.SUN, 0, None, 0.9)
@@ -504,3 +507,57 @@ class PotatoMine(Plant):
             self.changeFrames(self.explode_frames)
         elif (self.current_time - self.bomb_timer) > 500:
             self.health = 0
+
+class Squash(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.SQUASH, c.PLANT_HEALTH, None)
+        self.orig_pos = (x, y)
+        self.aim_timer = 0
+        self.squashing = False
+
+    def loadImages(self, name, scale):
+        self.idle_frames = []
+        self.aim_frames = []
+        self.attack_frames = []
+        
+        idle_name = name
+        aim_name = name + 'Aim'
+        attack_name = name + 'Attack'
+        
+        frame_list = [self.idle_frames, self.aim_frames, self.attack_frames]
+        name_list = [idle_name, aim_name, attack_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, 1, c.WHITE)
+
+        self.frames = self.idle_frames
+
+    def canAttack(self, zombie):
+        if (self.state == c.IDLE and self.rect.x <= zombie.rect.right and
+            (self.rect.right + c.GRID_X_SIZE >= zombie.rect.x)):
+            return True
+        return False
+
+    def setAttack(self, zombie, zombie_group):
+        self.attack_zombie = zombie
+        self.zombie_group = zombie_group
+        self.state = c.ATTACK
+
+    def attacking(self):
+        if self.squashing:
+            if self.frame_index == 2:
+                self.zombie_group.remove(self.attack_zombie)
+            if (self.frame_index + 1) == self.frame_num:
+                self.attack_zombie.kill()
+                self.health = 0
+        elif self.aim_timer == 0:
+            self.aim_timer = self.current_time
+            self.changeFrames(self.aim_frames)
+        elif (self.current_time - self.aim_timer) > 1000:
+            self.changeFrames(self.attack_frames)
+            self.rect.centerx = self.attack_zombie.rect.centerx
+            self.squashing = True
+            self.animate_interval = 300
+
+    def getPosition(self):
+        return self.orig_pos

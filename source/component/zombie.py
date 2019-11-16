@@ -33,7 +33,7 @@ class Zombie(pg.sprite.Sprite):
         self.animate_interval = 150
         self.ice_slow_ratio = 1
         self.ice_slow_timer = 0
-        self.speed_ratio = 1
+        self.speed = 1
     
     def loadFrames(self, frames, name, image_x, colorkey=c.BLACK):
         frame_list = tool.GFX[name]
@@ -68,11 +68,11 @@ class Zombie(pg.sprite.Sprite):
             self.changeFrames(self.walk_frames)
             self.helmet = False
             if self.name == c.NEWSPAPER_ZOMBIE:
-                self.speed_ratio = 0.5
+                self.speed = 2
 
         if (self.current_time - self.walk_timer) > (c.ZOMBIE_WALK_INTERVAL * self.getTimeRatio()):
             self.walk_timer = self.current_time
-            self.rect.x -= 1
+            self.rect.x -= self.speed
     
     def attacking(self):
         if self.health <= 0:
@@ -122,7 +122,7 @@ class Zombie(pg.sprite.Sprite):
         self.image = self.frames[self.frame_index]
 
     def getTimeRatio(self):
-        return self.ice_slow_ratio * self.speed_ratio
+        return self.ice_slow_ratio
 
     def setIceSlow(self):
         '''when get a ice bullet damage, slow the attack or walk speed of the zombie'''
