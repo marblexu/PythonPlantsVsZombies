@@ -57,6 +57,8 @@ MAP_OFFSET_Y = 100
 
 #MENUBAR
 MENUBAR_BACKGROUND = 'ChooserBackground'
+PANEL_BACKGROUND = 'PanelBackground'
+START_BUTTON = 'StartButton'
 
 #PLANT INFO
 PLANT_IMAGE_RECT = 'plant_image_rect'
@@ -140,3 +142,6 @@ DIGEST = 'digest'
 WALK = 'walk'
 DIE = 'die'
 
+#LEVEL STATE
+CHOOSE = 'choose'
+PLAY = 'play'

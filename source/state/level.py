@@ -19,21 +19,10 @@ class Level(tool.State):
         self.map = map.Map(c.GRID_X_LEN, self.map_y_len)
         
         self.loadMap()
-        
-        self.menubar = menubar.MenuBar(menubar.card_list, self.map_data[c.INIT_SUN_NAME])
-        self.drag_plant = False
-        self.hint_image = None
-        self.hint_plant = False
-        
-        self.produce_sun = True
-        self.sun_timer = current_time
-        
-        self.removeMouseImage()
+        self.state = c.CHOOSE
+        self.initChoose()
         self.setupBackground()
-        self.setupGroups()
-        self.setupZombies()
-        self.setupCars()
-    
+
     def loadMap(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
         file_path = os.path.join('source', 'data', 'map', map_file)
@@ -80,7 +69,37 @@ class Level(tool.State):
 
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
-        
+        if self.state == c.CHOOSE:
+            self.choose(mouse_pos, mouse_click)
+        elif self.state == c.PLAY:
+            self.play(mouse_pos, mouse_click)
+
+        self.draw(surface)
+
+    def initChoose(self):
+        self.panel = menubar.Panel(menubar.all_card_list, self.map_data[c.INIT_SUN_NAME])
+
+    def choose(self, mouse_pos, mouse_click):
+        if mouse_pos and mouse_click[0]:
+            self.panel.checkCardClick(mouse_pos)
+            if self.panel.checkStartButtonClick(mouse_pos):
+                self.state = c.PLAY
+                self.initPlay(self.panel.getSelectedCards())
+
+    def initPlay(self, card_list):
+        self.menubar = menubar.MenuBar(card_list, self.map_data[c.INIT_SUN_NAME])
+        self.drag_plant = False
+        self.hint_image = None
+        self.hint_plant = False
+        self.produce_sun = True
+        self.sun_timer = self.current_time
+
+        self.removeMouseImage()
+        self.setupGroups()
+        self.setupZombies()
+        self.setupCars()
+
+    def play(self, mouse_pos, mouse_click):
         if self.zombie_start_time == 0:
             self.zombie_start_time = self.current_time
         elif len(self.zombie_list) > 0:
@@ -132,8 +151,7 @@ class Level(tool.State):
         self.checkPlants()
         self.checkCarCollisions()
         self.checkGameState()
-        self.draw(surface)
-    
+
     def createZombie(self, name, map_y):
         x, y = self.map.getMapGridPos(0, map_y)
         if name == c.NORMAL_ZOMBIE:
@@ -370,15 +388,18 @@ class Level(tool.State):
     def draw(self, surface):
         self.level.blit(self.background, self.viewport, self.viewport)
         surface.blit(self.level, (0,0), self.viewport)
-        self.menubar.draw(surface)
-        for i in range(self.map_y_len):
-            self.plant_groups[i].draw(surface)
-            self.zombie_groups[i].draw(surface)
-            self.bullet_groups[i].draw(surface)
-        for car in self.cars:
-            car.draw(surface)
-        self.head_group.draw(surface)
-        self.sun_group.draw(surface)
+        if self.state == c.CHOOSE:
+            self.panel.draw(surface)
+        elif self.state == c.PLAY:
+            self.menubar.draw(surface)
+            for i in range(self.map_y_len):
+                self.plant_groups[i].draw(surface)
+                self.zombie_groups[i].draw(surface)
+                self.bullet_groups[i].draw(surface)
+            for car in self.cars:
+                car.draw(surface)
+            self.head_group.draw(surface)
+            self.sun_group.draw(surface)
 
-        if self.drag_plant:
-            self.drawMouseShow(surface)
+            if self.drag_plant:
+                self.drawMouseShow(surface)
