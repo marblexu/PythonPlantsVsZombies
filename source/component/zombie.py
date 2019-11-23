@@ -33,6 +33,7 @@ class Zombie(pg.sprite.Sprite):
         self.animate_interval = 150
         self.ice_slow_ratio = 1
         self.ice_slow_timer = 0
+        self.hit_timer = 0
         self.speed = 1
     
     def loadFrames(self, frames, name, image_x, colorkey=c.BLACK):
@@ -118,8 +119,12 @@ class Zombie(pg.sprite.Sprite):
                     return
                 self.frame_index = 0
             self.animate_timer = self.current_time
-        
+
         self.image = self.frames[self.frame_index]
+        if(self.current_time - self.hit_timer) >= 200:
+            self.image.set_alpha(255)
+        else:
+            self.image.set_alpha(192)
 
     def getTimeRatio(self):
         return self.ice_slow_ratio
@@ -136,6 +141,7 @@ class Zombie(pg.sprite.Sprite):
 
     def setDamage(self, damage, ice):
         self.health -= damage
+        self.hit_timer = self.current_time
         if ice:
             self.setIceSlow()
     

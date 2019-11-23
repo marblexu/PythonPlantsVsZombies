@@ -561,3 +561,37 @@ class Squash(Plant):
 
     def getPosition(self):
         return self.orig_pos
+
+class Spikeweed(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.SPIKEWEED, c.PLANT_HEALTH, None)
+        self.animate_interval = 200
+        self.attack_timer = 0
+
+    def loadImages(self, name, scale):
+        self.loadFrames(self.frames, name, 0.9, c.WHITE)
+        self.select_image = self.frames[0]
+
+    def setIdle(self):
+        print('spikeweed idle')
+        self.animate_interval = 200
+        self.state = c.IDLE
+
+    def canAttack(self, zombie):
+        if (self.rect.x <= zombie.rect.right and
+            (self.rect.right >= zombie.rect.x)):
+            return True
+        return False
+
+    def setAttack(self, zombie_group):
+        print('spikeweed attack')
+        self.zombie_group = zombie_group
+        self.animate_interval = 50
+        self.state = c.ATTACK
+
+    def attacking(self):
+        if (self.current_time - self.attack_timer) > 2000:
+            self.attack_timer = self.current_time
+            for zombie in self.zombie_group:
+                if self.canAttack(zombie):
+                    zombie.setDamage(1, False)

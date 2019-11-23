@@ -200,6 +200,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.PotatoMine(x, y))
         elif self.plant_name == c.SQUASH:
             self.plant_groups[map_y].add(plant.Squash(x, y))
+        elif self.plant_name == c.SPIKEWEED:
+            self.plant_groups[map_y].add(plant.Spikeweed(x, y))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
@@ -236,7 +238,7 @@ class Level(tool.State):
             rect = frame_list[0].get_rect()
             width, height = rect.w, rect.h
 
-        if plant_name == c.POTATOMINE or plant_name == c.SQUASH:
+        if plant_name == c.POTATOMINE or plant_name == c.SQUASH or plant_name == c.SPIKEWEED:
             color = c.WHITE
         else:
             color = c.BLACK
@@ -269,7 +271,7 @@ class Level(tool.State):
         for i in range(self.map_y_len):
             for zombie in self.zombie_groups[i]:
                 plant = pg.sprite.spritecollideany(zombie, self.plant_groups[i], collided_func)
-                if plant and zombie.state == c.WALK:
+                if plant and plant.name != c.SPIKEWEED and zombie.state == c.WALK:
                     zombie.setAttack(plant)
                     plant.setAttacked()
 
@@ -336,6 +338,16 @@ class Level(tool.State):
                 if plant.canAttack(zombie):
                     plant.setAttack(zombie, self.zombie_groups[i])
                     break
+        elif plant.name == c.SPIKEWEED:
+            can_attack = False
+            for zombie in self.zombie_groups[i]:
+                if plant.canAttack(zombie):
+                    can_attack = True
+                    break
+            if plant.state == c.IDLE and can_attack:
+                plant.setAttack(self.zombie_groups[i])
+            elif plant.state == c.ATTACK and not can_attack:
+                plant.setIdle()
         else:
             if (plant.state == c.IDLE and zombie_len > 0):
                 for zombie in self.zombie_groups[i]:
