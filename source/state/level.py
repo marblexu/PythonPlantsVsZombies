@@ -202,6 +202,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.Squash(x, y))
         elif self.plant_name == c.SPIKEWEED:
             self.plant_groups[map_y].add(plant.Spikeweed(x, y))
+        elif self.plant_name == c.JALAPENO:
+            self.plant_groups[map_y].add(plant.Jalapeno(x, y))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
@@ -238,7 +240,8 @@ class Level(tool.State):
             rect = frame_list[0].get_rect()
             width, height = rect.w, rect.h
 
-        if plant_name == c.POTATOMINE or plant_name == c.SQUASH or plant_name == c.SPIKEWEED:
+        if (plant_name == c.POTATOMINE or plant_name == c.SQUASH or
+            plant_name == c.SPIKEWEED or plant_name == c.JALAPENO):
             color = c.WHITE
         else:
             color = c.BLACK
@@ -298,7 +301,7 @@ class Level(tool.State):
         x, y = plant.getPosition()
         map_x, map_y = self.map.getMapIndex(x, y)
         self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
-        if (plant.name == c.CHERRYBOMB or
+        if (plant.name == c.CHERRYBOMB or plant.name == c.JALAPENO or
             (plant.name == c.POTATOMINE and not plant.is_init)):
             self.boomZombies(plant.rect.centerx, map_y, plant.explode_y_range,
                             plant.explode_x_range)

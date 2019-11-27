@@ -570,7 +570,6 @@ class Spikeweed(Plant):
 
     def loadImages(self, name, scale):
         self.loadFrames(self.frames, name, 0.9, c.WHITE)
-        self.select_image = self.frames[0]
 
     def setIdle(self):
         print('spikeweed idle')
@@ -595,3 +594,41 @@ class Spikeweed(Plant):
             for zombie in self.zombie_group:
                 if self.canAttack(zombie):
                     zombie.setDamage(1, False)
+
+class Jalapeno(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.JALAPENO, c.PLANT_HEALTH, None)
+        self.state = c.ATTACK
+        self.start_explode = False
+        self.explode_y_range = 0
+        self.explode_x_range = 377
+        
+    def loadImages(self, name, scale):
+        self.explode_frames = []
+        explode_name = name + 'Explode'
+        self.loadFrames(self.explode_frames, explode_name, 1, c.WHITE)
+        
+        self.loadFrames(self.frames, name, 1, c.WHITE)
+
+    def setExplode(self):
+        self.changeFrames(self.explode_frames)
+        self.animate_timer = self.current_time
+        self.rect.x = c.MAP_OFFSET_X
+        self.start_explode = True
+
+    def animation(self):
+        if self.start_explode:
+            if(self.current_time - self.animate_timer) > 100:
+                self.frame_index += 1
+                if self.frame_index >= self.frame_num:
+                    self.health = 0
+                    return
+                self.animate_timer = self.current_time
+        else:
+            if (self.current_time - self.animate_timer) > 100:
+                self.frame_index += 1
+                if self.frame_index >= self.frame_num:
+                    self.setExplode()
+                    return
+                self.animate_timer = self.current_time
+        self.image = self.frames[self.frame_index]

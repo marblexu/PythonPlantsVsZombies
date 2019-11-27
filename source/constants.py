@@ -77,6 +77,7 @@ PUFFMUSHROOM = 'PuffMushroom'
 POTATOMINE = 'PotatoMine'
 SQUASH = 'Squash'
 SPIKEWEED = 'Spikeweed'
+JALAPENO = 'Jalapeno'
 
 PLANT_HEALTH = 5
 WALLNUT_HEALTH = 30
@@ -103,6 +104,7 @@ CARD_PUFFMUSHROOM = 'card_puffmushroom'
 CARD_POTATOMINE = 'card_potatomine'
 CARD_SQUASH = 'card_squash'
 CARD_SPIKEWEED = 'card_spikeweed'
+CARD_JALAPENO = 'card_jalapeno'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'
