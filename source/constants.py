@@ -78,6 +78,7 @@ POTATOMINE = 'PotatoMine'
 SQUASH = 'Squash'
 SPIKEWEED = 'Spikeweed'
 JALAPENO = 'Jalapeno'
+SCAREDYSHROOM = 'ScaredyShroom'
 
 PLANT_HEALTH = 5
 WALLNUT_HEALTH = 30
@@ -105,6 +106,7 @@ CARD_POTATOMINE = 'card_potatomine'
 CARD_SQUASH = 'card_squash'
 CARD_SPIKEWEED = 'card_spikeweed'
 CARD_JALAPENO = 'card_jalapeno'
+CARD_SCAREDYSHROOM = 'card_scaredyshroom'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'
@@ -143,6 +145,7 @@ ATTACKED = 'attacked'
 DIGEST = 'digest'
 WALK = 'walk'
 DIE = 'die'
+CRY = 'cry'
 
 #LEVEL STATE
 CHOOSE = 'choose'

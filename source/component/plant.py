@@ -124,7 +124,7 @@ class Plant(pg.sprite.Sprite):
         self.bullet_group = bullet_group
         self.animate_timer = 0
         self.animate_interval = 100
-        self.is_attacked = False
+        self.hit_timer = 0
 
     def loadFrames(self, frames, name, scale, color=c.BLACK):
         frame_list = tool.GFX[name]
@@ -168,9 +168,6 @@ class Plant(pg.sprite.Sprite):
         elif self.state == c.DIGEST:
             self.digest()
 
-        if self.is_attacked:
-            self.attacked()
-
     def idling(self):
         pass
 
@@ -178,9 +175,6 @@ class Plant(pg.sprite.Sprite):
         pass
 
     def digest(self):
-        pass
-
-    def attacked(self):
         pass
 
     def animation(self):
@@ -191,9 +185,13 @@ class Plant(pg.sprite.Sprite):
             self.animate_timer = self.current_time
         
         self.image = self.frames[self.frame_index]
+        if(self.current_time - self.hit_timer) >= 200:
+            self.image.set_alpha(255)
+        else:
+            self.image.set_alpha(192)
 
     def canAttack(self, zombie):
-        if (self.rect.x <= zombie.rect.right):
+        if (zombie.state != c.DIE and self.rect.x <= zombie.rect.right):
             return True
         return False
 
@@ -204,11 +202,9 @@ class Plant(pg.sprite.Sprite):
         self.state = c.IDLE
         self.is_attacked = False
 
-    def setAttacked(self):
-        self.is_attacked = True
-    
     def setDamage(self, damage):
         self.health -= damage
+        self.hit_timer = self.current_time
 
     def getPosition(self):
         return self.rect.centerx, self.rect.bottom
@@ -328,16 +324,12 @@ class WallNut(Plant):
         self.loadFrames(self.cracked1_frames, cracked1_frames_name, 1)
         self.loadFrames(self.cracked2_frames, cracked2_frames_name, 1)
     
-    def attacked(self):
+    def idling(self):
         if not self.cracked1 and self.health <= c.WALLNUT_CRACKED1_HEALTH:
-            self.frames = self.cracked1_frames
-            self.frame_num = len(self.frames)
-            self.frame_index = 0
+            self.changeFrames(self.cracked1_frames)
             self.cracked1 = True
         elif not self.cracked2 and self.health <= c.WALLNUT_CRACKED2_HEALTH:
-            self.frames = self.cracked2_frames
-            self.frame_num = len(self.frames)
-            self.frame_index = 0
+            self.changeFrames(self.cracked2_frames)
             self.cracked2 = True
 
 class CherryBomb(Plant):
@@ -451,7 +443,7 @@ class PuffMushroom(Plant):
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 3000:
-            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y + 10, self.rect.y + 10,
                                     c.BULLET_MUSHROOM, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time
 
@@ -583,7 +575,6 @@ class Spikeweed(Plant):
         return False
 
     def setAttack(self, zombie_group):
-        print('spikeweed attack')
         self.zombie_group = zombie_group
         self.animate_interval = 50
         self.state = c.ATTACK
@@ -632,3 +623,48 @@ class Jalapeno(Plant):
                     return
                 self.animate_timer = self.current_time
         self.image = self.frames[self.frame_index]
+
+class ScaredyShroom(Plant):
+    def __init__(self, x, y, bullet_group):
+        Plant.__init__(self, x, y, c.SCAREDYSHROOM, c.PLANT_HEALTH, bullet_group)
+        self.shoot_timer = 0
+        self.cry_x_range = c.GRID_X_SIZE * 2
+
+    def loadImages(self, name, scale):
+        self.idle_frames = []
+        self.cry_frames = []
+
+        idle_name = name
+        cry_name = name + 'Cry'
+        
+        frame_list = [self.idle_frames, self.cry_frames]
+        name_list = [idle_name, cry_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, 1, c.WHITE)
+
+        self.frames = self.idle_frames
+
+    def needCry(self, zombie):
+        if (zombie.state != c.DIE and self.rect.x <= zombie.rect.right and 
+            self.rect.x + self.cry_x_range > zombie.rect.x):
+            return True
+        return False
+
+    def setCry(self):
+        self.state = c.CRY
+        self.changeFrames(self.cry_frames)
+
+    def setAttack(self):
+        self.state = c.ATTACK
+        self.changeFrames(self.idle_frames)
+
+    def setIdle(self):
+        self.state = c.IDLE
+        self.changeFrames(self.idle_frames)
+
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 2000:
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y + 40, self.rect.y + 40,
+                                    c.BULLET_MUSHROOM, c.BULLET_DAMAGE_NORMAL, True))
+            self.shoot_timer = self.current_time

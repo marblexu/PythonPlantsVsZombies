@@ -204,6 +204,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.Spikeweed(x, y))
         elif self.plant_name == c.JALAPENO:
             self.plant_groups[map_y].add(plant.Jalapeno(x, y))
+        elif self.plant_name == c.SCAREDYSHROOM:
+            self.plant_groups[map_y].add(plant.ScaredyShroom(x, y, self.bullet_groups[map_y]))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
@@ -241,7 +243,8 @@ class Level(tool.State):
             width, height = rect.w, rect.h
 
         if (plant_name == c.POTATOMINE or plant_name == c.SQUASH or
-            plant_name == c.SPIKEWEED or plant_name == c.JALAPENO):
+            plant_name == c.SPIKEWEED or plant_name == c.JALAPENO or
+            plant_name == c.SCAREDYSHROOM):
             color = c.WHITE
         else:
             color = c.BLACK
@@ -276,7 +279,6 @@ class Level(tool.State):
                 plant = pg.sprite.spritecollideany(zombie, self.plant_groups[i], collided_func)
                 if plant and plant.name != c.SPIKEWEED and zombie.state == c.WALK:
                     zombie.setAttack(plant)
-                    plant.setAttacked()
 
     def checkCarCollisions(self):
         collided_func = pg.sprite.collide_circle_ratio(0.8)
@@ -351,13 +353,33 @@ class Level(tool.State):
                 plant.setAttack(self.zombie_groups[i])
             elif plant.state == c.ATTACK and not can_attack:
                 plant.setIdle()
+        elif plant.name == c.SCAREDYSHROOM:
+            need_cry = False
+            can_attack = False
+            for zombie in self.zombie_groups[i]:
+                if plant.needCry(zombie):
+                    need_cry = True
+                    break
+                elif plant.canAttack(zombie):
+                    can_attack = True
+            if need_cry:
+                if plant.state != c.CRY:
+                    plant.setCry()
+            elif can_attack:
+                if plant.state != c.ATTACK:
+                    plant.setAttack()
+            elif plant.state != c.IDLE:
+                plant.setIdle()
         else:
+            can_attack = False
             if (plant.state == c.IDLE and zombie_len > 0):
                 for zombie in self.zombie_groups[i]:
                     if plant.canAttack(zombie):
-                        plant.setAttack()
+                        can_attack = True
                         break
-            elif (plant.state == c.ATTACK and zombie_len == 0):
+            if plant.state == c.IDLE and can_attack:
+                plant.setAttack()
+            elif (plant.state == c.ATTACK and not can_attack):
                 plant.setIdle()
 
         if plant.health <= 0:

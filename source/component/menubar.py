@@ -13,14 +13,15 @@ CARD_LIST_NUM = 8
 card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.CARD_WALLNUT,
                   c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA, c.CARD_CHOMPER,
                   c.CARD_PUFFMUSHROOM, c.CARD_POTATOMINE, c.CARD_SQUASH, c.CARD_SPIKEWEED,
-                  c.CARD_JALAPENO]
+                  c.CARD_JALAPENO, c.CARD_SCAREDYSHROOM]
 plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
                    c.CHERRYBOMB, c.THREEPEASHOOTER, c.REPEATERPEA, c.CHOMPER,
                    c.PUFFMUSHROOM, c.POTATOMINE, c.SQUASH, c.SPIKEWEED,
-                   c.JALAPENO]
-plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25, 50, 100, 125]
-plant_frozen_time_list = [0, 5000, 5000, 10000, 5000, 5000, 5000, 5000, 8000, 8000, 8000, 8000, 8000]
-all_card_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                   c.JALAPENO, c.SCAREDYSHROOM]
+plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25, 50, 100, 125, 25]
+plant_frozen_time_list = [0, 5000, 5000, 10000, 5000, 5000, 5000, 5000, 8000, 8000,
+                          8000, 8000, 8000, 5000]
+all_card_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 def getSunValueImage(sun_value):
     font = pg.font.SysFont(None, 22)
