@@ -19,8 +19,8 @@ plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
                    c.PUFFMUSHROOM, c.POTATOMINE, c.SQUASH, c.SPIKEWEED,
                    c.JALAPENO, c.SCAREDYSHROOM]
 plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25, 50, 100, 125, 25]
-plant_frozen_time_list = [0, 5000, 5000, 10000, 5000, 5000, 5000, 5000, 8000, 8000,
-                          8000, 8000, 8000, 5000]
+plant_frozen_time_list = [7500, 7500, 7500, 30000, 50000, 7500, 7500, 7500, 7500, 30000,
+                          30000, 7500, 50000, 7500]
 all_card_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 def getSunValueImage(sun_value):
@@ -41,7 +41,7 @@ def getSunValueImage(sun_value):
 class Card():
     def __init__(self, x, y, name_index, scale=0.78):
         self.loadFrame(card_name_list[name_index], scale)
-        self.rect = self.image.get_rect()
+        self.rect = self.orig_image.get_rect()
         self.rect.x = x
         self.rect.y = y
         
@@ -49,6 +49,7 @@ class Card():
         self.sun_cost = plant_sun_list[name_index]
         self.frozen_time = plant_frozen_time_list[name_index]
         self.frozen_timer = -self.frozen_time
+        self.refresh_timer = 0
         self.select = True
 
     def loadFrame(self, name, scale):
@@ -56,8 +57,9 @@ class Card():
         rect = frame.get_rect()
         width, height = rect.w, rect.h
 
-        self.image = tool.get_image(frame, 0, 0, width, height, c.BLACK, scale)
-    
+        self.orig_image = tool.get_image(frame, 0, 0, width, height, c.BLACK, scale)
+        self.image = self.orig_image
+
     def checkMouseClick(self, mouse_pos):
         x, y = mouse_pos
         if(x >= self.rect.x and x <= self.rect.right and
@@ -83,12 +85,30 @@ class Card():
     def setFrozenTime(self, current_time):
         self.frozen_timer = current_time
 
-    def update(self, sun_value, current_time):
-        if (self.sun_cost > sun_value or
-            (current_time - self.frozen_timer) <= self.frozen_time):
-            self.image.set_alpha(128)
+    def createShowImage(self, sun_value, current_time):
+        '''create a card image to show cool down status
+           or disable status when have not enough sun value'''
+        time = current_time - self.frozen_timer
+        if time < self.frozen_time: #cool down status
+            image = pg.Surface([self.rect.w, self.rect.h])
+            frozen_image = self.orig_image.copy()
+            frozen_image.set_alpha(128)
+            frozen_height = (self.frozen_time - time)/self.frozen_time * self.rect.h
+            
+            image.blit(frozen_image, (0,0), (0, 0, self.rect.w, frozen_height))
+            image.blit(self.orig_image, (0,frozen_height),
+                       (0, frozen_height, self.rect.w, self.rect.h - frozen_height))
+        elif self.sun_cost > sun_value: #disable status
+            image = self.orig_image.copy()
+            image.set_alpha(192)
         else:
-            self.image.set_alpha(255)
+            image = self.orig_image
+        return image
+
+    def update(self, sun_value, current_time):
+        if (current_time - self.refresh_timer) >= 500:
+            self.image = self.createShowImage(sun_value, current_time)
+            self.refresh_timer = current_time
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)

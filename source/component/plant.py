@@ -461,7 +461,7 @@ class PotatoMine(Plant):
         self.init_timer = 0
         self.bomb_timer = 0
         self.explode_y_range = 0
-        self.explode_x_range = c.GRID_X_SIZE//2
+        self.explode_x_range = c.GRID_X_SIZE//3 * 2
 
     def loadImages(self, name, scale):
         self.init_frames = []
@@ -489,7 +489,8 @@ class PotatoMine(Plant):
                 self.is_init = False
 
     def canAttack(self, zombie):
-        if not self.is_init and abs(zombie.rect.x - self.rect.x) <= self.explode_x_range:
+        if (not self.is_init and zombie.rect.right >= self.rect.x and
+            (zombie.rect.x - self.rect.x) <= self.explode_x_range):
             return True
         return False
 
@@ -589,6 +590,7 @@ class Spikeweed(Plant):
 class Jalapeno(Plant):
     def __init__(self, x, y):
         Plant.__init__(self, x, y, c.JALAPENO, c.PLANT_HEALTH, None)
+        self.orig_pos = (x, y)
         self.state = c.ATTACK
         self.start_explode = False
         self.explode_y_range = 0
@@ -623,6 +625,9 @@ class Jalapeno(Plant):
                     return
                 self.animate_timer = self.current_time
         self.image = self.frames[self.frame_index]
+
+    def getPosition(self):
+        return self.orig_pos
 
 class ScaredyShroom(Plant):
     def __init__(self, x, y, bullet_group):
