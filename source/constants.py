@@ -79,6 +79,7 @@ SQUASH = 'Squash'
 SPIKEWEED = 'Spikeweed'
 JALAPENO = 'Jalapeno'
 SCAREDYSHROOM = 'ScaredyShroom'
+SUNSHROOM = 'SunShroom'
 
 PLANT_HEALTH = 5
 WALLNUT_HEALTH = 30
@@ -107,6 +108,7 @@ CARD_SQUASH = 'card_squash'
 CARD_SPIKEWEED = 'card_spikeweed'
 CARD_JALAPENO = 'card_jalapeno'
 CARD_SCAREDYSHROOM = 'card_scaredyshroom'
+CARD_SUNSHROOM = 'card_sunshroom'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'

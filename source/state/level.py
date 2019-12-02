@@ -139,7 +139,7 @@ class Level(tool.State):
             if not self.drag_plant and mouse_pos and mouse_click[0]:
                 for sun in self.sun_group:
                     if sun.checkCollision(mouse_pos[0], mouse_pos[1]):
-                        self.menubar.increaseSunValue(c.SUN_VALUE)
+                        self.menubar.increaseSunValue(sun.sun_value)
 
         for car in self.cars:
             car.update(self.game_info)
@@ -206,6 +206,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.Jalapeno(x, y))
         elif self.plant_name == c.SCAREDYSHROOM:
             self.plant_groups[map_y].add(plant.ScaredyShroom(x, y, self.bullet_groups[map_y]))
+        elif self.plant_name == c.SUNSHROOM:
+            self.plant_groups[map_y].add(plant.SunShroom(x, y, self.sun_group))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
@@ -244,7 +246,7 @@ class Level(tool.State):
 
         if (plant_name == c.POTATOMINE or plant_name == c.SQUASH or
             plant_name == c.SPIKEWEED or plant_name == c.JALAPENO or
-            plant_name == c.SCAREDYSHROOM):
+            plant_name == c.SCAREDYSHROOM or plant_name == c.SUNSHROOM):
             color = c.WHITE
         else:
             color = c.BLACK

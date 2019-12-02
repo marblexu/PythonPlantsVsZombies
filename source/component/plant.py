@@ -210,8 +210,14 @@ class Plant(pg.sprite.Sprite):
         return self.rect.centerx, self.rect.bottom
 
 class Sun(Plant):
-    def __init__(self, x, y, dest_x, dest_y):
-        Plant.__init__(self, x, y, c.SUN, 0, None, 0.9)
+    def __init__(self, x, y, dest_x, dest_y, is_big=True):
+        if is_big:
+            scale = 0.9
+            self.sun_value = c.SUN_VALUE
+        else:
+            scale = 0.6
+            self.sun_value = 12
+        Plant.__init__(self, x, y, c.SUN, 0, None, scale)
         self.move_speed = 1
         self.dest_x = dest_x
         self.dest_y = dest_y
@@ -673,3 +679,42 @@ class ScaredyShroom(Plant):
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y + 40, self.rect.y + 40,
                                     c.BULLET_MUSHROOM, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time
+
+class SunShroom(Plant):
+    def __init__(self, x, y, sun_group):
+        Plant.__init__(self, x, y, c.SUNSHROOM, c.PLANT_HEALTH, None)
+        self.animate_interval = 200
+        self.sun_timer = 0
+        self.sun_group = sun_group
+        self.is_big = False
+        self.change_timer = 0
+
+    def loadImages(self, name, scale):
+        self.idle_frames = []
+        self.big_frames = []
+
+        idle_name = name
+        big_name = name + 'Big'
+        
+        frame_list = [self.idle_frames, self.big_frames]
+        name_list = [idle_name, big_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, 1, c.WHITE)
+
+        self.frames = self.idle_frames
+
+    def idling(self):
+        if not self.is_big:
+            if self.change_timer == 0:
+                self.change_timer = self.current_time
+            elif (self.current_time - self.change_timer) > 25000:
+                self.changeFrames(self.big_frames)
+                self.is_big = True
+        
+        if self.sun_timer == 0:
+            self.sun_timer = self.current_time - (c.FLOWER_SUN_INTERVAL - 6000)
+        elif (self.current_time - self.sun_timer) > c.FLOWER_SUN_INTERVAL:
+            self.sun_group.add(Sun(self.rect.centerx, self.rect.bottom, self.rect.right,
+                                   self.rect.bottom + self.rect.h // 2, self.is_big))
+            self.sun_timer = self.current_time
