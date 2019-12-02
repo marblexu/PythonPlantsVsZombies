@@ -32,6 +32,7 @@ class Level(tool.State):
     
     def setupBackground(self):
         img_index = self.map_data[c.BACKGROUND_TYPE]
+        self.background_type = img_index
         self.background = tool.GFX[c.BACKGROUND_NAME][img_index]
         self.bg_rect = self.background.get_rect()
 
@@ -91,7 +92,10 @@ class Level(tool.State):
         self.drag_plant = False
         self.hint_image = None
         self.hint_plant = False
-        self.produce_sun = True
+        if self.background_type == c.BACKGROUND_DAY:
+            self.produce_sun = True
+        else:
+            self.produce_sun = False
         self.sun_timer = self.current_time
 
         self.removeMouseImage()
@@ -136,10 +140,10 @@ class Level(tool.State):
                 map_x, map_y = self.map.getRandomMapIndex()
                 x, y = self.map.getMapGridPos(map_x, map_y)
                 self.sun_group.add(plant.Sun(x, 0, x, y))
-            if not self.drag_plant and mouse_pos and mouse_click[0]:
-                for sun in self.sun_group:
-                    if sun.checkCollision(mouse_pos[0], mouse_pos[1]):
-                        self.menubar.increaseSunValue(sun.sun_value)
+        if not self.drag_plant and mouse_pos and mouse_click[0]:
+            for sun in self.sun_group:
+                if sun.checkCollision(mouse_pos[0], mouse_pos[1]):
+                    self.menubar.increaseSunValue(sun.sun_value)
 
         for car in self.cars:
             car.update(self.game_info)
