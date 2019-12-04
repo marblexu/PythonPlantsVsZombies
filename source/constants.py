@@ -80,6 +80,7 @@ SPIKEWEED = 'Spikeweed'
 JALAPENO = 'Jalapeno'
 SCAREDYSHROOM = 'ScaredyShroom'
 SUNSHROOM = 'SunShroom'
+ICESHROOM = 'IceShroom'
 
 PLANT_HEALTH = 5
 WALLNUT_HEALTH = 30
@@ -92,6 +93,9 @@ SUN_LIVE_TIME = 7000
 SUN_VALUE = 25
 
 ICE_SLOW_TIME = 2000
+
+FREEZE_TIME = 7500
+ICETRAP = 'IceTrap'
 
 #PLANT CARD INFO
 CARD_SUNFLOWER = 'card_sunflower'
@@ -109,6 +113,8 @@ CARD_SPIKEWEED = 'card_spikeweed'
 CARD_JALAPENO = 'card_jalapeno'
 CARD_SCAREDYSHROOM = 'card_scaredyshroom'
 CARD_SUNSHROOM = 'card_sunshroom'
+CARD_ICESHROOM = 'card_iceshroom'
+
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'
@@ -148,7 +154,12 @@ DIGEST = 'digest'
 WALK = 'walk'
 DIE = 'die'
 CRY = 'cry'
+FREEZE = 'freeze'
 
 #LEVEL STATE
 CHOOSE = 'choose'
 PLAY = 'play'
+
+#BACKGROUND
+BACKGROUND_DAY = 0
+BACKGROUND_NIGHT = 1

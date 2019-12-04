@@ -35,6 +35,7 @@ class Zombie(pg.sprite.Sprite):
         self.ice_slow_timer = 0
         self.hit_timer = 0
         self.speed = 1
+        self.freeze_timer = 0
     
     def loadFrames(self, frames, name, image_x, colorkey=c.BLACK):
         frame_list = tool.GFX[name]
@@ -58,6 +59,8 @@ class Zombie(pg.sprite.Sprite):
             self.attacking()
         elif self.state == c.DIE:
             self.dying()
+        elif self.state == c.FREEZE:
+            self.freezing()
 
     def walking(self):
         if self.health <= 0:
@@ -91,7 +94,19 @@ class Zombie(pg.sprite.Sprite):
     
     def dying(self):
         pass
-    
+
+    def freezing(self):
+        if self.health <= 0:
+            self.setDie()
+        elif self.health <= c.LOSTHEAD_HEALTH and not self.losHead:
+            if self.old_state == c.WALK:
+                self.changeFrames(self.losthead_walk_frames)
+            else:
+                self.changeFrames(self.losthead_attack_frames)
+            self.setLostHead()
+        if (self.current_time - self.freeze_timer) > c.FREEZE_TIME:
+            self.setWalk()
+
     def setLostHead(self):
         self.losHead = True
         if self.head_group is not None:
@@ -111,6 +126,10 @@ class Zombie(pg.sprite.Sprite):
         self.rect.centerx = centerx
 
     def animation(self):
+        if self.state == c.FREEZE:
+            self.image.set_alpha(192)
+            return
+
         if (self.current_time - self.animate_timer) > (self.animate_interval * self.getTimeRatio()):
             self.frame_index += 1
             if self.frame_index >= self.frame_num:
@@ -177,6 +196,19 @@ class Zombie(pg.sprite.Sprite):
         self.state = c.DIE
         self.animate_interval = 200
         self.changeFrames(self.boomdie_frames)
+
+    def setFreeze(self, ice_trap_image):
+        self.old_state = self.state
+        self.state = c.FREEZE
+        self.freeze_timer = self.current_time
+        self.ice_trap_image = ice_trap_image
+        self.ice_trap_rect = ice_trap_image.get_rect()
+        self.ice_trap_rect.centerx = self.rect.centerx
+        self.ice_trap_rect.bottom = self.rect.bottom
+
+    def drawFreezeTrap(self, surface):
+        if self.state == c.FREEZE:
+            surface.blit(self.ice_trap_image, self.ice_trap_rect)
 
 class ZombieHead(Zombie):
     def __init__(self, x, y):

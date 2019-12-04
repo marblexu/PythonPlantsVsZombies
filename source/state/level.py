@@ -212,6 +212,8 @@ class Level(tool.State):
             self.plant_groups[map_y].add(plant.ScaredyShroom(x, y, self.bullet_groups[map_y]))
         elif self.plant_name == c.SUNSHROOM:
             self.plant_groups[map_y].add(plant.SunShroom(x, y, self.sun_group))
+        elif self.plant_name == c.ICESHROOM:
+            self.plant_groups[map_y].add(plant.IceShroom(x, y))
 
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
@@ -250,7 +252,8 @@ class Level(tool.State):
 
         if (plant_name == c.POTATOMINE or plant_name == c.SQUASH or
             plant_name == c.SPIKEWEED or plant_name == c.JALAPENO or
-            plant_name == c.SCAREDYSHROOM or plant_name == c.SUNSHROOM):
+            plant_name == c.SCAREDYSHROOM or plant_name == c.SUNSHROOM or
+            plant_name == c.ICESHROOM):
             color = c.WHITE
         else:
             color = c.BLACK
@@ -305,6 +308,12 @@ class Level(tool.State):
                 if abs(zombie.rect.x - x) <= x_range:
                     zombie.setBoomDie()
 
+    def freezeZombies(self, plant):
+        for i in range(self.map_y_len):
+            for zombie in self.zombie_groups[i]:
+                if zombie.rect.centerx < c.SCREEN_WIDTH:
+                    zombie.setFreeze(plant.trap_frames[0])
+
     def killPlant(self, plant):
         x, y = plant.getPosition()
         map_x, map_y = self.map.getMapIndex(x, y)
@@ -313,6 +322,9 @@ class Level(tool.State):
             (plant.name == c.POTATOMINE and not plant.is_init)):
             self.boomZombies(plant.rect.centerx, map_y, plant.explode_y_range,
                             plant.explode_x_range)
+        elif plant.name == c.ICESHROOM:
+            self.freezeZombies(plant)
+
         plant.kill()
 
     def checkPlant(self, plant, i):
@@ -427,7 +439,11 @@ class Level(tool.State):
         self.mouse_rect.centerx = x
         self.mouse_rect.centery = y
         surface.blit(self.mouse_image, self.mouse_rect)
-            
+
+    def drawZombieFreezeTrap(self, i, surface):
+        for zombie in self.zombie_groups[i]:
+            zombie.drawFreezeTrap(surface)
+
     def draw(self, surface):
         self.level.blit(self.background, self.viewport, self.viewport)
         surface.blit(self.level, (0,0), self.viewport)
@@ -439,6 +455,7 @@ class Level(tool.State):
                 self.plant_groups[i].draw(surface)
                 self.zombie_groups[i].draw(surface)
                 self.bullet_groups[i].draw(surface)
+                self.drawZombieFreezeTrap(i, surface)
             for car in self.cars:
                 car.draw(surface)
             self.head_group.draw(surface)

@@ -718,3 +718,55 @@ class SunShroom(Plant):
             self.sun_group.add(Sun(self.rect.centerx, self.rect.bottom, self.rect.right,
                                    self.rect.bottom + self.rect.h // 2, self.is_big))
             self.sun_timer = self.current_time
+
+class IceShroom(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.ICESHROOM, c.PLANT_HEALTH, None)
+        self.orig_pos = (x, y)
+        self.state = c.ATTACK
+        self.start_freeze = False
+
+    def loadImages(self, name, scale):
+        self.idle_frames = []
+        self.snow_frames = []
+        self.trap_frames = []
+
+        idle_name = name
+        snow_name = name + 'Snow'
+        trap_name = name + 'Trap'
+        
+        frame_list = [self.idle_frames, self.snow_frames, self.trap_frames]
+        name_list = [idle_name, snow_name, trap_name]
+        scale_list = [1, 1.5, 1]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, scale_list[i], c.WHITE)
+
+        self.frames = self.idle_frames
+
+    def setFreeze(self):
+        self.changeFrames(self.snow_frames)
+        self.animate_timer = self.current_time
+        self.rect.x = c.MAP_OFFSET_X
+        self.rect.y = c.MAP_OFFSET_Y
+        self.start_freeze = True
+
+    def animation(self):
+        if self.start_freeze:
+            if(self.current_time - self.animate_timer) > 500:
+                self.frame_index += 1
+                if self.frame_index >= self.frame_num:
+                    self.health = 0
+                    return
+                self.animate_timer = self.current_time
+        else:
+            if (self.current_time - self.animate_timer) > 100:
+                self.frame_index += 1
+                if self.frame_index >= self.frame_num:
+                    self.setFreeze()
+                    return
+                self.animate_timer = self.current_time
+        self.image = self.frames[self.frame_index]
+
+    def getPosition(self):
+        return self.orig_pos
