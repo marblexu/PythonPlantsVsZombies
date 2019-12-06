@@ -122,6 +122,7 @@ class Plant(pg.sprite.Sprite):
         self.health = health
         self.state = c.IDLE
         self.bullet_group = bullet_group
+        self.can_sleep = False
         self.animate_timer = 0
         self.animate_interval = 100
         self.hit_timer = 0
@@ -191,7 +192,8 @@ class Plant(pg.sprite.Sprite):
             self.image.set_alpha(192)
 
     def canAttack(self, zombie):
-        if (zombie.state != c.DIE and self.rect.x <= zombie.rect.right):
+        if (self.state != c.SLEEP and zombie.state != c.DIE and
+            self.rect.x <= zombie.rect.right):
             return True
         return False
 
@@ -201,6 +203,10 @@ class Plant(pg.sprite.Sprite):
     def setIdle(self):
         self.state = c.IDLE
         self.is_attacked = False
+
+    def setSleep(self):
+        self.state = c.SLEEP
+        self.changeFrames(self.sleep_frames)
 
     def setDamage(self, damage):
         self.health -= damage
@@ -439,13 +445,26 @@ class Chomper(Plant):
             self.attack_zombie.kill()
             self.setIdle()
 
-class PuffMushroom(Plant):
+class PuffShroom(Plant):
     def __init__(self, x, y, bullet_group):
-        Plant.__init__(self, x, y, c.PUFFMUSHROOM, c.PLANT_HEALTH, bullet_group)
+        Plant.__init__(self, x, y, c.PUFFSHROOM, c.PLANT_HEALTH, bullet_group)
+        self.can_sleep = True
         self.shoot_timer = 0
 
     def loadImages(self, name, scale):
-        self.loadFrames(self.frames, name, 1)
+        self.idle_frames = []
+        self.sleep_frames = []
+
+        idle_name = name
+        sleep_name = name + 'Sleep'
+        
+        frame_list = [self.idle_frames, self.sleep_frames]
+        name_list = [idle_name, sleep_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, 1)
+
+        self.frames = self.idle_frames
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 3000:
@@ -638,18 +657,21 @@ class Jalapeno(Plant):
 class ScaredyShroom(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.SCAREDYSHROOM, c.PLANT_HEALTH, bullet_group)
+        self.can_sleep = True
         self.shoot_timer = 0
         self.cry_x_range = c.GRID_X_SIZE * 2
 
     def loadImages(self, name, scale):
         self.idle_frames = []
         self.cry_frames = []
+        self.sleep_frames = []
 
         idle_name = name
         cry_name = name + 'Cry'
+        sleep_name = name + 'Sleep'
         
-        frame_list = [self.idle_frames, self.cry_frames]
-        name_list = [idle_name, cry_name]
+        frame_list = [self.idle_frames, self.cry_frames, self.sleep_frames]
+        name_list = [idle_name, cry_name, sleep_name]
 
         for i, name in enumerate(name_list):
             self.loadFrames(frame_list[i], name, 1, c.WHITE)
@@ -683,6 +705,7 @@ class ScaredyShroom(Plant):
 class SunShroom(Plant):
     def __init__(self, x, y, sun_group):
         Plant.__init__(self, x, y, c.SUNSHROOM, c.PLANT_HEALTH, None)
+        self.can_sleep = True
         self.animate_interval = 200
         self.sun_timer = 0
         self.sun_group = sun_group
@@ -692,12 +715,14 @@ class SunShroom(Plant):
     def loadImages(self, name, scale):
         self.idle_frames = []
         self.big_frames = []
+        self.sleep_frames = []
 
         idle_name = name
         big_name = name + 'Big'
+        sleep_name = name + 'Sleep'
         
-        frame_list = [self.idle_frames, self.big_frames]
-        name_list = [idle_name, big_name]
+        frame_list = [self.idle_frames, self.big_frames, self.sleep_frames]
+        name_list = [idle_name, big_name, sleep_name]
 
         for i, name in enumerate(name_list):
             self.loadFrames(frame_list[i], name, 1, c.WHITE)
@@ -722,22 +747,24 @@ class SunShroom(Plant):
 class IceShroom(Plant):
     def __init__(self, x, y):
         Plant.__init__(self, x, y, c.ICESHROOM, c.PLANT_HEALTH, None)
+        self.can_sleep = True
         self.orig_pos = (x, y)
-        self.state = c.ATTACK
         self.start_freeze = False
 
     def loadImages(self, name, scale):
         self.idle_frames = []
         self.snow_frames = []
+        self.sleep_frames = []
         self.trap_frames = []
 
         idle_name = name
         snow_name = name + 'Snow'
+        sleep_name = name + 'Sleep'
         trap_name = name + 'Trap'
         
-        frame_list = [self.idle_frames, self.snow_frames, self.trap_frames]
-        name_list = [idle_name, snow_name, trap_name]
-        scale_list = [1, 1.5, 1]
+        frame_list = [self.idle_frames, self.snow_frames, self.sleep_frames, self.trap_frames]
+        name_list = [idle_name, snow_name, sleep_name, trap_name]
+        scale_list = [1, 1.5, 1, 1]
 
         for i, name in enumerate(name_list):
             self.loadFrames(frame_list[i], name, scale_list[i], c.WHITE)
@@ -763,8 +790,11 @@ class IceShroom(Plant):
             if (self.current_time - self.animate_timer) > 100:
                 self.frame_index += 1
                 if self.frame_index >= self.frame_num:
-                    self.setFreeze()
-                    return
+                    if self.state == c.SLEEP:
+                        self.frame_index = 0
+                    else:
+                        self.setFreeze()
+                        return
                 self.animate_timer = self.current_time
         self.image = self.frames[self.frame_index]
 

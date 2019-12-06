@@ -183,38 +183,41 @@ class Level(tool.State):
         x, y = self.hint_rect.x, self.hint_rect.bottom
         map_x, map_y = self.map.getMapIndex(x, y)
         if self.plant_name == c.SUNFLOWER:
-            self.plant_groups[map_y].add(plant.SunFlower(x, y, self.sun_group))
+            new_plant = plant.SunFlower(x, y, self.sun_group)
         elif self.plant_name == c.PEASHOOTER:
-            self.plant_groups[map_y].add(plant.PeaShooter(x, y, self.bullet_groups[map_y]))
+            new_plant = plant.PeaShooter(x, y, self.bullet_groups[map_y])
         elif self.plant_name == c.SNOWPEASHOOTER:
-            self.plant_groups[map_y].add(plant.SnowPeaShooter(x, y, self.bullet_groups[map_y]))
+            new_plant = plant.SnowPeaShooter(x, y, self.bullet_groups[map_y])
         elif self.plant_name == c.WALLNUT:
-            self.plant_groups[map_y].add(plant.WallNut(x, y))
+            new_plant = plant.WallNut(x, y)
         elif self.plant_name == c.CHERRYBOMB:
-            self.plant_groups[map_y].add(plant.CherryBomb(x, y))
+            new_plant = plant.CherryBomb(x, y)
         elif self.plant_name == c.THREEPEASHOOTER:
-            self.plant_groups[map_y].add(plant.ThreePeaShooter(x, y, self.bullet_groups, map_y))
+            new_plant = plant.ThreePeaShooter(x, y, self.bullet_groups, map_y)
         elif self.plant_name == c.REPEATERPEA:
-            self.plant_groups[map_y].add(plant.RepeaterPea(x, y, self.bullet_groups[map_y]))
+            new_plant = plant.RepeaterPea(x, y, self.bullet_groups[map_y])
         elif self.plant_name == c.CHOMPER:
-            self.plant_groups[map_y].add(plant.Chomper(x, y))
-        elif self.plant_name == c.PUFFMUSHROOM:
-            self.plant_groups[map_y].add(plant.PuffMushroom(x, y, self.bullet_groups[map_y]))
+            new_plant = plant.Chomper(x, y)
+        elif self.plant_name == c.PUFFSHROOM:
+            new_plant = plant.PuffShroom(x, y, self.bullet_groups[map_y])
         elif self.plant_name == c.POTATOMINE:
-            self.plant_groups[map_y].add(plant.PotatoMine(x, y))
+            new_plant = plant.PotatoMine(x, y)
         elif self.plant_name == c.SQUASH:
-            self.plant_groups[map_y].add(plant.Squash(x, y))
+            new_plant = plant.Squash(x, y)
         elif self.plant_name == c.SPIKEWEED:
-            self.plant_groups[map_y].add(plant.Spikeweed(x, y))
+            new_plant = plant.Spikeweed(x, y)
         elif self.plant_name == c.JALAPENO:
-            self.plant_groups[map_y].add(plant.Jalapeno(x, y))
+            new_plant = plant.Jalapeno(x, y)
         elif self.plant_name == c.SCAREDYSHROOM:
-            self.plant_groups[map_y].add(plant.ScaredyShroom(x, y, self.bullet_groups[map_y]))
+            new_plant = plant.ScaredyShroom(x, y, self.bullet_groups[map_y])
         elif self.plant_name == c.SUNSHROOM:
-            self.plant_groups[map_y].add(plant.SunShroom(x, y, self.sun_group))
+            new_plant = plant.SunShroom(x, y, self.sun_group)
         elif self.plant_name == c.ICESHROOM:
-            self.plant_groups[map_y].add(plant.IceShroom(x, y))
+            new_plant = plant.IceShroom(x, y)
 
+        if new_plant.can_sleep and self.background_type == c.BACKGROUND_DAY:
+            new_plant.setSleep()
+        self.plant_groups[map_y].add(new_plant)
         self.menubar.decreaseSunValue(self.plant_cost)
         self.menubar.setCardFrozenTime(self.plant_name)
         self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)
@@ -322,7 +325,7 @@ class Level(tool.State):
             (plant.name == c.POTATOMINE and not plant.is_init)):
             self.boomZombies(plant.rect.centerx, map_y, plant.explode_y_range,
                             plant.explode_x_range)
-        elif plant.name == c.ICESHROOM:
+        elif plant.name == c.ICESHROOM and plant.state != c.SLEEP:
             self.freezeZombies(plant)
 
         plant.kill()
@@ -400,13 +403,13 @@ class Level(tool.State):
             elif (plant.state == c.ATTACK and not can_attack):
                 plant.setIdle()
 
-        if plant.health <= 0:
-            self.killPlant(plant)
-
     def checkPlants(self):
         for i in range(self.map_y_len):
             for plant in self.plant_groups[i]:
-                self.checkPlant(plant, i)
+                if plant.state != c.SLEEP:
+                    self.checkPlant(plant, i)
+                if plant.health <= 0:
+                    self.killPlant(plant)
 
     def checkVictory(self):
         if len(self.zombie_list) > 0:
