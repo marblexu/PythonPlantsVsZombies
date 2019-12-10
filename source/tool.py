@@ -23,7 +23,7 @@ class State():
         return self.persist
     
     @abstractmethod
-    def update(sefl, surface, keys, current_time):
+    def update(self, surface, keys, current_time):
         '''abstract method'''
 
 class Control():
