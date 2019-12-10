@@ -36,6 +36,7 @@ class Zombie(pg.sprite.Sprite):
         self.hit_timer = 0
         self.speed = 1
         self.freeze_timer = 0
+        self.is_hypno = False # the zombie is hypo and attack other zombies when it ate a HypnoShroom
     
     def loadFrames(self, frames, name, image_x, colorkey=c.BLACK):
         frame_list = tool.GFX[name]
@@ -76,7 +77,10 @@ class Zombie(pg.sprite.Sprite):
 
         if (self.current_time - self.walk_timer) > (c.ZOMBIE_WALK_INTERVAL * self.getTimeRatio()):
             self.walk_timer = self.current_time
-            self.rect.x -= self.speed
+            if self.is_hypno:
+                self.rect.x += self.speed
+            else:
+                self.rect.x -= self.speed
     
     def attacking(self):
         if self.health <= 0:
@@ -84,13 +88,20 @@ class Zombie(pg.sprite.Sprite):
         elif self.health <= c.LOSTHEAD_HEALTH and not self.losHead:
             self.changeFrames(self.losthead_attack_frames)
             self.setLostHead()
+        elif self.health <= c.NORMAL_HEALTH and self.helmet:
+            self.changeFrames(self.attack_frames)
+            self.helmet = False
         if (self.current_time - self.attack_timer) > (c.ATTACK_INTERVAL * self.getTimeRatio()):
-            self.plant.setDamage(self.damage)
+            if self.prey.health > 0:
+                if self.prey_is_plant:
+                    self.prey.setDamage(self.damage, self)
+                else:
+                    self.prey.setDamage(self.damage)
             self.attack_timer = self.current_time
 
-            if self.plant.health <= 0:
-                self.plant = None
-                self.setWalk()
+        if self.prey.health <= 0:
+            self.prey = None
+            self.setWalk()
     
     def dying(self):
         pass
@@ -140,6 +151,8 @@ class Zombie(pg.sprite.Sprite):
             self.animate_timer = self.current_time
 
         self.image = self.frames[self.frame_index]
+        if self.is_hypno:
+            self.image = pg.transform.flip(self.image, True, False)
         if(self.current_time - self.hit_timer) >= 200:
             self.image.set_alpha(255)
         else:
@@ -158,7 +171,7 @@ class Zombie(pg.sprite.Sprite):
             if (self.current_time - self.ice_slow_timer) > c.ICE_SLOW_TIME:
                 self.ice_slow_ratio = 1
 
-    def setDamage(self, damage, ice):
+    def setDamage(self, damage, ice=False):
         self.health -= damage
         self.hit_timer = self.current_time
         if ice:
@@ -175,9 +188,11 @@ class Zombie(pg.sprite.Sprite):
         else:
             self.changeFrames(self.walk_frames)
 
-    def setAttack(self, plant):
-        self.plant = plant
+    def setAttack(self, prey, is_plant=True):
+        self.prey = prey  # prey can be plant or other zombies
+        self.prey_is_plant = is_plant
         self.state = c.ATTACK
+        self.attack_timer = self.current_time
         self.animate_interval = 100
         
         if self.helmet:
@@ -209,6 +224,10 @@ class Zombie(pg.sprite.Sprite):
     def drawFreezeTrap(self, surface):
         if self.state == c.FREEZE:
             surface.blit(self.ice_trap_image, self.ice_trap_rect)
+
+    def setHypno(self):
+        self.is_hypno = True
+        self.setWalk()
 
 class ZombieHead(Zombie):
     def __init__(self, x, y):

@@ -81,6 +81,7 @@ JALAPENO = 'Jalapeno'
 SCAREDYSHROOM = 'ScaredyShroom'
 SUNSHROOM = 'SunShroom'
 ICESHROOM = 'IceShroom'
+HYPNOSHROOM = 'HypnoShroom'
 
 PLANT_HEALTH = 5
 WALLNUT_HEALTH = 30
@@ -114,7 +115,7 @@ CARD_JALAPENO = 'card_jalapeno'
 CARD_SCAREDYSHROOM = 'card_scaredyshroom'
 CARD_SUNSHROOM = 'card_sunshroom'
 CARD_ICESHROOM = 'card_iceshroom'
-
+CARD_HYPNOSHROOM = 'card_hypnoshroom'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'

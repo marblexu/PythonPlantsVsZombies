@@ -46,10 +46,12 @@ class Level(tool.State):
 
         self.plant_groups = []
         self.zombie_groups = []
+        self.hypno_zombie_groups = [] #zombies who are hypno after eating hypnoshroom
         self.bullet_groups = []
         for i in range(self.map_y_len):
             self.plant_groups.append(pg.sprite.Group())
             self.zombie_groups.append(pg.sprite.Group())
+            self.hypno_zombie_groups.append(pg.sprite.Group())
             self.bullet_groups.append(pg.sprite.Group())
     
     def setupZombies(self):
@@ -116,6 +118,11 @@ class Level(tool.State):
             self.bullet_groups[i].update(self.game_info)
             self.plant_groups[i].update(self.game_info)
             self.zombie_groups[i].update(self.game_info)
+            self.hypno_zombie_groups[i].update(self.game_info)
+            for zombie in self.hypno_zombie_groups[i]:
+                if zombie.rect.x > c.SCREEN_WIDTH:
+                    zombie.kill()
+
         self.head_group.update(self.game_info)
         self.sun_group.update(self.game_info)
         
@@ -214,6 +221,8 @@ class Level(tool.State):
             new_plant = plant.SunShroom(x, y, self.sun_group)
         elif self.plant_name == c.ICESHROOM:
             new_plant = plant.IceShroom(x, y)
+        elif self.plant_name == c.HYPNOSHROOM:
+            new_plant = plant.HypnoShroom(x, y)
 
         if new_plant.can_sleep and self.background_type == c.BACKGROUND_DAY:
             new_plant.setSleep()
@@ -256,7 +265,7 @@ class Level(tool.State):
         if (plant_name == c.POTATOMINE or plant_name == c.SQUASH or
             plant_name == c.SPIKEWEED or plant_name == c.JALAPENO or
             plant_name == c.SCAREDYSHROOM or plant_name == c.SUNSHROOM or
-            plant_name == c.ICESHROOM):
+            plant_name == c.ICESHROOM or plant_name == c.HYPNOSHROOM):
             color = c.WHITE
         else:
             color = c.BLACK
@@ -287,10 +296,26 @@ class Level(tool.State):
     def checkZombieCollisions(self):
         collided_func = pg.sprite.collide_circle_ratio(0.7)
         for i in range(self.map_y_len):
+            hypo_zombies = []
             for zombie in self.zombie_groups[i]:
+                if zombie.state != c.WALK:
+                    continue
                 plant = pg.sprite.spritecollideany(zombie, self.plant_groups[i], collided_func)
-                if plant and plant.name != c.SPIKEWEED and zombie.state == c.WALK:
+                if plant and plant.name != c.SPIKEWEED:
                     zombie.setAttack(plant)
+
+            for hypno_zombie in self.hypno_zombie_groups[i]:
+                if hypno_zombie.health <= 0:
+                    continue
+                zombie_list = pg.sprite.spritecollide(hypno_zombie,
+                               self.zombie_groups[i], False,collided_func)
+                for zombie in zombie_list:
+                    if zombie.state == c.DIE:
+                        continue
+                    if zombie.state == c.WALK:
+                        zombie.setAttack(hypno_zombie, False)
+                    if hypno_zombie.state == c.WALK:
+                        hypno_zombie.setAttack(zombie, False)
 
     def checkCarCollisions(self):
         collided_func = pg.sprite.collide_circle_ratio(0.8)
@@ -327,7 +352,12 @@ class Level(tool.State):
                             plant.explode_x_range)
         elif plant.name == c.ICESHROOM and plant.state != c.SLEEP:
             self.freezeZombies(plant)
-
+        elif plant.name == c.HYPNOSHROOM and plant.state != c.SLEEP:
+            zombie = plant.kill_zombie
+            zombie.setHypno()
+            _, map_y = self.map.getMapIndex(zombie.rect.centerx, zombie.rect.bottom)
+            self.zombie_groups[map_y].remove(zombie)
+            self.hypno_zombie_groups[map_y].add(zombie)
         plant.kill()
 
     def checkPlant(self, plant, i):
@@ -457,6 +487,7 @@ class Level(tool.State):
             for i in range(self.map_y_len):
                 self.plant_groups[i].draw(surface)
                 self.zombie_groups[i].draw(surface)
+                self.hypno_zombie_groups[i].draw(surface)
                 self.bullet_groups[i].draw(surface)
                 self.drawZombieFreezeTrap(i, surface)
             for car in self.cars:

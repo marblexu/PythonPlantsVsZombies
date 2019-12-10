@@ -208,9 +208,11 @@ class Plant(pg.sprite.Sprite):
         self.state = c.SLEEP
         self.changeFrames(self.sleep_frames)
 
-    def setDamage(self, damage):
+    def setDamage(self, damage, zombie):
         self.health -= damage
         self.hit_timer = self.current_time
+        if self.health == 0:
+            self.kill_zombie = zombie
 
     def getPosition(self):
         return self.rect.centerx, self.rect.bottom
@@ -800,3 +802,24 @@ class IceShroom(Plant):
 
     def getPosition(self):
         return self.orig_pos
+
+class HypnoShroom(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.HYPNOSHROOM, 1, None)
+        self.can_sleep = True
+        self.animate_interval = 200
+
+    def loadImages(self, name, scale):
+        self.idle_frames = []
+        self.sleep_frames = []
+
+        idle_name = name
+        sleep_name = name + 'Sleep'
+
+        frame_list = [self.idle_frames, self.sleep_frames]
+        name_list = [idle_name, sleep_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, 1, c.WHITE)
+
+        self.frames = self.idle_frames
