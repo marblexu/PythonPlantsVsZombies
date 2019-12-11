@@ -22,7 +22,7 @@ plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
                    c.HYPNOSHROOM]
 plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25, 50, 100, 125, 25, 25, 75, 75]
 plant_frozen_time_list = [7500, 7500, 7500, 30000, 50000, 7500, 7500, 7500, 7500, 30000,
-                          30000, 7500, 50000, 7500, 7500, 50000, 3000]
+                          30000, 7500, 50000, 7500, 7500, 50000, 30000]
 all_card_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 def getSunValueImage(sun_value):
