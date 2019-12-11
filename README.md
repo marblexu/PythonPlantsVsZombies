@@ -20,3 +20,4 @@ $ python main.py
 ![demo1](https://raw.githubusercontent.com/marblexu/PythonPlantsVsZombies/master/demo/demo1.jpg)
 ![demo2](https://raw.githubusercontent.com/marblexu/PythonPlantsVsZombies/master/demo/demo2.jpg)
 
+[![Run on Repl.it](https://repl.it/badge/github/marblexu/PythonPlantsVsZombies)](https://repl.it/github/marblexu/PythonPlantsVsZombies)
