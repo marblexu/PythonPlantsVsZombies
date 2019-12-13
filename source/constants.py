@@ -1,4 +1,4 @@
-__author__ = 'marble_xu'
+__author__ = 'ignore'
 
 START_LEVEL_NUM = 1
 
