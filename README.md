@@ -8,7 +8,8 @@ It's just for learning and noncommercial use. If this game infringes the copyrig
 * support night level
 
 # Requirement
-* Python 3.7
+* Python 3.7 
+* Notice: python version 3.7 is advisable, but not required. For LINUX: if your Linux system has a preinstalled python 3+, it's ok to run this game. Updating to python 3.7 directly may break LINUX Mint.
 * Python-Pygame 1.9
 
 # How To Start Game
