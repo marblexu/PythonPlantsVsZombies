@@ -19,9 +19,8 @@ class Level(tool.State):
         self.map = map.Map(c.GRID_X_LEN, self.map_y_len)
         
         self.loadMap()
-        self.state = c.CHOOSE
-        self.initChoose()
         self.setupBackground()
+        self.initState()
 
     def loadMap(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
@@ -79,22 +78,38 @@ class Level(tool.State):
 
         self.draw(surface)
 
+    def initState(self):
+        if c.CHOOSEBAR_TYPE in self.map_data:
+            self.bar_type = self.map_data[c.CHOOSEBAR_TYPE]
+        else:
+            self.bar_type = c.CHOOSEBAR_STATIC
+
+        if self.bar_type == c.CHOOSEBAR_STATIC:
+            self.initChoose()
+        else:
+            card_pool = menubar.getCardPool(self.map_data[c.CARD_POOL])
+            self.initPlay(card_pool)
+
     def initChoose(self):
+        self.state = c.CHOOSE
         self.panel = menubar.Panel(menubar.all_card_list, self.map_data[c.INIT_SUN_NAME])
 
     def choose(self, mouse_pos, mouse_click):
         if mouse_pos and mouse_click[0]:
             self.panel.checkCardClick(mouse_pos)
             if self.panel.checkStartButtonClick(mouse_pos):
-                self.state = c.PLAY
                 self.initPlay(self.panel.getSelectedCards())
 
     def initPlay(self, card_list):
-        self.menubar = menubar.MenuBar(card_list, self.map_data[c.INIT_SUN_NAME])
+        self.state = c.PLAY
+        if self.bar_type == c.CHOOSEBAR_STATIC:
+            self.menubar = menubar.MenuBar(card_list, self.map_data[c.INIT_SUN_NAME])
+        else:
+            self.menubar = menubar.MoveBar(card_list)
         self.drag_plant = False
         self.hint_image = None
         self.hint_plant = False
-        if self.background_type == c.BACKGROUND_DAY:
+        if self.background_type == c.BACKGROUND_DAY and self.bar_type == c.CHOOSEBAR_STATIC:
             self.produce_sun = True
         else:
             self.produce_sun = False
@@ -227,8 +242,12 @@ class Level(tool.State):
         if new_plant.can_sleep and self.background_type == c.BACKGROUND_DAY:
             new_plant.setSleep()
         self.plant_groups[map_y].add(new_plant)
-        self.menubar.decreaseSunValue(self.plant_cost)
-        self.menubar.setCardFrozenTime(self.plant_name)
+        if self.bar_type == c.CHOOSEBAR_STATIC:
+            self.menubar.decreaseSunValue(self.select_plant.sun_cost)
+            self.menubar.setCardFrozenTime(self.plant_name)
+        else:
+            self.menubar.deleateCard(self.select_plant)
+
         self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)
         self.removeMouseImage()
         #print('addPlant map[%d,%d], grid pos[%d, %d] pos[%d, %d]' % (map_x, map_y, x, y, pos[0], pos[1]))
@@ -252,7 +271,7 @@ class Level(tool.State):
         else:
             self.hint_plant = False
 
-    def setupMouseImage(self, plant_name, plant_cost):
+    def setupMouseImage(self, plant_name, select_plant):
         frame_list = tool.GFX[plant_name]
         if plant_name in tool.PLANT_RECT:
             data = tool.PLANT_RECT[plant_name]
@@ -274,7 +293,7 @@ class Level(tool.State):
         pg.mouse.set_visible(False)
         self.drag_plant = True
         self.plant_name = plant_name
-        self.plant_cost = plant_cost
+        self.select_plant = select_plant
 
     def removeMouseImage(self):
         pg.mouse.set_visible(True)

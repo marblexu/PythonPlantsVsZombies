@@ -1,5 +1,6 @@
 __author__ = 'marble_xu'
 
+import random
 import pygame as pg
 from .. import tool
 from .. import constants as c
@@ -39,6 +40,16 @@ def getSunValueImage(sun_value):
     image.blit(msg_image, (x, 0), (0, 0, msg_rect.w, msg_rect.h))
     image.set_colorkey(c.BLACK)
     return image
+
+def getCardPool(data):
+    card_pool = []
+    for card in data:
+        tmp = card['name']
+        for i,name in enumerate(plant_name_list):
+            if name == tmp:
+                card_pool.append(i)
+                break
+    return card_pool
 
 class Card():
     def __init__(self, x, y, name_index, scale=0.78):
@@ -167,7 +178,7 @@ class MenuBar():
         for card in self.card_list:
             if card.checkMouseClick(mouse_pos):
                 if card.canClick(self.sun_value, self.current_time):
-                    result = (plant_name_list[card.name_index], card.sun_cost)
+                    result = (plant_name_list[card.name_index], card)
                 break
         return result
     
@@ -310,3 +321,118 @@ class Panel():
 
         if self.selected_num == CARD_LIST_NUM:
             surface.blit(self.button_image, self.button_rect)
+
+class MoveCard():
+    def __init__(self, x, y, name_index, scale=0.78):
+        name = card_name_list[name_index] + '_move'
+        self.loadFrame(name, scale)
+        self.rect = self.orig_image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.rect.w = 1
+        self.image = self.createShowImage()
+
+        self.name_index = name_index
+        self.move_timer = 0
+        self.select = True
+
+    def loadFrame(self, name, scale):
+        frame = tool.GFX[name]
+        rect = frame.get_rect()
+        width, height = rect.w, rect.h
+
+        self.orig_image = tool.get_image(frame, 0, 0, width, height, c.BLACK, scale)
+        self.orig_rect = self.orig_image.get_rect()
+        self.image = self.orig_image
+
+    def checkMouseClick(self, mouse_pos):
+        x, y = mouse_pos
+        if(x >= self.rect.x and x <= self.rect.right and
+           y >= self.rect.y and y <= self.rect.bottom):
+            return True
+        return False
+
+    def createShowImage(self):
+        '''create a part card image when card appears from left'''
+        if self.rect.w < self.orig_rect.w: #create a part card image
+            image = pg.Surface([self.rect.w, self.rect.h])
+            image.blit(self.orig_image, (0, 0), (0, 0, self.rect.w, self.rect.h))
+            self.rect.w += 1
+        else:
+            image = self.orig_image
+        return image
+
+    def update(self, left_x, current_time):
+        if self.move_timer == 0:
+            self.move_timer = current_time
+        elif (current_time - self.move_timer) >= c.CARD_MOVE_TIME:
+            if self.rect.x > left_x:
+                self.rect.x -= 1
+                self.image = self.createShowImage()
+            self.move_timer += c.CARD_MOVE_TIME
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+class MoveBar():
+    def __init__(self, card_pool):
+        self.loadFrame(c.MOVEBAR_BACKGROUND)
+        self.rect = self.image.get_rect()
+        self.rect.x = 90
+        self.rect.y = 0
+        
+        self.card_start_x = self.rect.x + 8
+        self.card_end_x = self.rect.right - 5
+        self.card_pool = card_pool
+        self.card_list = []
+        self.create_timer = -c.MOVEBAR_CARD_FRESH_TIME
+
+    def loadFrame(self, name):
+        frame = tool.GFX[name]
+        rect = frame.get_rect()
+        frame_rect = (rect.x, rect.y, rect.w, rect.h)
+
+        self.image = tool.get_image(tool.GFX[name], *frame_rect, c.WHITE, 1)
+
+    def createCard(self):
+        if len(self.card_list) > 0 and self.card_list[-1].rect.right > self.card_end_x:
+            return False
+        x = self.card_end_x
+        y = 6
+        index = random.randint(0, len(self.card_pool) - 1)
+        self.card_list.append(MoveCard(x, y, self.card_pool[index]))
+        return True
+
+    def update(self, current_time):
+        self.current_time = current_time
+        left_x = self.card_start_x
+        for card in self.card_list:
+            card.update(left_x, self.current_time)
+            left_x = card.rect.right + 1
+
+        if(self.current_time - self.create_timer) > c.MOVEBAR_CARD_FRESH_TIME:
+            if self.createCard():
+                self.create_timer = self.current_time
+
+    def checkCardClick(self, mouse_pos):
+        result = None
+        for index, card in enumerate(self.card_list):
+            if card.checkMouseClick(mouse_pos):
+                result = (plant_name_list[card.name_index], card)
+                break
+        return result
+    
+    def checkMenuBarClick(self, mouse_pos):
+        x, y = mouse_pos
+        if(x >= self.rect.x and x <= self.rect.right and
+           y >= self.rect.y and y <= self.rect.bottom):
+            return True
+        return False
+
+    def deleateCard(self, card):
+        self.card_list.remove(card)
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+        for card in self.card_list:
+            card.draw(surface)
