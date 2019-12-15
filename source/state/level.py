@@ -202,7 +202,7 @@ class Level(tool.State):
 
         if self.hint_image is None:
             self.setupHintImage()
-        x, y = self.hint_rect.x, self.hint_rect.bottom
+        x, y = self.hint_rect.centerx, self.hint_rect.bottom
         map_x, map_y = self.map.getMapIndex(x, y)
         if self.plant_name == c.SUNFLOWER:
             new_plant = plant.SunFlower(x, y, self.sun_group)

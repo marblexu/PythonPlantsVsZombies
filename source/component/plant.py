@@ -115,7 +115,7 @@ class Plant(pg.sprite.Sprite):
         self.frame_num = len(self.frames)
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
-        self.rect.x = x
+        self.rect.centerx = x
         self.rect.bottom = y
         
         self.name = name
