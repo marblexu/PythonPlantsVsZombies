@@ -78,6 +78,12 @@ class Level(tool.State):
 
         self.draw(surface)
 
+    def initBowlingMap(self):
+        print('initBowlingMap')
+        for x in range(3, self.map.width):
+            for y in range(self.map.height):
+                self.map.setMapGridType(x, y, c.MAP_EXIST)
+
     def initState(self):
         if c.CHOOSEBAR_TYPE in self.map_data:
             self.bar_type = self.map_data[c.CHOOSEBAR_TYPE]
@@ -89,6 +95,8 @@ class Level(tool.State):
         else:
             card_pool = menubar.getCardPool(self.map_data[c.CARD_POOL])
             self.initPlay(card_pool)
+            if self.bar_type == c.CHOSSEBAR_BOWLING:
+                self.initBowlingMap()
 
     def initChoose(self):
         self.state = c.CHOOSE
@@ -238,6 +246,10 @@ class Level(tool.State):
             new_plant = plant.IceShroom(x, y)
         elif self.plant_name == c.HYPNOSHROOM:
             new_plant = plant.HypnoShroom(x, y)
+        elif self.plant_name == c.WALLNUTBOWLING:
+            new_plant = plant.WallNutBowling(x, y, map_y, self)
+        elif self.plant_name == c.REDWALLNUTBOWLING:
+            new_plant = plant.RedWallNutBowling(x, y)
 
         if new_plant.can_sleep and self.background_type == c.BACKGROUND_DAY:
             new_plant.setSleep()
@@ -248,7 +260,8 @@ class Level(tool.State):
         else:
             self.menubar.deleateCard(self.select_plant)
 
-        self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)
+        if self.bar_type != c.CHOSSEBAR_BOWLING:
+            self.map.setMapGridType(map_x, map_y, c.MAP_EXIST)
         self.removeMouseImage()
         #print('addPlant map[%d,%d], grid pos[%d, %d] pos[%d, %d]' % (map_x, map_y, x, y, pos[0], pos[1]))
 
@@ -284,7 +297,8 @@ class Level(tool.State):
         if (plant_name == c.POTATOMINE or plant_name == c.SQUASH or
             plant_name == c.SPIKEWEED or plant_name == c.JALAPENO or
             plant_name == c.SCAREDYSHROOM or plant_name == c.SUNSHROOM or
-            plant_name == c.ICESHROOM or plant_name == c.HYPNOSHROOM):
+            plant_name == c.ICESHROOM or plant_name == c.HYPNOSHROOM or
+            plant_name == c.WALLNUTBOWLING or plant_name == c.REDWALLNUTBOWLING):
             color = c.WHITE
         else:
             color = c.BLACK
@@ -313,15 +327,27 @@ class Level(tool.State):
                         bullet.setExplode()
     
     def checkZombieCollisions(self):
-        collided_func = pg.sprite.collide_circle_ratio(0.7)
+        if self.bar_type == c.CHOSSEBAR_BOWLING:
+            ratio = 0.6
+        else:
+            ratio = 0.7
+        collided_func = pg.sprite.collide_circle_ratio(ratio)
         for i in range(self.map_y_len):
             hypo_zombies = []
             for zombie in self.zombie_groups[i]:
                 if zombie.state != c.WALK:
                     continue
                 plant = pg.sprite.spritecollideany(zombie, self.plant_groups[i], collided_func)
-                if plant and plant.name != c.SPIKEWEED:
-                    zombie.setAttack(plant)
+                if plant:
+                    if plant.name == c.WALLNUTBOWLING:
+                        if plant.canHit(i):
+                            zombie.setDamage(c.WALLNUT_BOWLING_DAMAGE)
+                            plant.changeDirection(i)
+                    elif plant.name == c.REDWALLNUTBOWLING:
+                        if plant.state == c.IDLE:
+                            plant.setAttack()
+                    elif plant.name != c.SPIKEWEED:
+                        zombie.setAttack(plant)
 
             for hypno_zombie in self.hypno_zombie_groups[i]:
                 if hypno_zombie.health <= 0:
@@ -352,7 +378,7 @@ class Level(tool.State):
             if abs(i - map_y) > y_range:
                 continue
             for zombie in self.zombie_groups[i]:
-                if abs(zombie.rect.x - x) <= x_range:
+                if abs(zombie.rect.centerx - x) <= x_range:
                     zombie.setBoomDie()
 
     def freezeZombies(self, plant):
@@ -364,9 +390,11 @@ class Level(tool.State):
     def killPlant(self, plant):
         x, y = plant.getPosition()
         map_x, map_y = self.map.getMapIndex(x, y)
-        self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
+        if self.bar_type != c.CHOSSEBAR_BOWLING:
+            self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
         if (plant.name == c.CHERRYBOMB or plant.name == c.JALAPENO or
-            (plant.name == c.POTATOMINE and not plant.is_init)):
+            (plant.name == c.POTATOMINE and not plant.is_init) or
+            plant.name == c.REDWALLNUTBOWLING):
             self.boomZombies(plant.rect.centerx, map_y, plant.explode_y_range,
                             plant.explode_x_range)
         elif plant.name == c.ICESHROOM and plant.state != c.SLEEP:
@@ -440,6 +468,9 @@ class Level(tool.State):
                     plant.setAttack()
             elif plant.state != c.IDLE:
                 plant.setIdle()
+        elif(plant.name == c.WALLNUTBOWLING or
+             plant.name == c.REDWALLNUTBOWLING):
+            pass
         else:
             can_attack = False
             if (plant.state == c.IDLE and zombie_len > 0):

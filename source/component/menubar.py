@@ -15,15 +15,15 @@ card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.
                   c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA, c.CARD_CHOMPER,
                   c.CARD_PUFFSHROOM, c.CARD_POTATOMINE, c.CARD_SQUASH, c.CARD_SPIKEWEED,
                   c.CARD_JALAPENO, c.CARD_SCAREDYSHROOM, c.CARD_SUNSHROOM, c.CARD_ICESHROOM,
-                  c.CARD_HYPNOSHROOM]
+                  c.CARD_HYPNOSHROOM, c.CARD_WALLNUT, c.CARD_REDWALLNUT]
 plant_name_list = [c.SUNFLOWER, c.PEASHOOTER, c.SNOWPEASHOOTER, c.WALLNUT,
                    c.CHERRYBOMB, c.THREEPEASHOOTER, c.REPEATERPEA, c.CHOMPER,
                    c.PUFFSHROOM, c.POTATOMINE, c.SQUASH, c.SPIKEWEED,
                    c.JALAPENO, c.SCAREDYSHROOM, c.SUNSHROOM, c.ICESHROOM,
-                   c.HYPNOSHROOM]
-plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25, 50, 100, 125, 25, 25, 75, 75]
+                   c.HYPNOSHROOM, c.WALLNUTBOWLING, c.REDWALLNUTBOWLING]
+plant_sun_list = [50, 100, 175, 50, 150, 325, 200, 150, 0, 25, 50, 100, 125, 25, 25, 75, 75, 0, 0]
 plant_frozen_time_list = [7500, 7500, 7500, 30000, 50000, 7500, 7500, 7500, 7500, 30000,
-                          30000, 7500, 50000, 7500, 7500, 50000, 30000]
+                          30000, 7500, 50000, 7500, 7500, 50000, 30000, 0, 0]
 all_card_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 def getSunValueImage(sun_value):
@@ -323,16 +323,16 @@ class Panel():
             surface.blit(self.button_image, self.button_rect)
 
 class MoveCard():
-    def __init__(self, x, y, name_index, scale=0.78):
-        name = card_name_list[name_index] + '_move'
-        self.loadFrame(name, scale)
+    def __init__(self, x, y, card_name, plant_name, scale=0.78):
+        self.loadFrame(card_name, scale)
         self.rect = self.orig_image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.rect.w = 1
         self.image = self.createShowImage()
 
-        self.name_index = name_index
+        self.card_name = card_name
+        self.plant_name = plant_name
         self.move_timer = 0
         self.select = True
 
@@ -400,7 +400,10 @@ class MoveBar():
         x = self.card_end_x
         y = 6
         index = random.randint(0, len(self.card_pool) - 1)
-        self.card_list.append(MoveCard(x, y, self.card_pool[index]))
+        card_index = self.card_pool[index]
+        card_name = card_name_list[card_index] + '_move'
+        plant_name = plant_name_list[card_index]
+        self.card_list.append(MoveCard(x, y, card_name, plant_name))
         return True
 
     def update(self, current_time):
@@ -418,7 +421,7 @@ class MoveBar():
         result = None
         for index, card in enumerate(self.card_list):
             if card.checkMouseClick(mouse_pos):
-                result = (plant_name_list[card.name_index], card)
+                result = (card.plant_name, card)
                 break
         return result
     
