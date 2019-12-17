@@ -1,5 +1,5 @@
 {
-    "background_type":0,
+    "background_type":1,
     "init_sun_value":50,
     "zombie_list":[
         {"time":20000, "map_y":0, "name":"Zombie"},
