@@ -107,7 +107,9 @@ class Level(tool.State):
             self.panel.checkCardClick(mouse_pos)
             if self.panel.checkStartButtonClick(mouse_pos):
                 self.initPlay(self.panel.getSelectedCards())
-
+    
+    
+    #for when you're choosing your cards and setting up the beginning of the game
     def initPlay(self, card_list):
         self.state = c.PLAY
         if self.bar_type == c.CHOOSEBAR_STATIC:
@@ -128,6 +130,8 @@ class Level(tool.State):
         self.setupZombies()
         self.setupCars()
 
+
+    #contains logic for clicking and dragging plants onto the level map. Also handles spawning and killing of zombies
     def play(self, mouse_pos, mouse_click):
         if self.zombie_start_time == 0:
             self.zombie_start_time = self.current_time
@@ -163,7 +167,7 @@ class Level(tool.State):
                     self.addPlant()
             elif mouse_pos is None:
                 self.setupHintImage()
-        
+        #rendering and updating sun power-ups in-game
         if self.produce_sun:
             if(self.current_time - self.sun_timer) > c.PRODUCE_SUN_INTERVAL:
                 self.sun_timer = self.current_time
@@ -185,7 +189,7 @@ class Level(tool.State):
         self.checkPlants()
         self.checkCarCollisions()
         self.checkGameState()
-
+    #implementation of function that creates zombies
     def createZombie(self, name, map_y):
         x, y = self.map.getMapGridPos(0, map_y)
         if name == c.NORMAL_ZOMBIE:
@@ -202,7 +206,7 @@ class Level(tool.State):
     def canSeedPlant(self):
         x, y = pg.mouse.get_pos()
         return self.map.showPlant(x, y)
-        
+    #function for adding a plant to a square on the map.
     def addPlant(self):
         pos = self.canSeedPlant()
         if pos is None:
@@ -266,7 +270,7 @@ class Level(tool.State):
         #print('addPlant map[%d,%d], grid pos[%d, %d] pos[%d, %d]' % (map_x, map_y, x, y, pos[0], pos[1]))
 
     def setupHintImage(self):
-        pos = self.canSeedPlant()
+        pos = self.canSeedPlant() #check if a grid square is empty or occupied
         if pos and self.mouse_image:
             if (self.hint_image and pos[0] == self.hint_rect.x and
                 pos[1] == self.hint_rect.y):
@@ -283,7 +287,7 @@ class Level(tool.State):
             self.hint_plant = True
         else:
             self.hint_plant = False
-
+    #renders image of selected plant
     def setupMouseImage(self, plant_name, select_plant):
         frame_list = tool.GFX[plant_name]
         if plant_name in tool.PLANT_RECT:
@@ -316,6 +320,7 @@ class Level(tool.State):
         self.hint_image = None
         self.hint_plant = False
 
+    #collision detection between  plant bullets and zombies.  bullets dont explode if they collide with a dead zombie
     def checkBulletCollisions(self):
         collided_func = pg.sprite.collide_circle_ratio(0.7)
         for i in range(self.map_y_len):
@@ -337,6 +342,7 @@ class Level(tool.State):
             for zombie in self.zombie_groups[i]:
                 if zombie.state != c.WALK:
                     continue
+                #check if the zombie collides with the bullet from the plant or the plant itself
                 plant = pg.sprite.spritecollideany(zombie, self.plant_groups[i], collided_func)
                 if plant:
                     if plant.name == c.WALLNUTBOWLING:
@@ -348,7 +354,8 @@ class Level(tool.State):
                             plant.setAttack()
                     elif plant.name != c.SPIKEWEED:
                         zombie.setAttack(plant)
-
+            
+            #for when hypno zombies and zombies run into each other
             for hypno_zombie in self.hypno_zombie_groups[i]:
                 if hypno_zombie.health <= 0:
                     continue
@@ -408,7 +415,7 @@ class Level(tool.State):
         plant.kill()
 
     def checkPlant(self, plant, i):
-        zombie_len = len(self.zombie_groups[i])
+        zombie_len = len(self.zombie_groups[i]) #i indexes to give number of zombies at y-co-ordinate i
         if plant.name == c.THREEPEASHOOTER:
             if plant.state == c.IDLE:
                 if zombie_len > 0:

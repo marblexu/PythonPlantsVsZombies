@@ -871,9 +871,7 @@ class WallNutBowling(Plant):
             self.map_y = map_y1
 
     def shouldChangeDirection(self):
-        if self.init_rect.centery <= c.MAP_OFFSET_Y:
-            return True
-        elif self.init_rect.bottom + 20 >= c.SCREEN_HEIGHT:
+        if self.init_rect.centery <= c.MAP_OFFSET_Y or self.init_rect.bottom + 20 >= c.SCREEN_HEIGHT:
             return True
         return False
 
