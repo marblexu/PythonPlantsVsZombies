@@ -100,7 +100,7 @@ def load_image_frames(directory, image_name, colorkey, accept):
     tmp = {}
     # image_name is "Peashooter", pic name is 'Peashooter_1', get the index 1
     index_start = len(image_name) + 1 
-    frame_num = 0;
+    frame_num = 0
     for pic in os.listdir(directory):
         name, ext = os.path.splitext(pic)
         if ext.lower() in accept:
