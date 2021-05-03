@@ -9,7 +9,20 @@
 
 # Requirement
 * Python 3.7 
-* Notice: python version 3.7 is advisable, but not required. For LINUX: if your Linux system has a preinstalled python 3+, it's ok to run this game. Updating to python 3.7 directly may break LINUX Mint.
+* Notice: python version 3.7 is advisable, but not required. For LINUX: if your Linux system has a preinstalled python 3+, it's ok to run this game. Updating to python 3.7 directly may break LINUX Mint,you can update to the the latest python version :
+* Open terminal.
+Become root user by using "sudo" command.
+Use the code below to update Python 2.7 to 3.5
+
+sudo apt-get install python3.7
+
+You will be asked for your permission, then Give option Y.
+
+Wait till complete the process.
+clear the screen by using command clear
+Check python version by below command.
+
+python -version 
 * Python-Pygame 1.9
 
 # How To Start Game
