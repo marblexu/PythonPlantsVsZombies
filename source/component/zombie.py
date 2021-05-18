@@ -153,6 +153,10 @@ class Zombie(pg.sprite.Sprite):
         self.image = self.frames[self.frame_index]
         if self.is_hypno:
             self.image = pg.transform.flip(self.image, True, False)
+        if self.ice_slow_ratio > 1:
+            self.image = self.image.convert_alpha()
+            self.image.fill((100, 100, 255, 255), None, pg.BLEND_RGBA_MULT)
+
         if(self.current_time - self.hit_timer) >= 200:
             self.image.set_alpha(255)
         else:
