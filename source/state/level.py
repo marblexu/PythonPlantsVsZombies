@@ -330,7 +330,7 @@ class Level(tool.State):
         if self.bar_type == c.CHOSSEBAR_BOWLING:
             ratio = 0.6
         else:
-            ratio = 0.7
+            ratio = 0.5
         collided_func = pg.sprite.collide_circle_ratio(ratio)
         for i in range(self.map_y_len):
             hypo_zombies = []
