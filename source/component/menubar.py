@@ -9,7 +9,8 @@ PANEL_Y_START = 87
 PANEL_X_START = 22
 PANEL_Y_INTERNAL = 74
 PANEL_X_INTERNAL = 53
-CARD_LIST_NUM = 8
+CARD_LIST_NUM = 0
+CARD_MAX_NUM = 8
 
 card_name_list = [c.CARD_SUNFLOWER, c.CARD_PEASHOOTER, c.CARD_SNOWPEASHOOTER, c.CARD_WALLNUT,
                   c.CARD_CHERRYBOMB, c.CARD_THREEPEASHOOTER, c.CARD_REPEATERPEA, c.CARD_CHOMPER,
@@ -275,7 +276,7 @@ class Panel():
             self.selected_cards.remove(delete_card)
             self.selected_num -= 1
 
-        if self.selected_num == CARD_LIST_NUM:
+        if self.selected_num >= CARD_MAX_NUM:
             return
 
         for card in self.card_list:
@@ -319,7 +320,7 @@ class Panel():
         for card in self.selected_cards:
             card.draw(surface)
 
-        if self.selected_num == CARD_LIST_NUM:
+        if self.selected_num >= CARD_LIST_NUM:
             surface.blit(self.button_image, self.button_rect)
 
 class MoveCard():
