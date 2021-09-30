@@ -9,6 +9,6 @@
         "PotatoMine":{"x":0, "y":0, "width":75, "height":55},
         "Squash":{"x":10, "y":140, "width":80, "height":86},
         "SquashAim":{"x":10, "y":140, "width":80, "height":86},
-        "Spikeweed":{"x":3, "y":0, "width":80, "height":35}
+        "Spikeweed":{"x":4, "y":0, "width":80, "height":35}
     }
 }
