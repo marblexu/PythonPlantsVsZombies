@@ -1,0 +1,25 @@
+{
+    "zombie_image_rect":{
+        "Zombie":{"x":62, "width":90},
+        "ZombieAttack":{"x":62, "width":90},
+        "ZombieLostHead":{"x":62, "width":90},
+        "ZombieLostHeadAttack":{"x":62, "width":90},
+        "ZombieDie":{"x":0, "width":164},
+        "BoomDie":{"x":68, "width":80},
+        "ConeheadZombie":{"x":80, "width":80},
+        "ConeheadZombieAttack":{"x":79, "width":87},
+        "BucketheadZombie":{"x":54, "width":90},
+        "BucketheadZombieAttack":{"x":46, "width":90},
+        "FlagZombie":{"x":56, "width":110},
+        "FlagZombieAttack":{"x":60, "width":100},
+        "FlagZombieLostHead":{"x":55, "width":110},
+        "FlagZombieLostHeadAttack":{"x":55, "width":110},
+        "NewspaperZombie":{"x":48, "width":92},
+        "NewspaperZombieAttack":{"x":48, "width":92},
+        "NewspaperZombieNoPaper":{"x":40, "width":98},
+        "NewspaperZombieNoPaperAttack":{"x":48, "width":92},
+        "NewspaperZombieLostHead":{"x":44, "width":96},
+        "NewspaperZombieLostHeadAttack":{"x":48, "width":92},
+        "NewspaperZombieDie":{"x":0, "width":100}
+    }
+}

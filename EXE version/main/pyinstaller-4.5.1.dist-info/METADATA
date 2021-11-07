@@ -1,0 +1,207 @@
+Metadata-Version: 2.1
+Name: pyinstaller
+Version: 4.5.1
+Summary: PyInstaller bundles a Python application and all its dependencies into a single package.
+Home-page: http://www.pyinstaller.org/
+Author: Hartmut Goebel, Giovanni Bajo, David Vierra, David Cortesi, Martin Zibricky
+License: GPLv2-or-later with a special exception which allows to use PyInstaller to build and distribute non-free programs (including commercial ones)
+Keywords: packaging, app, apps, bundle, convert, standalone, executable,pyinstaller, cxfreeze, freeze, py2exe, py2app, bbfreeze
+Platform: UNKNOWN
+Classifier: Development Status :: 6 - Mature
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Other Audience
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Natural Language :: English
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: AIX
+Classifier: Operating System :: POSIX :: BSD
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: POSIX :: SunOS/Solaris
+Classifier: Programming Language :: C
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: Topic :: Software Development :: Interpreters
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: System :: Installation/Setup
+Classifier: Topic :: System :: Software Distribution
+Classifier: Topic :: Utilities
+Requires-Python: >=3.6
+Description-Content-Type: text/x-rst
+License-File: COPYING.txt
+Requires-Dist: setuptools
+Requires-Dist: altgraph
+Requires-Dist: pyinstaller-hooks-contrib (>=2020.6)
+Requires-Dist: importlib-metadata ; python_version < "3.8"
+Requires-Dist: macholib (>=1.8) ; sys_platform == "darwin"
+Requires-Dist: pefile (>=2017.8.1) ; sys_platform == "win32"
+Requires-Dist: pywin32-ctypes (>=0.2.0) ; sys_platform == "win32"
+Provides-Extra: encryption
+Requires-Dist: tinyaes (>=1.0.0) ; extra == 'encryption'
+Provides-Extra: hook_testing
+Requires-Dist: pytest (>=2.7.3) ; extra == 'hook_testing'
+Requires-Dist: execnet (>=1.5.0) ; extra == 'hook_testing'
+Requires-Dist: psutil ; extra == 'hook_testing'
+
+PyInstaller Overview
+====================
+
+PyInstaller bundles a Python application and all its dependencies into a single
+package. The user can run the packaged app without installing a Python
+interpreter or any modules.
+
+:Documentation: https://pyinstaller.readthedocs.io/
+:Website:       http://www.pyinstaller.org/
+:Code:          https://github.com/pyinstaller/pyinstaller
+
+PyInstaller reads a Python script written by you. It analyzes your code
+to discover every other module and library your script needs in order to
+execute. Then it collects copies of all those files -- including the active
+Python interpreter! -- and puts them with your script in a single folder, or
+optionally in a single executable file.
+
+
+PyInstaller is tested against Windows, Mac OS X, and GNU/Linux.
+However, it is not a cross-compiler:
+to make a Windows app you run PyInstaller in Windows; to make
+a GNU/Linux app you run it in GNU/Linux, etc.
+PyInstaller has been used successfully
+with AIX, Solaris, FreeBSD and OpenBSD,
+but is not tested against them as part of the continuous integration tests.
+
+
+Main Advantages
+---------------
+
+- Works out-of-the-box with any Python version 3.6-3.9.
+- Fully multi-platform, and uses the OS support to load the dynamic libraries,
+  thus ensuring full compatibility.
+- Correctly bundles the major Python packages such as numpy, PyQt5,
+  PySide2, Django, wxPython, matplotlib and others out-of-the-box.
+- Compatible with many 3rd-party packages out-of-the-box. (All the required
+  tricks to make external packages work are already integrated.)
+- Libraries like PyQt5, PySide2, wxPython, matplotlib or Django are fully
+  supported, without having to handle plugins or external data files manually.
+- Works with code signing on OS X.
+- Bundles MS Visual C++ DLLs on Windows.
+
+
+Installation
+------------
+
+PyInstaller is available on PyPI. You can install it through `pip`::
+
+      pip install pyinstaller
+
+
+Requirements and Tested Platforms
+---------------------------------
+
+- Python: 
+
+ - 3.6-3.9
+ - tinyaes_ 1.0+ (only if using bytecode encryption).
+   Instead of installing tinyaes, ``pip install pyinstaller[encryption]`` instead.
+
+- Windows (32bit/64bit):
+
+ - PyInstaller should work on Windows 7 or newer, but we only officially support Windows 8+.
+
+ - Support for Python installed from the Windows store without using virtual
+   environments requires PyInstaller 4.4 or later.
+    
+- GNU/Linux (32bit/64bit)
+
+ - ldd: Console application to print the shared libraries required
+   by each program or shared library. This typically can be found in
+   the distribution-package `glibc` or `libc-bin`.
+ - objdump: Console application to display information from 
+   object files. This typically can be found in the
+   distribution-package `binutils`.
+ - objcopy: Console application to copy and translate object files.
+   This typically can be found in the distribution-package `binutils`,
+   too.
+
+- Mac OS X (64bit):
+
+ - Mac OS X 10.13 (High Sierra) or newer.
+
+
+Usage
+-----
+
+Basic usage is very simple, just run it against your main script::
+
+      pyinstaller /path/to/yourscript.py
+
+For more details, see the `manual`_.
+
+
+Untested Platforms
+------------------
+
+The following platforms have been contributed and any feedback or
+enhancements on these are welcome.
+
+- FreeBSD
+
+ - ldd
+
+- Solaris
+
+ - ldd
+ - objdump
+
+- AIX
+
+ - AIX 6.1 or newer. PyInstaller will not work with statically
+   linked Python libraries.
+ - ldd
+
+- PowerPC GNU/Linux (Debian)
+
+
+Before using any contributed platform, you need to build the PyInstaller
+bootloader, as we do not ship binary packages. Download PyInstaller
+source, and build the bootloader::
+     
+        cd bootloader
+        python ./waf all
+
+Then install PyInstaller::
+
+        python setup.py install
+        
+or simply use it directly from the source (pyinstaller.py).
+
+
+Support
+-------
+
+See http://www.pyinstaller.org/support.html for how to find help as well as
+for commercial support.
+
+
+Changes in this Release
+-----------------------
+
+You can find a detailed list of changes in this release
+in the `Changelog`_ section of the manual.
+
+
+.. _tinyaes: https://github.com/naufraghi/tinyaes-py
+.. _`manual`: https://pyinstaller.readthedocs.io/en/v4.5.1/
+.. _`Changelog`: https://pyinstaller.readthedocs.io/en/v4.5.1/CHANGES.html
+
+
