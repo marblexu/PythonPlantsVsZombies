@@ -42,6 +42,8 @@ OPTION_ADVENTURE = 'Adventure'
 GAME_LOOSE_IMAGE = 'GameLoose'
 GAME_VICTORY_IMAGE = 'GameVictory'
 
+TEST_IMAGE = 'test'
+
 #MAP COMPONENTS
 BACKGROUND_NAME = 'Background'
 BACKGROUND_TYPE = 'background_type'
