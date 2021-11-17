@@ -30,7 +30,7 @@ class Zombie(pg.sprite.Sprite):
         self.animate_timer = 0
         self.attack_timer = 0
         self.state = c.WALK
-        self.animate_interval = 150 / c.DELTA_TIME
+        self.animate_interval = 150
         self.ice_slow_ratio = 1
         self.ice_slow_timer = 0
         self.hit_timer = 0
@@ -48,7 +48,7 @@ class Zombie(pg.sprite.Sprite):
             frames.append(tool.get_image(frame, image_x, 0, width, height, colorkey))
 
     def update(self, game_info):
-        self.current_time = game_info[c.CURRENT_TIME]
+        self.current_time = game_info[c.CURRENT_TIME] * c.DELTA_TIME
         self.handleState()
         self.updateIceSlow()
         self.animation()
