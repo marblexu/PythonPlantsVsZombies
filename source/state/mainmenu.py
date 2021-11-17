@@ -36,6 +36,7 @@ class Menu(tool.State):
         self.option_frames = []
         frame_names = [c.OPTION_ADVENTURE + '_0', c.OPTION_ADVENTURE + '_1']
         frame_rect = [0, 0, 165, 77]
+        
         for name in frame_names:
             self.option_frames.append(tool.get_image(tool.GFX[name], *frame_rect, c.BLACK, 1.7))
         
