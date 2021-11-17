@@ -49,7 +49,7 @@ class Control():
         self.state.startup(self.current_time, self.game_info)
 
     def update(self):
-        self.current_time = pg.time.get_ticks()
+        self.current_time = pg.time.get_ticks() * c.DELTA_TIME
         if self.state.done:
             self.flip_state()
         self.state.update(self.screen, self.current_time, self.mouse_pos, self.mouse_click)

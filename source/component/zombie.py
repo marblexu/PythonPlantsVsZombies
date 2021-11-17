@@ -48,7 +48,7 @@ class Zombie(pg.sprite.Sprite):
             frames.append(tool.get_image(frame, image_x, 0, width, height, colorkey))
 
     def update(self, game_info):
-        self.current_time = game_info[c.CURRENT_TIME] * c.DELTA_TIME
+        self.current_time = game_info[c.CURRENT_TIME]
         self.handleState()
         self.updateIceSlow()
         self.animation()

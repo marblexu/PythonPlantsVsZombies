@@ -20,7 +20,7 @@ class Car(pg.sprite.Sprite):
         self.dead = False
 
     def update(self, game_info):
-        self.current_time = game_info[c.CURRENT_TIME] * c.DELTA_TIME
+        self.current_time = game_info[c.CURRENT_TIME]
         if self.state == c.IDLE:
             pass
         elif self.state == c.WALK:
@@ -84,7 +84,7 @@ class Bullet(pg.sprite.Sprite):
         self.frames = self.fly_frames
 
     def update(self, game_info):
-        self.current_time = game_info[c.CURRENT_TIME] * c.DELTA_TIME
+        self.current_time = game_info[c.CURRENT_TIME]
         if self.state == c.FLY:
             if self.rect.y != self.dest_y:
                 self.rect.y += self.y_vel * c.DELTA_TIME
@@ -158,7 +158,7 @@ class Plant(pg.sprite.Sprite):
         self.rect.x = x
 
     def update(self, game_info):
-        self.current_time = game_info[c.CURRENT_TIME] * c.DELTA_TIME
+        self.current_time = game_info[c.CURRENT_TIME]
         self.handleState()
         self.animation()
     
