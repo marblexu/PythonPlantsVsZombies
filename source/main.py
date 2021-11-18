@@ -4,6 +4,7 @@ from . import tool
 from . import constants as c
 from .state import mainmenu, screen, level
 
+# 처음 시작할 때 호출
 def main():
     game = tool.Control()
     state_dict = {c.MAIN_MENU: mainmenu.Menu(),
