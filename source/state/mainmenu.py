@@ -4,6 +4,9 @@ import pygame as pg
 from .. import tool
 from .. import constants as c
 
+
+# 게임 처음 들어가고 난 뒤에 나오는 메뉴
+# 각종 이미지, 스프라이트 정의
 class Menu(tool.State):
     def __init__(self):
         tool.State.__init__(self)
@@ -13,11 +16,14 @@ class Menu(tool.State):
         self.persist = persist
         self.game_info = persist
         
+        # 뒷배경과 설정 표시
         self.setupBackground()
         self.setupOption()
 
     def setupBackground(self):
         frame_rect = [80, 0, 800, 600]
+        # 메뉴 이미지
+        # 상수 MAIN_MENU_IMAGE
         self.bg_image = tool.get_image(tool.GFX[c.MAIN_MENU_IMAGE], *frame_rect)
         self.bg_rect = self.bg_image.get_rect()
         self.bg_rect.x = 0

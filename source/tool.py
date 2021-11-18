@@ -26,7 +26,9 @@ class State():
     def update(self, surface, keys, current_time):
         '''abstract method'''
 
+# pygame 관련 기능, 속성들이 정의됨 (화면재생률, 클릭 상태, 게임 정보 등)
 class Control():
+    # 객체 생성 시 초기화되는 부분
     def __init__(self):
         self.screen = pg.display.get_surface()
         self.done = False
@@ -167,6 +169,8 @@ def loadPlantImageRect():
     f.close()
     return data[c.PLANT_IMAGE_RECT]
 
+# source/main.py에서 import하면서 바로 초기화, 실행됨
+# pygame 라이브러리의 윈도우 폼 생성되는 곳
 pg.init()
 pg.display.set_caption(c.ORIGINAL_CAPTION)
 SCREEN = pg.display.set_mode(c.SCREEN_SIZE)
