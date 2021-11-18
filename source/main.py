@@ -12,4 +12,4 @@ def main():
                   c.GAME_LOSE: screen.GameLoseScreen(),
                   c.LEVEL: level.Level()}
     game.setup_states(state_dict, c.MAIN_MENU)
-    game.main()
+    game.main() # pygame 화면 재생 부분 (루프)
