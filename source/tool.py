@@ -6,6 +6,27 @@ from abc import abstractmethod
 import pygame as pg
 from . import constants as c
 
+
+#싱글톤 패턴으로 어디서든 호출할 수 있도록 만듬
+class GameManager(object):
+    __instance = None
+    def __init__(self):
+        self.killZombieCount = 0
+        self.timer = 0
+        self.score = 0
+
+    @classmethod
+    def getInstance(cls):
+        if not cls.__instance:
+            cls.__instance = GameManager()
+        return cls.__instance
+    
+    def getKillZombieCount(self):
+        return self.killZombieCount
+    def addKillZombieCount(self):
+        self.killZombieCount += 1
+        
+
 class State():
     def __init__(self):
         self.start_time = 0.0
@@ -58,6 +79,11 @@ class Control():
         self.mouse_click[1] = False
 
     def flip_state(self):
+        #화면 직접적으로 바꾸어 주는 부분
+        #현재 state를 state.next로 바꾸어 줌
+        #state.next는 State 자식클래스들 startup()에서 지정 
+        #한 씬에서 여러가지 씬으로 변경할수 있는경우에는 어떻게 처리해야 할지?
+        #->level.py에 def checkGameState(self) 함수 참고
         previous, self.state_name = self.state_name, self.state.next
         persist = self.state.cleanup()
         self.state = self.state_dict[self.state_name]
@@ -77,6 +103,8 @@ class Control():
                 print('pos:', self.mouse_pos, ' mouse:', self.mouse_click)
 
     def main(self):
+        #done이 false면 무한 루프
+        #state.done하고 self.done하고 다름 주의
         while not self.done:
             self.event_loop()
             self.update()

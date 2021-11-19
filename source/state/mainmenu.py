@@ -15,6 +15,8 @@ class Menu(tool.State):
         
         self.setupBackground()
         self.setupOption()
+        
+        
 
     def setupBackground(self):
         frame_rect = [80, 0, 800, 600]
@@ -79,7 +81,12 @@ class Menu(tool.State):
                     self.option_frame_index = 0
                 self.option_timer = self.current_time
                 self.option_image = self.option_frames[self.option_frame_index]
-            if(self.current_time - self.option_start) > 1300:
+            #클릭후 1.3초후 self.done = True
+            #self.done이 True가 되면? 
+            #1. tool.py 의 Update에서 걸림
+            #2. flip_state()함수에서 현재 state를 다음 state로 넘겨 다른 state.update()가 호출
+            #즉!!! State를 상속받은 클래스는 done을 true해주면 무조건 다음 state로 넘어감!!
+            if(self.current_time - self.option_start) > 1300: 
                 self.done = True
 
         surface.blit(self.bg_image, self.bg_rect)
@@ -88,3 +95,6 @@ class Menu(tool.State):
          surface.blit(self.test_img,self.test_img_rect)
         else:
           pg.quit()
+       
+       
+       
