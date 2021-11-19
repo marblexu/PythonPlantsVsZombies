@@ -46,6 +46,7 @@ class Screen(tool.State):
             surface.fill(c.WHITE)
             surface.blit(self.image, self.rect)
         else:
+            tool.GameManager.getInstance().resetKillZombieCount()
             self.done = True
 
         #텍스트 출력
