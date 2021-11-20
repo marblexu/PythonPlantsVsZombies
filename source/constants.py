@@ -1,6 +1,6 @@
 __author__ = 'marble_xu'
 
-START_LEVEL_NUM = 1
+START_LEVEL_NUM = 0
 
 ORIGINAL_CAPTION = 'Plant VS Zombies Game'
 
@@ -41,6 +41,8 @@ MAIN_MENU_IMAGE = 'MainMenu'
 OPTION_ADVENTURE = 'Adventure'
 GAME_LOOSE_IMAGE = 'GameLoose'
 GAME_VICTORY_IMAGE = 'GameVictory'
+
+TEST_IMAGE = 'test'
 
 #MAP COMPONENTS
 BACKGROUND_NAME = 'Background'

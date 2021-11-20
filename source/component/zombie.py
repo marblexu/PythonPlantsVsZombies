@@ -206,6 +206,7 @@ class Zombie(pg.sprite.Sprite):
         self.state = c.DIE
         self.animate_interval = 200
         self.changeFrames(self.die_frames)
+        tool.GameManager.getInstance().addKillZombieCount()
     
     def setBoomDie(self):
         self.state = c.DIE

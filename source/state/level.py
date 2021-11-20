@@ -7,6 +7,7 @@ from .. import tool
 from .. import constants as c
 from ..component import map, plant, zombie, menubar
 
+#식물 선택, 맵 로드 하는 곳?
 class Level(tool.State):
     def __init__(self):
         tool.State.__init__(self)

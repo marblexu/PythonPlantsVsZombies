@@ -446,6 +446,8 @@ class Chomper(Plant):
         elif (self.current_time - self.digest_timer) > self.digest_interval:
             self.digest_timer = 0
             self.attack_zombie.kill()
+            #식물쪽에서 좀비를 죽이는거 카운트
+            tool.GameManager.getInstance().addKillZombieCount()
             self.setIdle()
 
 class PuffShroom(Plant):
@@ -570,6 +572,8 @@ class Squash(Plant):
                 self.zombie_group.remove(self.attack_zombie)
             if (self.frame_index + 1) == self.frame_num:
                 self.attack_zombie.kill()
+                #식물쪽에서 좀비를 죽이는거 카운트
+                tool.GameManager.getInstance().addKillZombieCount()
                 self.health = 0
         elif self.aim_timer == 0:
             self.aim_timer = self.current_time
