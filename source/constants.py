@@ -41,6 +41,7 @@ MAIN_MENU_IMAGE = 'MainMenu'
 OPTION_ADVENTURE = 'Adventure'
 GAME_LOOSE_IMAGE = 'GameLoose'
 GAME_VICTORY_IMAGE = 'GameVictory'
+OPTION_GAMEOFF = 'GameOff'
 
 TEST_IMAGE = 'test'
 

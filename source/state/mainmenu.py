@@ -16,8 +16,6 @@ class Menu(tool.State):
         self.setupBackground()
         self.setupOption()
         
-        
-
     def setupBackground(self):
         frame_rect = [80, 0, 800, 600]
         self.bg_image = tool.get_image(tool.GFX[c.MAIN_MENU_IMAGE], *frame_rect)
@@ -26,18 +24,33 @@ class Menu(tool.State):
         self.bg_rect.y = 0
 
         #left top right bottom
-        frame_rect2 = [0,0,73,71]
-        self.test_img = tool.get_image(tool.GFX[c.TEST_IMAGE],*frame_rect2)
-        self.test_img_rect = self.test_img.get_rect()
-        self.test_img_rect.x = 450
-        self.test_img_rect.y = 300
-
+        gameoff_rect = [0, 0 ,165 , 60]
+        self.gameoff_img = tool.get_image(tool.GFX[c.OPTION_GAMEOFF],*gameoff_rect)
+        self.gameoff_img_rect = self.gameoff_img.get_rect()
+        self.gameoff_img_rect.x = 460
+        self.gameoff_img_rect.y = 300
         self.isclicked = False
+    
+    """def setupGameOff(self):
+        self.gf_frames = []
+        frame_names = [c.OPTION_GAMEOFF + '_0', c.OPTION_GAMEOFF + '_1']
+        frame_rect = [0, 0, 165, 67]
+
+        for name in frame_names:
+            self.gf_frames.append(tool.get_image(tool.GFX[name], *frame_rect, c.BLACK, 1.7))
+
+        self.gf_rect = self.gf_rect.get_rect()
+        self.gf_rect.x = 435
+        self.gf_rect.y = 40
+
+        self.gf_start = 0
+        self.gf_timer = 0
+        self.isclicked = False"""
         
     def setupOption(self):
         self.option_frames = []
         frame_names = [c.OPTION_ADVENTURE + '_0', c.OPTION_ADVENTURE + '_1']
-        frame_rect = [0, 0, 165, 77]
+        frame_rect = [0, 0, 165, 70]
         
         for name in frame_names:
             self.option_frames.append(tool.get_image(tool.GFX[name], *frame_rect, c.BLACK, 1.7))
@@ -60,20 +73,19 @@ class Menu(tool.State):
             self.option_timer = self.option_start = self.current_time
         return False
 
-    def checkOptionClick2(self, mouse_pos):
+    def checkGameOffClick(self, mouse_pos):
         x, y = mouse_pos
-        if(x >= self.test_img_rect.x and x <= self.test_img_rect.right and
-           y >= self.test_img_rect.y and y <= self.test_img_rect.bottom):
+        if(x >= self.gameoff_img_rect.x and x <= self.gameoff_img_rect.right and
+           y >= self.gameoff_img_rect.y and y <= self.gameoff_img_rect.bottom):
             self.isclicked = True
            
-        
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
         
         if not self.option_clicked:
             if mouse_pos:
                 self.checkOptionClick(mouse_pos)
-                self.checkOptionClick2(mouse_pos)
+                self.checkGameOffClick(mouse_pos)
         else:
             if(self.current_time - self.option_timer) > 200:
                 self.option_frame_index += 1
@@ -91,8 +103,9 @@ class Menu(tool.State):
 
         surface.blit(self.bg_image, self.bg_rect)
         surface.blit(self.option_image, self.option_rect)
+
         if(self.isclicked == False):
-         surface.blit(self.test_img,self.test_img_rect)
+         surface.blit(self.gameoff_img,self.gameoff_img_rect)
         else:
           pg.quit()
        
