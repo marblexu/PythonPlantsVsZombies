@@ -4,8 +4,10 @@ import os
 import json
 from abc import abstractmethod
 import pygame as pg
+import sys
 from . import constants as c
-
+mainClock = pg.time.Clock()
+from pygame.locals import *
 
 #싱글톤 패턴으로 어디서든 호출할 수 있도록 만듬
 class GameManager(object):
@@ -91,7 +93,11 @@ class Control():
         self.state = self.state_dict[self.state_name]
         self.state.startup(self.current_time, persist)
 
-    def event_loop(self):
+    
+    """def event_loop(self):
+        #SCREEN = pg.display.set_mode(c.SCREEN_SIZE, pg.RESIZABLE)
+        #SCREEN.fill((0, 0, 50))
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.done = True
@@ -102,7 +108,34 @@ class Control():
             elif event.type == pg.MOUSEBUTTONDOWN:
                 self.mouse_pos = pg.mouse.get_pos()
                 self.mouse_click[0], _, self.mouse_click[1] = pg.mouse.get_pressed()
+                print('pos:', self.mouse_pos, ' mouse:', self.mouse_click)"""
+    
+    def event_loop(self):
+        fullscreen = False
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.done = True
+            if event.type == pg.VIDEORESIZE:
+                if not fullscreen:
+                    SCREEN = pg.display.set_mode((event.w, event.h), pg.RESIZABLE)
+            if event.type == pg.KEYDOWN:
+                #self.keys = pg.key.get_pressed()
+                if event.key == pg.K_ESCAPE:
+                    pg.quit()
+                    sys.exit()
+                if event.key == pg.K_f:                  
+                    fullscreen = not fullscreen
+                    if fullscreen:
+                        SCREEN = pg.display.set_mode(monitor_size, pg.FULLSCREEN)
+                    else :
+                        SCREEN = pg.display.set_mode((SCREEN.get_width(), SCREEN.get_height()), pg.RESIZABLE)
+            if event.type == pg.KEYUP:
+                self.keys = pg.key.get_pressed()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                self.mouse_pos = pg.mouse.get_pos()
+                self.mouse_click[0], _, self.mouse_click[1] = pg.mouse.get_pressed()
                 print('pos:', self.mouse_pos, ' mouse:', self.mouse_click)
+    
 
     def main(self):
         #done이 false면 무한 루프
@@ -115,22 +148,22 @@ class Control():
         print('game over')
 
 def get_image(sheet, x, y, width, height, colorkey=c.BLACK, scale=1):
-        image = pg.Surface([width, height])
-        rect = image.get_rect()
+    image = pg.Surface([width, height])
+    rect = image.get_rect()
 
-        image.blit(sheet, (0, 0), (x, y, width, height))
-        image.set_colorkey(colorkey)
-        image = pg.transform.scale(image,
-                                   (int(rect.width*scale),
-                                    int(rect.height*scale)))
-        return image
+    image.blit(sheet, (0, 0), (x, y, width, height))
+    image.set_colorkey(colorkey)
+    image = pg.transform.scale(image,
+                                (int(rect.width*scale),
+                                int(rect.height*scale)))
+    return image
 
 def load_image_frames(directory, image_name, colorkey, accept):
     frame_list = []
     tmp = {}
     # image_name is "Peashooter", pic name is 'Peashooter_1', get the index 1
     index_start = len(image_name) + 1 
-    frame_num = 0;
+    frame_num = 0
     for pic in os.listdir(directory):
         name, ext = os.path.splitext(pic)
         if ext.lower() in accept:
@@ -146,6 +179,7 @@ def load_image_frames(directory, image_name, colorkey, accept):
 
     for i in range(frame_num):
         frame_list.append(tmp[i])
+
     return frame_list
 
 def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.gif')):
@@ -197,10 +231,14 @@ def loadPlantImageRect():
     f.close()
     return data[c.PLANT_IMAGE_RECT]
 
+
+
 pg.init()
 pg.display.set_caption(c.ORIGINAL_CAPTION)
-SCREEN = pg.display.set_mode(c.SCREEN_SIZE)
-
+monitor_size = [pg.display.Info().current_w, pg.display.Info().current_h]
+SCREEN = pg.display.set_mode(c.SCREEN_SIZE, pg.RESIZABLE)
 GFX = load_all_gfx(os.path.join("resources","graphics"))
 ZOMBIE_RECT = loadZombieImageRect()
 PLANT_RECT = loadPlantImageRect()
+mainClock.tick(60)
+   
