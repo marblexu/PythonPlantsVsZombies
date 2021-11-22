@@ -26,6 +26,7 @@ class GameManager(object):
     def getKillZombieCount(self):
         return self.killZombieCount
     def addKillZombieCount(self):
+        print(11111)
         self.killZombieCount += 1
     def resetKillZombieCount(self):
         self.killZombieCount = 0
