@@ -4,6 +4,9 @@ import random
 import pygame as pg
 from .. import tool
 from .. import constants as c
+import os
+
+
 
 class Car(pg.sprite.Sprite):
     def __init__(self, x, y, map_y):
@@ -19,6 +22,9 @@ class Car(pg.sprite.Sprite):
         self.state = c.IDLE
         self.dead = False
 
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.drive_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '잔디깎이돌진.mp3'))  #잔디깎이가 돌진하는 소리
+
     def update(self, game_info):
         self.current_time = game_info[c.CURRENT_TIME]
         if self.state == c.IDLE:
@@ -31,6 +37,7 @@ class Car(pg.sprite.Sprite):
     def setWalk(self):
         if self.state == c.IDLE:
             self.state = c.WALK
+            self.drive_sound.play()
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -232,6 +239,10 @@ class Sun(Plant):
         self.dest_y = dest_y
         self.die_timer = 0
 
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.getSun_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '빛에너지.mp3'))  #빛에너지를 먹는 소리
+
+
     def handleState(self):
         if self.rect.centerx != self.dest_x:
             self.rect.centerx += self.move_speed if self.rect.centerx < self.dest_x else -self.move_speed
@@ -250,6 +261,7 @@ class Sun(Plant):
             return False
         if(x >= self.rect.x and x <= self.rect.right and
            y >= self.rect.y and y <= self.rect.bottom):
+            self.getSun_sound.play()
             self.state = c.DIE
             self.kill()
             return True

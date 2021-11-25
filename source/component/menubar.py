@@ -1,5 +1,6 @@
 __author__ = 'marble_xu'
 
+import os
 import random
 import pygame as pg
 from .. import tool
@@ -251,6 +252,10 @@ class Panel():
         self.button_rect.x = 155
         self.button_rect.y = 547
 
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.start_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '게임시작버튼.mp3'))  #시작버튼을 누르는 소리
+        self.start_sound.set_volume(2)                                                      #소리크기 설정
+
     def setupCards(self, card_list):
         self.card_list = []
         x = PANEL_X_START - PANEL_X_INTERNAL
@@ -301,6 +306,7 @@ class Panel():
         x, y = mouse_pos
         if (x >= self.button_rect.x and x <= self.button_rect.right and
             y >= self.button_rect.y and y <= self.button_rect.bottom):
+           self.start_sound.play()
            return True
         return False
 

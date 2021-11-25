@@ -1,5 +1,6 @@
 __author__ = 'marble_xu'
 
+import os
 import pygame as pg
 from .. import tool
 from .. import constants as c
@@ -7,6 +8,9 @@ from .. import constants as c
 class Menu(tool.State):
     def __init__(self):
         tool.State.__init__(self)
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.start_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '게임시작버튼.mp3'))  #시작버튼을 누르는 소리
+        self.start_sound.set_volume(2)                                                      #소리크기 설정
     
     def startup(self, current_time, persist):
         self.next = c.LEVEL
@@ -16,6 +20,7 @@ class Menu(tool.State):
         self.setupBackground()
         self.setupOption()
         
+
     def setupBackground(self):
         frame_rect = [80, 0, 800, 600]
         self.bg_image = tool.get_image(tool.GFX[c.MAIN_MENU_IMAGE], *frame_rect)
@@ -79,6 +84,11 @@ class Menu(tool.State):
            y >= self.gameoff_img_rect.y and y <= self.gameoff_img_rect.bottom):
             self.isclicked = True
            
+            self.start_sound.play()
+            self.option_clicked = True
+            self.option_timer = self.option_start = self.current_time
+        return False
+        
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
         
@@ -111,3 +121,8 @@ class Menu(tool.State):
        
        
        
+        if(self.current_time - self.option_start) > 1300:
+                self.done = True
+
+        surface.blit(self.bg_image, self.bg_rect)
+        surface.blit(self.option_image, self.option_rect)
