@@ -1,0 +1,14 @@
+{
+    "plant_image_rect":{
+        "PeaNormal":{"x":28, "y":0, "width":28, "height":34},
+        "PeaIce":{"x":26, "y":0, "width":30, "height":34},
+        "Chomper":{"x":0, "y":0, "width":100, "height":114},
+        "PuffShroom":{"x":0, "y":28, "width":35, "height":38},
+        "PuffShroomSleep":{"x":1, "y":0, "width":39, "height":65},
+        "BulletMushRoom":{"x":0, "y":1, "width":55, "height":21},
+        "PotatoMine":{"x":0, "y":0, "width":75, "height":55},
+        "Squash":{"x":10, "y":140, "width":80, "height":86},
+        "SquashAim":{"x":10, "y":140, "width":80, "height":86},
+        "Spikeweed":{"x":3, "y":0, "width":80, "height":35}
+    }
+}

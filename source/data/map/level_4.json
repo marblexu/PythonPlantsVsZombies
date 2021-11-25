@@ -1,0 +1,41 @@
+{
+    "background_type":0,
+    "choosebar_type":1,
+    "card_pool":[
+        {"name":"Peashooter"},
+        {"name":"SnowPea"},
+        {"name":"WallNut"},
+        {"name":"CherryBomb"},
+        {"name":"RepeaterPea"},
+        {"name":"Chomper"},
+        {"name":"PotatoMine"}
+    ],
+    "zombie_list":[
+        {"time": 1000, "map_y":1, "name":"Zombie"},
+        {"time": 6000, "map_y":3, "name":"FlagZombie"},
+        {"time":10000, "map_y":0, "name":"ConeheadZombie"},
+        {"time":14000, "map_y":2, "name":"NewspaperZombie"},
+        {"time":18000, "map_y":4, "name":"BucketheadZombie"},
+        {"time":22000, "map_y":0, "name":"Zombie"},
+        {"time":26000, "map_y":3, "name":"BucketheadZombie"},
+        {"time":30000, "map_y":4, "name":"Zombie"},
+        {"time":32000, "map_y":3, "name":"NewspaperZombie"},
+        {"time":34000, "map_y":1, "name":"FlagZombie"},
+        {"time":36000, "map_y":2, "name":"ConeheadZombie"},
+        {"time":38000, "map_y":0, "name":"BucketheadZombie"},
+        {"time":40000, "map_y":1, "name":"ConeheadZombie"},
+        {"time":42000, "map_y":1, "name":"NewspaperZombie"},
+        {"time":60000, "map_y":4, "name":"Zombie"},
+        {"time":61000, "map_y":3, "name":"NewspaperZombie"},
+        {"time":62000, "map_y":1, "name":"FlagZombie"},
+        {"time":63000, "map_y":2, "name":"Zombie"},
+        {"time":64000, "map_y":0, "name":"BucketheadZombie"},
+        {"time":65000, "map_y":1, "name":"ConeheadZombie"},
+        {"time":66000, "map_y":2, "name":"Zombie"},
+        {"time":67000, "map_y":4, "name":"BucketheadZombie"},
+        {"time":68000, "map_y":3, "name":"NewspaperZombie"},
+        {"time":69000, "map_y":1, "name":"FlagZombie"},
+        {"time":70000, "map_y":4, "name":"BucketheadZombie"},
+        {"time":71000, "map_y":0, "name":"FlagZombie"}
+    ]
+}

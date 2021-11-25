@@ -1,0 +1,33 @@
+{
+    "background_type":4,
+    "choosebar_type":2,
+    "card_pool":[
+        {"name":"WallNutBowling"},
+        {"name":"RedWallNutBowling"}
+    ],
+    "zombie_list":[
+        {"time": 1000, "map_y":1, "name":"Zombie"},
+        {"time":10000, "map_y":3, "name":"FlagZombie"},
+        {"time":12000, "map_y":0, "name":"ConeheadZombie"},
+        {"time":14000, "map_y":2, "name":"NewspaperZombie"},
+        {"time":18000, "map_y":4, "name":"BucketheadZombie"},
+        {"time":22000, "map_y":3, "name":"Zombie"},
+        {"time":26000, "map_y":1, "name":"BucketheadZombie"},
+        {"time":30000, "map_y":4, "name":"Zombie"},
+        {"time":32000, "map_y":3, "name":"NewspaperZombie"},
+        {"time":34000, "map_y":1, "name":"FlagZombie"},
+        {"time":36000, "map_y":2, "name":"ConeheadZombie"},
+        {"time":40000, "map_y":1, "name":"ConeheadZombie"},
+        {"time":42000, "map_y":1, "name":"NewspaperZombie"},
+        {"time":50000, "map_y":4, "name":"Zombie"},
+        {"time":54000, "map_y":3, "name":"NewspaperZombie"},
+        {"time":58000, "map_y":1, "name":"FlagZombie"},
+        {"time":62000, "map_y":2, "name":"Zombie"},
+        {"time":64000, "map_y":1, "name":"ConeheadZombie"},
+        {"time":66000, "map_y":2, "name":"Zombie"},
+        {"time":68000, "map_y":3, "name":"NewspaperZombie"},
+        {"time":70000, "map_y":1, "name":"FlagZombie"},
+        {"time":72000, "map_y":4, "name":"BucketheadZombie"},
+        {"time":74000, "map_y":0, "name":"FlagZombie"}
+    ]
+}

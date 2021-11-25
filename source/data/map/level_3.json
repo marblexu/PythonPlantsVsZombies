@@ -1,0 +1,20 @@
+{
+    "background_type":1,
+    "init_sun_value":50,
+    "zombie_list":[
+        {"time":20000, "map_y":0, "name":"Zombie"},
+        {"time":40000, "map_y":2, "name":"ConeheadZombie"},
+        {"time":50000, "map_y":4, "name":"BucketheadZombie"},
+        {"time":70000, "map_y":3, "name":"BucketheadZombie"},
+        {"time":72000, "map_y":1, "name":"FlagZombie"},
+        {"time":74000, "map_y":2, "name":"ConeheadZombie"},
+        {"time":90000, "map_y":0, "name":"BucketheadZombie"},
+        {"time":91000, "map_y":1, "name":"ConeheadZombie"},
+        {"time":92000, "map_y":2, "name":"Zombie"},
+        {"time":93000, "map_y":3, "name":"BucketheadZombie"},
+        {"time":94000, "map_y":0, "name":"Zombie"},
+        {"time":95000, "map_y":4, "name":"FlagZombie"},
+        {"time":96000, "map_y":1, "name":"BucketheadZombie"},
+        {"time":97000, "map_y":1, "name":"FlagZombie"}
+    ]
+}
