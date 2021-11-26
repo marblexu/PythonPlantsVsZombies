@@ -136,12 +136,7 @@ class Control():
                 self.mouse_pos = pg.mouse.get_pos()
                 self.mouse_click[0], _, self.mouse_click[1] = pg.mouse.get_pressed()
                 print('pos:', self.mouse_pos, ' mouse:', self.mouse_click)
-    
-
-    def main(self):
-        #done이 false면 무한 루프
-        #state.done하고 self.done하고 다름 주의
-                print('pos:', self.mouse_pos, ' mouse:', self.mouse_click)
+        
 
     def setBackGroundMusic(self):
         self.sound_dir = os.path.join('source','sound')  #경로 추가

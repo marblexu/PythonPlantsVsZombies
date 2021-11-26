@@ -107,13 +107,6 @@ class Screen(tool.State):
         surface.blit(self.mainMenuButton_IMG, self.mainMenuButton_IMG_rect)
         surface.blit(self.nextStageButton_IMG, self.nextStageButton_IMG_rect)
 
-    def update(self, surface, current_time, mouse_pos, mouse_click):
-        if(current_time - self.start_time) < self.end_time:
-            surface.fill(c.WHITE)
-            surface.blit(self.image, self.rect)
-        else:
-            self.done = True
-
 class GameVictoryScreen(Screen):
     def __init__(self):
         Screen.__init__(self)

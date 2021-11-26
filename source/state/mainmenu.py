@@ -85,9 +85,9 @@ class Menu(tool.State):
             self.isclicked = True
            
             self.start_sound.play()
-            self.option_clicked = True
-            self.option_timer = self.option_start = self.current_time
-        return False
+            #self.option_clicked = True
+            #self.option_timer = self.option_start = self.current_time
+        #return False
         
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
@@ -121,8 +121,7 @@ class Menu(tool.State):
        
        
        
-        if(self.current_time - self.option_start) > 1300:
-                self.done = True
+        #if(self.current_time - self.option_start) > 1300:
+         #       self.done = True
 
-        surface.blit(self.bg_image, self.bg_rect)
-        surface.blit(self.option_image, self.option_rect)
+       
