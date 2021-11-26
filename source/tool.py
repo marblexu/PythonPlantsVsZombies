@@ -14,7 +14,8 @@ class GameManager(object):
     __instance = None
     def __init__(self):
         self.killZombieCount = 0
-        self.timer = 0
+        self.startTimer = 0.0
+        self.timer = 0.0
         self.score = 0
 
     @classmethod
@@ -30,7 +31,12 @@ class GameManager(object):
         self.killZombieCount += 1
     def resetKillZombieCount(self):
         self.killZombieCount = 0
-        
+    def getTimer(self):
+        return self.timer
+    def addTimer(self):
+        self.timer=(pg.time.get_ticks()-self.startTimer)/1000
+    def reSetTimer(self):
+        self.startTimer = pg.time.get_ticks()
 
 class State():
     def __init__(self):
@@ -67,7 +73,7 @@ class Control():
         self.state = None
         self.game_info = {c.CURRENT_TIME:0.0,
                           c.LEVEL_NUM:c.START_LEVEL_NUM}
- 
+       
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
         self.state_name = start_state

@@ -128,8 +128,15 @@ class Level(tool.State):
         self.setupGroups()
         self.setupZombies()
         self.setupCars()
+        #중화 타이머
+        tool.GameManager.getInstance().reSetTimer()
 
     def play(self, mouse_pos, mouse_click):
+        
+        #중화 타이머
+        tool.GameManager.getInstance().addTimer()
+        print(tool.GameManager.getInstance().getTimer())
+        
         if self.zombie_start_time == 0:
             self.zombie_start_time = self.current_time
         elif len(self.zombie_list) > 0:
