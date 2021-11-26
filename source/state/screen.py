@@ -64,6 +64,16 @@ class GameVictoryScreen(Screen):
         #텍스트 추가
         font = pg.font.SysFont("arial",30,True,True)  #폰트 설정
         self.text = font.render("KILL ZOMBIES : " + str(tool.GameManager.getInstance().getKillZombieCount()),True,(0,0,0))  #텍스트가 표시된 Surface 를 만듬
+        #self.textForTime = font.render("PLAY TIME : " + str(int(tool.GameManager.getInstance().getTimer())) + "SECOND",True,(0,0,0))
+        minuteForRenderStr = 0
+        secondForRenderStr = 0
+        if int(tool.GameManager.getInstance().getTimer()) >= 60 :
+            minuteForRenderStr = int(tool.GameManager.getInstance().getTimer()) / 60
+            secondForRenderStr = int(tool.GameManager.getInstance().getTimer()) % 60
+            self.textForTime = font.render("PLAY TIME : " + str(minuteForRenderStr) + " MINUTE " + str(secondForRenderStr) + " SECOND",True,(0,0,0))
+        elif int(tool.GameManager.getInstance().getTimer()) < 60 :
+            self.textForTime = font.render("PLAY TIME : " + str(int(tool.GameManager.getInstance().getTimer())) + " SECOND",True,(0,0,0))
+
 
     def setupImage(self, name):
         super().setupImage(name)
@@ -71,7 +81,7 @@ class GameVictoryScreen(Screen):
         mainMenu_Button = [0, 0, 150, 80]
         self.mainMenuButton_IMG = tool.get_image(tool.GFX[c.GAMEFINISHED_MAINMENU_BUTTON],*mainMenu_Button)
         self.mainMenuButton_IMG_rect = self.mainMenuButton_IMG.get_rect()
-        self.mainMenuButton_IMG_rect.x = 250
+        self.mainMenuButton_IMG_rect.x = 235
         self.mainMenuButton_IMG_rect.y = 380
         self.isMainMenuClicked = False
 
@@ -79,7 +89,7 @@ class GameVictoryScreen(Screen):
         nextStage_Button = [0, 0, 150, 80]
         self.nextStageButton_IMG = tool.get_image(tool.GFX[c.GAMEFINISHED_NEXTSTAGE_BUTTON],*nextStage_Button)
         self.nextStageButton_IMG_rect = self.nextStageButton_IMG.get_rect()
-        self.nextStageButton_IMG_rect.x = 450
+        self.nextStageButton_IMG_rect.x = 435
         self.nextStageButton_IMG_rect.y = 380
         self.isNextStageClicked = False
 
@@ -106,7 +116,8 @@ class GameVictoryScreen(Screen):
                 tool.GameManager.getInstance().resetKillZombieCount()
                 self.done = True
 
-        surface.blit(self.text,(300,300))
+        surface.blit(self.text,(290,280))
+        surface.blit(self.textForTime, (260, 330))
         surface.blit(self.mainMenuButton_IMG, self.mainMenuButton_IMG_rect)
         surface.blit(self.nextStageButton_IMG, self.nextStageButton_IMG_rect)
 
@@ -138,7 +149,7 @@ class GameLoseScreen(Screen):
         mainMenu_Button = [0, 0, 150, 80]
         self.mainMenuButton_IMG = tool.get_image(tool.GFX[c.GAMEFINISHED_MAINMENU_BUTTON],*mainMenu_Button)
         self.mainMenuButton_IMG_rect = self.mainMenuButton_IMG.get_rect()
-        self.mainMenuButton_IMG_rect.x = 250
+        self.mainMenuButton_IMG_rect.x = 310
         self.mainMenuButton_IMG_rect.y = 380
         self.isMainMenuClicked = False
     
@@ -150,5 +161,5 @@ class GameLoseScreen(Screen):
                 tool.GameManager.getInstance().resetKillZombieCount()
                 self.done = True
 
-        surface.blit(self.text,(300,300))
+        surface.blit(self.text,(280,300))
         surface.blit(self.mainMenuButton_IMG, self.mainMenuButton_IMG_rect)
