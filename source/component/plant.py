@@ -49,7 +49,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect.y = start_y
         self.dest_y = dest_y
         self.y_vel = 4 if (dest_y > start_y) else -4
-        self.x_vel = 4
+        self.x_vel = 4 # 총알 날라가는 속도
         self.damage = damage
         self.ice = ice
         self.state = c.FLY
@@ -274,6 +274,7 @@ class PeaShooter(Plant):
         self.shoot_timer = 0
         
     def attacking(self):
+        # 총알 날라가는 간격 (텀)
         if (self.current_time - self.shoot_timer) > 2000:
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
