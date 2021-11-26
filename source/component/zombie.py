@@ -1,5 +1,6 @@
 __author__ = 'marble_xu'
 
+import os
 import pygame as pg
 from .. import tool
 from .. import constants as c
@@ -19,6 +20,9 @@ class Zombie(pg.sprite.Sprite):
         self.rect.centerx = x
         self.rect.bottom = y
         
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.dying_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '좀비가죽을때.mp3'))  #좀비가 죽는 소리
+
         self.health = health
         self.damage = damage
         self.dead = False
@@ -104,6 +108,7 @@ class Zombie(pg.sprite.Sprite):
             self.setWalk()
     
     def dying(self):
+        self.dying_sound.play()  #소리를 재생합니다
         pass
 
     def freezing(self):

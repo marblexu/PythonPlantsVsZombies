@@ -26,6 +26,7 @@ class GameManager(object):
     def getKillZombieCount(self):
         return self.killZombieCount
     def addKillZombieCount(self):
+        print(11111)
         self.killZombieCount += 1
     def resetKillZombieCount(self):
         self.killZombieCount = 0
@@ -135,16 +136,24 @@ class Control():
                 self.mouse_pos = pg.mouse.get_pos()
                 self.mouse_click[0], _, self.mouse_click[1] = pg.mouse.get_pressed()
                 print('pos:', self.mouse_pos, ' mouse:', self.mouse_click)
-    
+        
+
+    def setBackGroundMusic(self):
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        pg.mixer.music.load(os.path.join(self.sound_dir, '배경음악.mp3'))  #배경음악 로드
+        
 
     def main(self):
-        #done이 false면 무한 루프
-        #state.done하고 self.done하고 다름 주의
+
+        self.setBackGroundMusic()
+        pg.mixer.music.play(-1)   #게임이 시작하면 노래를 재생합니다
+
         while not self.done:
             self.event_loop()
             self.update()
             pg.display.update()
             self.clock.tick(self.fps)
+        pg.mixer.music.fadeout(500)  #게임이 끝나면 노래를 종료합니다
         print('game over')
 
 def get_image(sheet, x, y, width, height, colorkey=c.BLACK, scale=1):
@@ -157,6 +166,18 @@ def get_image(sheet, x, y, width, height, colorkey=c.BLACK, scale=1):
                                 (int(rect.width*scale),
                                 int(rect.height*scale)))
     return image
+       
+
+def get_image(sheet, x, y, width, height, colorkey=c.BLACK, scale=1):
+        image = pg.Surface([width, height])
+        rect = image.get_rect()
+
+        image.blit(sheet, (0, 0), (x, y, width, height))
+        image.set_colorkey(colorkey)
+        image = pg.transform.scale(image,
+                                   (int(rect.width*scale),
+                                    int(rect.height*scale)))
+        return image
 
 def load_image_frames(directory, image_name, colorkey, accept):
     frame_list = []
@@ -179,7 +200,6 @@ def load_image_frames(directory, image_name, colorkey, accept):
 
     for i in range(frame_num):
         frame_list.append(tmp[i])
-
     return frame_list
 
 def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.gif')):
