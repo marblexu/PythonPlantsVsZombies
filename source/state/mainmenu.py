@@ -9,8 +9,9 @@ class Menu(tool.State):
     def __init__(self):
         tool.State.__init__(self)
         self.sound_dir = os.path.join('source','sound')  #경로 추가
-        self.start_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '게임시작버튼.mp3'))  #시작버튼을 누르는 소리
+        self.start_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '게임시작버튼.mp3'))  #버튼을 누르는 소리
         self.start_sound.set_volume(2)                                                      #소리크기 설정
+
     
     def startup(self, current_time, persist):
         self.next = c.LEVEL
@@ -36,6 +37,13 @@ class Menu(tool.State):
         self.gameoff_img_rect.y = 300
         self.isclicked = False
     
+    """    soundOn_rect = [0, 0, 60,60]
+        self.soundOn_img = tool.get_image(tool.GFX[c.OPTION_SOUNDON], *soundOn_rect);
+        self.soundOn_img_rect = self.soundOn_img.get_rect()
+        self.soundOn_img_rect.x = 500
+        self.soundOn_img_rect.y = 200
+        self.isclicked = False"""
+
     """def setupGameOff(self):
         self.gf_frames = []
         frame_names = [c.OPTION_GAMEOFF + '_0', c.OPTION_GAMEOFF + '_1']
@@ -75,6 +83,7 @@ class Menu(tool.State):
         if(x >= self.option_rect.x and x <= self.option_rect.right and
            y >= self.option_rect.y and y <= self.option_rect.bottom):
             self.option_clicked = True
+            self.start_sound.play()                                         #소리재생
             self.option_timer = self.option_start = self.current_time
         return False
 
@@ -89,6 +98,8 @@ class Menu(tool.State):
             #self.option_timer = self.option_start = self.current_time
         #return False
         
+
+
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
         
@@ -96,6 +107,7 @@ class Menu(tool.State):
             if mouse_pos:
                 self.checkOptionClick(mouse_pos)
                 self.checkGameOffClick(mouse_pos)
+  
         else:
             if(self.current_time - self.option_timer) > 200:
                 self.option_frame_index += 1
@@ -116,6 +128,7 @@ class Menu(tool.State):
 
         if(self.isclicked == False):
          surface.blit(self.gameoff_img,self.gameoff_img_rect)
+       
         else:
           pg.quit()
        
