@@ -272,6 +272,7 @@ class PeaShooter(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.PEASHOOTER, c.PLANT_HEALTH, bullet_group)
         self.shoot_timer = 0
+        self.shoot_sound = pg.mixer.Sound("./resources/sound effects/peashooter.wav") # 음향 객체 정의
         
     def attacking(self):
         # 총알 날라가는 간격 (텀)
@@ -279,6 +280,7 @@ class PeaShooter(Plant):
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
+            self.shoot_sound.play()
 
 class RepeaterPea(Plant):
     def __init__(self, x, y, bullet_group):
