@@ -247,7 +247,7 @@ class Sun(Plant):
             scale = 0.6
             self.sun_value = 12
         Plant.__init__(self, x, y, c.SUN, 0, None, scale)
-        self.move_speed = 1 * c.DELTA_TIME
+        self.move_speed = 1 
         self.dest_x = dest_x
         self.dest_y = dest_y
         self.die_timer = 0
@@ -258,9 +258,9 @@ class Sun(Plant):
 
     def handleState(self):
         if self.rect.centerx != self.dest_x:
-            self.rect.centerx += self.move_speed if self.rect.centerx < self.dest_x else -self.move_speed
+            self.rect.centerx += self.move_speed * c.DELTA_TIME if self.rect.centerx < self.dest_x else -self.move_speed * c.DELTA_TIME
         if self.rect.bottom != self.dest_y:
-            self.rect.bottom += self.move_speed if self.rect.bottom < self.dest_y else -self.move_speed
+            self.rect.bottom += self.move_speed * c.DELTA_TIME if self.rect.bottom < self.dest_y else -self.move_speed * c.DELTA_TIME
         
         if self.rect.centerx == self.dest_x and self.rect.bottom == self.dest_y:
             if self.die_timer == 0:

@@ -41,7 +41,7 @@ class Zombie(pg.sprite.Sprite):
         self.ice_slow_ratio = 1
         self.ice_slow_timer = 0
         self.hit_timer = 0
-        self.speed = 1 * c.DELTA_TIME
+        self.speed = 1 
         self.freeze_timer = 0
         self.is_hypno = False # the zombie is hypo and attack other zombies when it ate a HypnoShroom
     
@@ -85,9 +85,9 @@ class Zombie(pg.sprite.Sprite):
         if (self.current_time - self.walk_timer) > (c.ZOMBIE_WALK_INTERVAL * self.getTimeRatio()):
             self.walk_timer = self.current_time
             if self.is_hypno:
-                self.rect.x += self.speed
+                self.rect.x += self.speed * c.DELTA_TIME
             else:
-                self.rect.x -= self.speed
+                self.rect.x -= self.speed * c.DELTA_TIME
     
     def attacking(self):
         if self.health <= 0:
