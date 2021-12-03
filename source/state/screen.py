@@ -70,9 +70,11 @@ class GameVictoryScreen(Screen):
         if int(tool.GameManager.getInstance().getTimer()) >= 60 :
             minuteForRenderStr = int(tool.GameManager.getInstance().getTimer()) / 60
             secondForRenderStr = int(tool.GameManager.getInstance().getTimer()) % 60
-            self.textForTime = font.render("PLAY TIME : " + str(minuteForRenderStr) + " MINUTE " + str(secondForRenderStr) + " SECOND",True,(0,0,0))
+            self.textForTime = font.render("PLAY TIME : " + str(int(minuteForRenderStr)) + " MINUTE " + str(secondForRenderStr) + " SECOND",True,(0,0,0))
+            self.textPos = [200, 330]
         elif int(tool.GameManager.getInstance().getTimer()) < 60 :
             self.textForTime = font.render("PLAY TIME : " + str(int(tool.GameManager.getInstance().getTimer())) + " SECOND",True,(0,0,0))
+            self.textPos = [250, 330]
 
 
     def setupImage(self, name):
@@ -117,7 +119,7 @@ class GameVictoryScreen(Screen):
                 self.done = True
 
         surface.blit(self.text,(290,280))
-        surface.blit(self.textForTime, (260, 330))
+        surface.blit(self.textForTime, self.textPos)
         surface.blit(self.mainMenuButton_IMG, self.mainMenuButton_IMG_rect)
         surface.blit(self.nextStageButton_IMG, self.nextStageButton_IMG_rect)
 
