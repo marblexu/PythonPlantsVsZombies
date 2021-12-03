@@ -18,6 +18,10 @@ class Menu(tool.State):
         self.game_info = persist
         
         self.setupBackground()
+        self.setupMuteSound()
+        self.ClickedMuteSound()
+        self.setupSound()
+        self.ClickedSound()
         self.setupOption()
         
 
@@ -28,29 +32,42 @@ class Menu(tool.State):
         self.bg_rect.x = 0
         self.bg_rect.y = 0
 
-        #left top right bottom
         gameoff_rect = [0, 0 ,165 , 60]
         self.gameoff_img = tool.get_image(tool.GFX[c.OPTION_GAMEOFF],*gameoff_rect)
         self.gameoff_img_rect = self.gameoff_img.get_rect()
         self.gameoff_img_rect.x = 460
-        self.gameoff_img_rect.y = 300
+        self.gameoff_img_rect.y = 350
         self.isclicked = False
-    
-    """def setupGameOff(self):
-        self.gf_frames = []
-        frame_names = [c.OPTION_GAMEOFF + '_0', c.OPTION_GAMEOFF + '_1']
-        frame_rect = [0, 0, 165, 67]
 
-        for name in frame_names:
-            self.gf_frames.append(tool.get_image(tool.GFX[name], *frame_rect, c.BLACK, 1.7))
+    def setupMuteSound(self):
+        mutesound_rect = [0, 0, 72, 44]
+        self.mutesound_img = tool.get_image(tool.GFX[c.SOUND_MUTE_IMAGE],*mutesound_rect)
+        self.mutesound_img_rect = self.mutesound_img.get_rect()
+        self.mutesound_img_rect.x = 460
+        self.mutesound_img_rect.y = 290
+        self.muteSoundClicked = False
 
-        self.gf_rect = self.gf_rect.get_rect()
-        self.gf_rect.x = 435
-        self.gf_rect.y = 40
+    def ClickedMuteSound(self):
+        clickedMutesound_rect = [0, 0, 72, 44]
+        self.clickedMutesound_img = tool.get_image(tool.GFX[c.CLICKED_MUTE_IMAGE],*clickedMutesound_rect)
+        self.clickedMutesound_img_rect = self.clickedMutesound_img.get_rect()
+        self.clickedMutesound_img_rect.x = 460
+        self.clickedMutesound_img_rect.y = 290
 
-        self.gf_start = 0
-        self.gf_timer = 0
-        self.isclicked = False"""
+    def setupSound(self):
+        sound_rect = [0, 0, 72, 44]
+        self.sound_img = tool.get_image(tool.GFX[c.SOUND_IMAGE],*sound_rect)
+        self.sound_img_rect = self.sound_img.get_rect()
+        self.sound_img_rect.x = 560
+        self.sound_img_rect.y = 290
+        self.soundClicked = False
+
+    def ClickedSound(self):
+        clickedsound_rect = [0, 0, 72, 44]
+        self.clickedSound_img = tool.get_image(tool.GFX[c.CLICKED_SOUND_IMAGE],*clickedsound_rect)
+        self.clickedSound_img_rect = self.clickedSound_img.get_rect()
+        self.clickedSound_img_rect.x = 560
+        self.clickedSound_img_rect.y = 290
         
     def setupOption(self):
         self.option_frames = []
@@ -83,12 +100,24 @@ class Menu(tool.State):
         if(x >= self.gameoff_img_rect.x and x <= self.gameoff_img_rect.right and
            y >= self.gameoff_img_rect.y and y <= self.gameoff_img_rect.bottom):
             self.isclicked = True
-           
-            self.start_sound.play()
+
+    def checkMuteSoundClick(self, mouse_pos):
+        x, y = mouse_pos
+        if(x >= self.mutesound_img_rect.x and x <= self.mutesound_img_rect.right and
+           y >= self.mutesound_img_rect.y and y <= self.mutesound_img_rect.bottom):
+            self.muteSoundClicked = True
+
+            #self.start_sound.play()
             #self.option_clicked = True
             #self.option_timer = self.option_start = self.current_time
         #return False
-        
+
+    def checkSoundClick(self, mouse_pos):
+        x, y = mouse_pos
+        if(x >= self.sound_img_rect.x and x <= self.sound_img_rect.right and
+           y >= self.sound_img_rect.y and y <= self.sound_img_rect.bottom):
+            self.soundClicked = True
+
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
         
@@ -96,6 +125,8 @@ class Menu(tool.State):
             if mouse_pos:
                 self.checkOptionClick(mouse_pos)
                 self.checkGameOffClick(mouse_pos)
+                self.checkSoundClick(mouse_pos)
+                self.checkMuteSoundClick(mouse_pos)
         else:
             if(self.current_time - self.option_timer) > 200:
                 self.option_frame_index += 1
@@ -115,13 +146,27 @@ class Menu(tool.State):
         surface.blit(self.option_image, self.option_rect)
 
         if(self.isclicked == False):
-         surface.blit(self.gameoff_img,self.gameoff_img_rect)
+            surface.blit(self.gameoff_img,self.gameoff_img_rect)
         else:
-          pg.quit()
-       
-       
-       
-        #if(self.current_time - self.option_start) > 1300:
-         #       self.done = True
+            pg.quit()
 
+
+        if(self.muteSoundClicked == False):
+            surface.blit(self.mutesound_img, self.mutesound_img_rect)
+            if(self.soundClicked == True):
+                self.setupSound()         
+        else:
+            surface.blit(self.clickedMutesound_img, self.clickedMutesound_img_rect)
+            pg.mixer.music.pause()
+
+        if(self.soundClicked == False):
+            surface.blit(self.sound_img, self.sound_img_rect)
+        else:
+            surface.blit(self.clickedSound_img, self.clickedSound_img_rect)
+            pg.mixer.music.unpause()
+            self.setupMuteSound()
+            #self.checkMuteSoundClick(mouse_pos)
+
+        
+        
        
