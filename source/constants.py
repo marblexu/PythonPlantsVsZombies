@@ -199,3 +199,6 @@ DELTA_TIME = 1.0
 #식물들 공속 업
 #기본 1 아이템 눌렀을 때 2 일정시간 지나면 다시 1
 ATK_TIME_UP = 1
+
+#Shovel for remove planted plants
+SHOVEL_IMAGE = 'Shovel'

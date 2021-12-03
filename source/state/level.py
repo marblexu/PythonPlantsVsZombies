@@ -52,6 +52,13 @@ class Level(tool.State):
         self.isItem_1_Clicked = 0
         self.Item_1_Timer = 5000
 
+        #추가로 삽 버튼 관련 속성 여기에 초기화함 - 12/04 홍성민
+        shovel = [0, 0, 59, 54]
+        self.shovelIMG = tool.get_image(tool.GFX[c.SHOVEL_IMAGE], *shovel)
+        self.shovelRect = self.shovelIMG.get_rect()
+        self.shovelRect.x = 690
+        self.shovelRect.y = 9
+
     def loadMap(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
         file_path = os.path.join('source', 'data', 'map', map_file)
@@ -162,6 +169,9 @@ class Level(tool.State):
         self.setupCars()
         #중화 타이머
         tool.GameManager.getInstance().reSetTimer()
+        #마우스 포인터 대신 띄워지는 삽 이미지
+        self.shovel_pointer_IMG = None
+        self.shovelActivate = False
 
     def play(self, mouse_pos, mouse_click):
 
@@ -626,6 +636,44 @@ class Level(tool.State):
            c.ATK_TIME_UP = 1
            self.isItem_1_Clicked = 2
 
+    #홍성민 삽 버튼 관련 함수들
+    def drawShovelButton(self, surface):
+        surface.blit(self.shovelIMG, self.shovelRect)
+
+    def checkShovelButtonClicked(self, mouse_pos):
+        x, y = mouse_pos
+        shovel_pointer = [0,0,59,54]
+        if(x >= self.shovelRect.x - 10 and x <= self.shovelRect.right + 10 and
+           y >= self.shovelRect.y - 10 and y <= self.shovelRect.bottom + 10):
+            print("shovel clicked")
+            # 이곳에 마우스포인터 삽 이미지 및 기능 활성화. 판정은 shovel pointer img가 none인지 아닌지로 한다.
+            if (self.shovel_pointer_IMG == None) :
+                self.shovel_pointer_IMG = tool.get_image(tool.GFX[c.SHOVEL_IMAGE], *shovel_pointer)
+                pg.mouse.set_visible(False)
+                self.shovelActivate = True
+                print("shovel clicked, and shovelpointer img was none. Now mouse set_visible is False, and IMG got his image")
+            # 이미지 및 기능 비활성화, 원래대로
+            elif (self.shovel_pointer_IMG != None) :
+                print("shovel clicked, and shovelpointer img was had something, Now mouse and IMG get back")
+                pg.mouse.set_visible(True)
+                self.shovel_pointer_IMG = None
+                self.shovelActivate = False
+                self.removeMouseImage()
+           # If you want to set IMG to member, use this code.
+           # self.shovel_pointer_IMG = tool.get_image(tool.GFX[c.SHOVEL_IMAGE], *shovel_pointer)
+    
+    #마우스 포인터 위치에 삽 이미지를 띄우게 하는 메소드
+    def drawShovelMouseShow(self, surface):
+        surface.blit(self.shovel_pointer_IMG, pg.mouse.get_pos())
+
+    # plant를 넘겨받아 삽으로 클릭한 식물을 지우는 메소드
+    def removePlantByShovel(self, plant) :
+        x, y = plant.getPosition()
+        map_x, map_y = self.map.getMapIndex(x, y)
+        if self.bar_type != c.CHOSSEBAR_BOWLING:
+            self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
+        plant.kill()
+
     def draw(self, surface, mouse_pos):
         self.level.blit(self.background, self.viewport, self.viewport)
         surface.blit(self.level, (0, 0), self.viewport)
@@ -635,6 +683,7 @@ class Level(tool.State):
             #추가 이미지 그려주는
             self.drawSpeedUpButton(surface)
             self.drawItem(surface)
+            self.drawShovelButton(surface)
 
             self.menubar.draw(surface)
             for i in range(self.map_y_len):
@@ -652,8 +701,24 @@ class Level(tool.State):
                 #다른 아이템 이미지 클릭 이벤트 여기에
                 self.CheckSpeedUpButtonClicked(mouse_pos)
                 self.CheckItemButtonClicked(mouse_pos)
+                self.checkShovelButtonClicked(mouse_pos)
             if(self.isItem_1_Clicked == 1):
                 self.Item_1_EndEvent()
 
             if self.drag_plant:
                 self.drawMouseShow(surface)
+
+            # self.shovel_pointer_IMG에 이미지가 추가되어 삽 기능이 작동하는 상태. if문의 조건문은 checkShovelButtonClicekd를 참조
+            if (self.shovel_pointer_IMG != None) : 
+                self.drawShovelMouseShow(surface)
+                for i in range(self.map_y_len):
+                    for plant in self.plant_groups[i]:
+                        plant_pos_x, plant_pos_y = plant.getPosition()
+                        shovel_clicked_x, shovel_clicked_y = pg.mouse.get_pos()
+                        shovel_isClicked = [False, False, False]
+                        shovel_isClicked = pg.mouse.get_pressed()
+                        plant_pos_y -= 100
+                        if(shovel_isClicked[0] == True and plant_pos_x - 35 <= shovel_clicked_x and shovel_clicked_x <= plant_pos_x + 35
+                        and plant_pos_y - 20 <= shovel_clicked_y and shovel_clicked_y <= plant_pos_y + 40) :
+                            print("Plants is Clicked with Shovel")
+                            self.removePlantByShovel(plant)
