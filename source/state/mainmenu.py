@@ -9,8 +9,9 @@ class Menu(tool.State):
     def __init__(self):
         tool.State.__init__(self)
         self.sound_dir = os.path.join('source','sound')  #경로 추가
-        self.start_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '게임시작버튼.mp3'))  #시작버튼을 누르는 소리
+        self.start_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '게임시작버튼.mp3'))  #버튼을 누르는 소리
         self.start_sound.set_volume(2)                                                      #소리크기 설정
+
     
     def startup(self, current_time, persist):
         self.next = c.LEVEL
@@ -92,6 +93,7 @@ class Menu(tool.State):
         if(x >= self.option_rect.x and x <= self.option_rect.right and
            y >= self.option_rect.y and y <= self.option_rect.bottom):
             self.option_clicked = True
+            self.start_sound.play()                                         #소리재생
             self.option_timer = self.option_start = self.current_time
         return False
 

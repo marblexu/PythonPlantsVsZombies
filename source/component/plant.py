@@ -24,6 +24,7 @@ class Car(pg.sprite.Sprite):
 
         self.sound_dir = os.path.join('source','sound')  #경로 추가
         self.drive_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '잔디깎이돌진.mp3'))  #잔디깎이가 돌진하는 소리
+        self.drive_sound.set_volume(0.1)
 
     def update(self, game_info):
         self.current_time = game_info[c.CURRENT_TIME]
@@ -61,6 +62,11 @@ class Bullet(pg.sprite.Sprite):
         self.ice = ice
         self.state = c.FLY
         self.current_time = 0
+
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.attack_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '식물이공격하는소리.mp3'))  #식물이 공격하는 소리
+        self.attack_sound.set_volume(0.2)
+        self.attack_sound.play() 
 
     def loadFrames(self, frames, name):
         frame_list = tool.GFX[name]
@@ -135,6 +141,12 @@ class Plant(pg.sprite.Sprite):
         self.animate_interval = 100
         self.hit_timer = 0
 
+        
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.attack_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '식물이공격하는소리.mp3'))  #식물이 공격하는 소리
+        self.attack_sound.set_volume(0.2)
+
+
     def loadFrames(self, frames, name, scale, color=c.BLACK):
         frame_list = tool.GFX[name]
         if name in tool.PLANT_RECT:
@@ -181,6 +193,7 @@ class Plant(pg.sprite.Sprite):
         pass
 
     def attacking(self):
+        self.attack_sound.play()           #소리 재생
         pass
 
     def digest(self):
@@ -234,7 +247,7 @@ class Sun(Plant):
             scale = 0.6
             self.sun_value = 12
         Plant.__init__(self, x, y, c.SUN, 0, None, scale)
-        self.move_speed = 1 * c.DELTA_TIME
+        self.move_speed = 1 
         self.dest_x = dest_x
         self.dest_y = dest_y
         self.die_timer = 0
@@ -245,9 +258,9 @@ class Sun(Plant):
 
     def handleState(self):
         if self.rect.centerx != self.dest_x:
-            self.rect.centerx += self.move_speed if self.rect.centerx < self.dest_x else -self.move_speed
+            self.rect.centerx += self.move_speed * c.DELTA_TIME if self.rect.centerx < self.dest_x else -self.move_speed * c.DELTA_TIME
         if self.rect.bottom != self.dest_y:
-            self.rect.bottom += self.move_speed if self.rect.bottom < self.dest_y else -self.move_speed
+            self.rect.bottom += self.move_speed * c.DELTA_TIME if self.rect.bottom < self.dest_y else -self.move_speed * c.DELTA_TIME
         
         if self.rect.centerx == self.dest_x and self.rect.bottom == self.dest_y:
             if self.die_timer == 0:
