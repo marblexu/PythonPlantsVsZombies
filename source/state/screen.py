@@ -71,10 +71,10 @@ class GameVictoryScreen(Screen):
             minuteForRenderStr = int(tool.GameManager.getInstance().getTimer()) / 60
             secondForRenderStr = int(tool.GameManager.getInstance().getTimer()) % 60
             self.textForTime = font.render("PLAY TIME : " + str(int(minuteForRenderStr)) + " MINUTE " + str(secondForRenderStr) + " SECOND",True,(0,0,0))
-            self.textPos = [200, 330]
+            self.textPos = [150, 330]
         elif int(tool.GameManager.getInstance().getTimer()) < 60 :
             self.textForTime = font.render("PLAY TIME : " + str(int(tool.GameManager.getInstance().getTimer())) + " SECOND",True,(0,0,0))
-            self.textPos = [250, 330]
+            self.textPos = [200, 330]
 
 
     def setupImage(self, name):
