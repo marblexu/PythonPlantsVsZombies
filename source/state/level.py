@@ -31,13 +31,13 @@ class Level(tool.State):
         speedup = [0, 0, 59, 54]
         if(c.DELTA_TIME == 1):
             self.speedupIMG = tool.get_image(
-            tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
+                tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
         elif(c.DELTA_TIME == 2):
             self.speedupIMG = tool.get_image(
-            tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
+                tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
         elif(c.DELTA_TIME == 3):
             self.speedupIMG = tool.get_image(
-            tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
+                tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
         self.speedupRect = self.speedupIMG.get_rect()
         self.speedupRect.x = 550
         self.speedupRect.y = 10
@@ -48,6 +48,9 @@ class Level(tool.State):
         self.itemRect_1 = self.itemImg_1.get_rect()
         self.itemRect_1.x = 620
         self.itemRect_1.y = 10
+        #0안클릭 1클릭이벤트 2클릭x
+        self.isItem_1_Clicked = 0
+        self.Item_1_Timer = 5000
 
     def loadMap(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
@@ -588,21 +591,40 @@ class Level(tool.State):
         speedup = [0, 0, 59, 54]
         if(c.DELTA_TIME == 1):
             self.speedupIMG = tool.get_image(
-            tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
+                tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
             c.DELTA_TIME = 2
         elif(c.DELTA_TIME == 2):
             self.speedupIMG = tool.get_image(
-            tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
+                tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
             c.DELTA_TIME = 3
         elif(c.DELTA_TIME == 3):
             self.speedupIMG = tool.get_image(
-            tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
+                tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
             c.DELTA_TIME = 1
         tool.GameManager.getInstance().reSetStartTimer()
         tool.GameManager.getInstance().reSetCurrentTimer()
 
-    def drawItem(self,surface):
-        surface.blit(self.itemImg_1,self.itemRect_1)
+    def drawItem(self, surface):
+        surface.blit(self.itemImg_1, self.itemRect_1)
+
+    def CheckItemButtonClicked(self, mouse_pos):
+        x, y = mouse_pos
+        if(x >= self.itemRect_1.x and x <= self.itemRect_1.right and
+           y >= self.itemRect_1.y and y <= self.itemRect_1.bottom and self.isItem_1_Clicked == 0):
+            self.Item_1_StartEvent()
+
+    def Item_1_StartEvent(self):
+        self.isItem_1_Clicked = 1
+        self.Item_1_Timer += self.current_time
+        c.ATK_TIME_UP = 2
+        temp = [0, 0, 59, 54]
+        self.itemImg_1 = tool.get_image(
+            tool.GFX[c.ITEM_1_2], *temp)
+
+    def Item_1_EndEvent(self):
+        if(self.Item_1_Timer < self.current_time):
+           c.ATK_TIME_UP = 1
+           self.isItem_1_Clicked = 2
 
     def draw(self, surface, mouse_pos):
         self.level.blit(self.background, self.viewport, self.viewport)
@@ -626,11 +648,12 @@ class Level(tool.State):
             self.head_group.draw(surface)
             self.sun_group.draw(surface)
 
-            
-
             if(mouse_pos != None):
                 #다른 아이템 이미지 클릭 이벤트 여기에
                 self.CheckSpeedUpButtonClicked(mouse_pos)
+                self.CheckItemButtonClicked(mouse_pos)
+            if(self.isItem_1_Clicked == 1):
+                self.Item_1_EndEvent()
 
             if self.drag_plant:
                 self.drawMouseShow(surface)
