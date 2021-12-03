@@ -199,7 +199,7 @@ class Level(tool.State):
         self.head_group.update(self.game_info)
         self.sun_group.update(self.game_info)
 
-        if not self.drag_plant and mouse_pos and mouse_click[0]:
+        if not self.drag_plant and mouse_pos and mouse_click[0] and self.shovelActivate == False:
             result = self.menubar.checkCardClick(mouse_pos)
             if result:
                 self.setupMouseImage(result[0], result[1])
