@@ -28,12 +28,19 @@ class Level(tool.State):
 
     #배속버튼, 아이템들 초기화
     def setUpItemImage(self):
-        tes = [0, 0, 150, 80]
-        self.test = tool.get_image(
-            tool.GFX[c.GAMEFINISHED_MAINMENU_BUTTON], *tes)
-        self.testr = self.test.get_rect()
-        self.testr.x = 310
-        self.testr.y = 380
+        speedup = [0, 0, 59, 54]
+        if(c.DELTA_TIME == 1):
+            self.speedupIMG = tool.get_image(
+            tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
+        elif(c.DELTA_TIME == 2):
+            self.speedupIMG = tool.get_image(
+            tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
+        elif(c.DELTA_TIME == 3):
+            self.speedupIMG = tool.get_image(
+            tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
+        self.speedupRect = self.speedupIMG.get_rect()
+        self.speedupRect.x = 550
+        self.speedupRect.y = 10
 
     def loadMap(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
@@ -562,19 +569,30 @@ class Level(tool.State):
 
     #중화 배속 버튼
     def drawSpeedUpButton(self, surface):
-        surface.blit(self.test, self.testr)
+        surface.blit(self.speedupIMG, self.speedupRect)
 
     def CheckSpeedUpButtonClicked(self, mouse_pos):
         x, y = mouse_pos
-        if(x >= self.testr.x and x <= self.testr.right and
-           y >= self.testr.y and y <= self.testr.bottom):
+        if(x >= self.speedupRect.x and x <= self.speedupRect.right and
+           y >= self.speedupRect.y and y <= self.speedupRect.bottom):
             self.SpeedUpButtonClickEvent()
 
     def SpeedUpButtonClickEvent(self):
-        print("CLICK!!")
+        speedup = [0, 0, 59, 54]
+        if(c.DELTA_TIME == 1):
+            self.speedupIMG = tool.get_image(
+            tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
+            c.DELTA_TIME = 2
+        elif(c.DELTA_TIME == 2):
+            self.speedupIMG = tool.get_image(
+            tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
+            c.DELTA_TIME = 3
+        elif(c.DELTA_TIME == 3):
+            self.speedupIMG = tool.get_image(
+            tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
+            c.DELTA_TIME = 1
         tool.GameManager.getInstance().reSetStartTimer()
         tool.GameManager.getInstance().reSetCurrentTimer()
-        c.DELTA_TIME+=1
 
     def draw(self, surface, mouse_pos):
         self.level.blit(self.background, self.viewport, self.viewport)
@@ -582,6 +600,9 @@ class Level(tool.State):
         if self.state == c.CHOOSE:
             self.panel.draw(surface)
         elif self.state == c.PLAY:
+            #추가 이미지 그려주는
+            self.drawSpeedUpButton(surface)
+            
             self.menubar.draw(surface)
             for i in range(self.map_y_len):
                 self.plant_groups[i].draw(surface)
@@ -594,9 +615,7 @@ class Level(tool.State):
             self.head_group.draw(surface)
             self.sun_group.draw(surface)
 
-            #추가 이미지 그려주는
-            self.drawSpeedUpButton(surface)
-
+            
 
             if(mouse_pos != None):
                 #다른 아이템 이미지 클릭 이벤트 여기에

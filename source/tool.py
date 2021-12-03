@@ -114,7 +114,7 @@ class Control():
         #self.current_time = pg.time.get_ticks() * c.DELTA_TIME
         GameManager.getInstance().addCurrentTimer()
         self.current_time = GameManager.getInstance().getCurrentTimer()
-        print(self.current_time)
+        #print(self.current_time)
 
         if self.state.done:
             self.flip_state()
