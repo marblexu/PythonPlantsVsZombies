@@ -2,6 +2,7 @@ __author__ = 'marble_xu'
 
 import random
 import pygame as pg
+from pygame.color import Color
 from .. import tool
 from .. import constants as c
 import os
@@ -193,7 +194,6 @@ class Plant(pg.sprite.Sprite):
         pass
 
     def attacking(self):
-        self.attack_sound.play()           #소리 재생
         pass
 
     def digest(self):
@@ -297,9 +297,9 @@ class PeaShooter(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.PEASHOOTER, c.PLANT_HEALTH, bullet_group)
         self.shoot_timer = 0
-        
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
@@ -310,7 +310,8 @@ class RepeaterPea(Plant):
         self.shoot_timer = 0
 
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.bullet_group.add(Bullet(self.rect.right + 40, self.rect.y, self.rect.y,
@@ -325,7 +326,8 @@ class ThreePeaShooter(Plant):
         self.bullet_groups = bullet_groups
 
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            self.attack_sound.play()           #소리 재생
             offset_y = 9 # modify bullet in the same y position with bullets of other plants
             for i in range(3):
                 tmp_y = self.map_y + (i - 1)
@@ -342,7 +344,8 @@ class SnowPeaShooter(Plant):
         self.shoot_timer = 0
 
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time

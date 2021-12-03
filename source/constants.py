@@ -54,7 +54,8 @@ SPEED_UP_BUTTON_1 = "speedup1"
 SPEED_UP_BUTTON_2 = "speedup2"
 SPEED_UP_BUTTON_3 = "speedup3"
 
-TEST_IMAGE = 'test'
+ITEM_1_1 = "Item1_1"
+ITEM_1_2 = "Item1_2"
 
 #MAP COMPONENTS
 BACKGROUND_NAME = 'Background'
@@ -195,3 +196,6 @@ BACKGROUND_NIGHT = 1
 
 #이중화 배속 기능 
 DELTA_TIME = 1.0
+#식물들 공속 업
+#기본 1 아이템 눌렀을 때 2 일정시간 지나면 다시 1
+ATK_TIME_UP = 1

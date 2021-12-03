@@ -42,6 +42,13 @@ class Level(tool.State):
         self.speedupRect.x = 550
         self.speedupRect.y = 10
 
+        item_1 = [0, 0, 59, 54]
+        self.itemImg_1 = tool.get_image(
+            tool.GFX[c.ITEM_1_1], *item_1)
+        self.itemRect_1 = self.itemImg_1.get_rect()
+        self.itemRect_1.x = 620
+        self.itemRect_1.y = 10
+
     def loadMap(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
         file_path = os.path.join('source', 'data', 'map', map_file)
@@ -594,6 +601,9 @@ class Level(tool.State):
         tool.GameManager.getInstance().reSetStartTimer()
         tool.GameManager.getInstance().reSetCurrentTimer()
 
+    def drawItem(self,surface):
+        surface.blit(self.itemImg_1,self.itemRect_1)
+
     def draw(self, surface, mouse_pos):
         self.level.blit(self.background, self.viewport, self.viewport)
         surface.blit(self.level, (0, 0), self.viewport)
@@ -602,7 +612,8 @@ class Level(tool.State):
         elif self.state == c.PLAY:
             #추가 이미지 그려주는
             self.drawSpeedUpButton(surface)
-            
+            self.drawItem(surface)
+
             self.menubar.draw(surface)
             for i in range(self.map_y_len):
                 self.plant_groups[i].draw(surface)
