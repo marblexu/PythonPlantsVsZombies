@@ -57,6 +57,10 @@ SPEED_UP_BUTTON_3 = "speedup3"
 ITEM_1_1 = "Item1_1"
 ITEM_1_2 = "Item1_2"
 
+ITEM_2_1 = "Item1_1"
+ITEM_2_2 = "Item1_2"
+
+
 #MAP COMPONENTS
 BACKGROUND_NAME = 'Background'
 BACKGROUND_TYPE = 'background_type'
@@ -199,6 +203,9 @@ DELTA_TIME = 1.0
 #식물들 공속 업
 #기본 1 아이템 눌렀을 때 2 일정시간 지나면 다시 1
 ATK_TIME_UP = 1
+#햇빛 많이 떨어지는 아이템
+#눌렀을 때 10
+SUN_TIME_UP = 1
 
 #Shovel for remove planted plants
 SHOVEL_IMAGE = 'Shovel'

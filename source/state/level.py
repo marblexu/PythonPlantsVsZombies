@@ -39,24 +39,36 @@ class Level(tool.State):
             self.speedupIMG = tool.get_image(
                 tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
         self.speedupRect = self.speedupIMG.get_rect()
-        self.speedupRect.x = 550
+        self.speedupRect.x = 540
         self.speedupRect.y = 10
 
+        #아이템1 초기화 부분
         item_1 = [0, 0, 59, 54]
         self.itemImg_1 = tool.get_image(
             tool.GFX[c.ITEM_1_1], *item_1)
         self.itemRect_1 = self.itemImg_1.get_rect()
-        self.itemRect_1.x = 620
+        self.itemRect_1.x = 605
         self.itemRect_1.y = 10
         #0안클릭 1클릭이벤트 2클릭x
         self.isItem_1_Clicked = 0
         self.Item_1_Timer = 5000
 
+        #아이템2 초기화 부분
+        item_2 = [0, 0, 59, 54]
+        self.itemImg_2 = tool.get_image(
+            tool.GFX[c.ITEM_2_1], *item_2)
+        self.itemRect_2 = self.itemImg_2.get_rect()
+        self.itemRect_2.x = 675
+        self.itemRect_2.y = 10
+        #0안클릭 1클릭이벤트 2클릭x
+        self.isItem_2_Clicked = 0
+        self.Item_2_Timer = 5000
+
         #추가로 삽 버튼 관련 속성 여기에 초기화함 - 12/04 홍성민
         shovel = [0, 0, 59, 54]
         self.shovelIMG = tool.get_image(tool.GFX[c.SHOVEL_IMAGE], *shovel)
         self.shovelRect = self.shovelIMG.get_rect()
-        self.shovelRect.x = 690
+        self.shovelRect.x = 740
         self.shovelRect.y = 9
 
     def loadMap(self):
@@ -215,7 +227,7 @@ class Level(tool.State):
                 self.setupHintImage()
 
         if self.produce_sun:
-            if(self.current_time - self.sun_timer) > c.PRODUCE_SUN_INTERVAL:
+            if(self.current_time - self.sun_timer) > c.PRODUCE_SUN_INTERVAL / c.SUN_TIME_UP:
                 self.sun_timer = self.current_time
                 map_x, map_y = self.map.getRandomMapIndex()
                 x, y = self.map.getMapGridPos(map_x, map_y)
@@ -616,12 +628,17 @@ class Level(tool.State):
 
     def drawItem(self, surface):
         surface.blit(self.itemImg_1, self.itemRect_1)
+        surface.blit(self.itemImg_2, self.itemRect_2)
+
 
     def CheckItemButtonClicked(self, mouse_pos):
         x, y = mouse_pos
         if(x >= self.itemRect_1.x and x <= self.itemRect_1.right and
            y >= self.itemRect_1.y and y <= self.itemRect_1.bottom and self.isItem_1_Clicked == 0):
             self.Item_1_StartEvent()
+        if(x >= self.itemRect_2.x and x <= self.itemRect_2.right and
+           y >= self.itemRect_2.y and y <= self.itemRect_2.bottom and self.isItem_2_Clicked == 0):
+            self.Item_2_StartEvent()
 
     def Item_1_StartEvent(self):
         self.isItem_1_Clicked = 1
@@ -635,6 +652,19 @@ class Level(tool.State):
         if(self.Item_1_Timer < self.current_time):
            c.ATK_TIME_UP = 1
            self.isItem_1_Clicked = 2
+
+    def Item_2_StartEvent(self):
+        self.isItem_2_Clicked = 1
+        self.Item_2_Timer += self.current_time
+        c.SUN_TIME_UP = 10
+        temp = [0, 0, 59, 54]
+        self.itemImg_2 = tool.get_image(
+            tool.GFX[c.ITEM_2_2], *temp)
+
+    def Item_2_EndEvent(self):
+        if(self.Item_2_Timer < self.current_time):
+           c.SUN_TIME_UP = 1
+           self.isItem_2_Clicked = 2
 
     #홍성민 삽 버튼 관련 함수들
     def drawShovelButton(self, surface):
@@ -704,7 +734,8 @@ class Level(tool.State):
                 self.checkShovelButtonClicked(mouse_pos)
             if(self.isItem_1_Clicked == 1):
                 self.Item_1_EndEvent()
-
+            if(self.isItem_2_Clicked == 1):
+                self.Item_2_EndEvent()
             if self.drag_plant:
                 self.drawMouseShow(surface)
 
