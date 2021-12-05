@@ -57,8 +57,8 @@ SPEED_UP_BUTTON_3 = "speedup3"
 ITEM_1_1 = "Item1_1"
 ITEM_1_2 = "Item1_2"
 
-ITEM_2_1 = "Item1_1"
-ITEM_2_2 = "Item1_2"
+ITEM_2_1 = "Item2_1"
+ITEM_2_2 = "Item2_2"
 
 
 #MAP COMPONENTS
