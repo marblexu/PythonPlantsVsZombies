@@ -187,14 +187,29 @@ class Menu(tool.State):
             self.hardClicked = True
 
     def easyConfig(self):
+        c.SUN_VALUE = 30
+        c.PLANT_HEALTH = 10
+
         c.LOSTHEAD_HEALTH = 3
+        c.NORMAL_HEALTH = 5
+        c.FLAG_HEALTH = 8
+        c.CONEHEAD_HEALTH = 10
+        c.BUCKETHEAD_HEALTH = 15
+        c.NEWSPAPER_HEALTH = 8
 
-    def normalConfig(self):
-        c.LOSTHEAD_HEALTH = 5
-    
     def hardConfig(self):
-        c.LOSTHEAD_HEALTH = 7
+        c.SUN_VALUE = 20
+        c.WALLNUT_HEALTH = 20
 
+        c.LOSTHEAD_HEALTH = 7
+        c.NORMAL_HEALTH = 15
+        c.FLAG_HEALTH = 22
+        c.CONEHEAD_HEALTH = 30
+        c.BUCKETHEAD_HEALTH = 45
+        c.NEWSPAPER_HEALTH = 22
+        c.DELTA_TIME = 2.0
+
+        c.ICE_SLOW_TIME = 5000
 
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
@@ -258,7 +273,7 @@ class Menu(tool.State):
             surface.blit(self.normalMode_img, self.normalMode_img_rect)
         else:
             surface.blit(self.clickedNormal_img, self.clickedNormal_img_rect)
-            self.normalConfig()
+            #self.normalConfig()
 
         if(self.hardClicked == False):
             surface.blit(self.hardMode_img, self.hardMode_img_rect)
