@@ -125,6 +125,8 @@ class GameVictoryScreen(Screen):
 
 class GameLoseScreen(Screen):
     def __init__(self):
+        #0은 테스트하기위한 스테이지임
+        c.START_LEVEL_NUM = 1
         Screen.__init__(self)
     
     def getImageName(self):
