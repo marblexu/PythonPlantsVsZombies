@@ -21,9 +21,9 @@ class Menu(tool.State):
         self.setupBackground()
 
         self.setupMuteSound()
-        self.ClickedMuteSound()
+        #self.ClickedMuteSound()
         self.setupSound()
-        self.ClickedSound()
+       # self.ClickedSound()
 
         self.setupEasyMode()
         self.ClickedEasyMode()
@@ -54,29 +54,38 @@ class Menu(tool.State):
         self.mutesound_img_rect = self.mutesound_img.get_rect()
         self.mutesound_img_rect.x = 440
         self.mutesound_img_rect.y = 265
-        self.muteSoundClicked = False
+        #사운드 버튼 만드는 법
+        #처음에는 한쪽은 켜져있고 한쪽은 꺼져있는 상태
+        #soundClicked = 사운드를 키고있는지 안키고 있는지 체크
+        #사운드 키는 버튼을 눌렀을 때 -> soundClicked변수가 
+        #                              True일 경우 -> 이미 사운드 킨 상태이므로 변경 X
+        #                              False일 경우 -> 사운드를 끈 상태에서 사운드 키는 버튼을 눌렀으니
+        #                                              Clicked 이미지로 변경, 뮤트 이미지는 클릭 안한 이미지로 변경 soundClicked변수 반대로
+        #사운드 끄는 버튼을 눌렀을 때 -> 위에꺼 반대로
+        self.soundClicked = True
+        #self.muteSoundClicked = False
 
-    def ClickedMuteSound(self):
-        clickedMutesound_rect = [0, 0, 99, 55]
-        self.clickedMutesound_img = tool.get_image(tool.GFX[c.CLICKED_MUTE_IMAGE],*clickedMutesound_rect)
-        self.clickedMutesound_img_rect = self.clickedMutesound_img.get_rect()
-        self.clickedMutesound_img_rect.x = 440
-        self.clickedMutesound_img_rect.y = 265
+    # def ClickedMuteSound(self):
+    #     clickedMutesound_rect = [0, 0, 99, 55]
+    #     self.clickedMutesound_img = tool.get_image(tool.GFX[c.CLICKED_MUTE_IMAGE],*clickedMutesound_rect)
+    #     self.clickedMutesound_img_rect = self.clickedMutesound_img.get_rect()
+    #     self.clickedMutesound_img_rect.x = 440
+    #     self.clickedMutesound_img_rect.y = 265
 
     def setupSound(self):
         sound_rect = [0, 0, 99, 55]
-        self.sound_img = tool.get_image(tool.GFX[c.SOUND_IMAGE],*sound_rect)
+        self.sound_img = tool.get_image(tool.GFX[c.CLICKED_SOUND_IMAGE],*sound_rect)
         self.sound_img_rect = self.sound_img.get_rect()
         self.sound_img_rect.x = 550
         self.sound_img_rect.y = 275
-        self.soundClicked = False
+        #self.soundClicked = False
 
-    def ClickedSound(self):
-        clickedsound_rect = [0, 0, 99, 55]
-        self.clickedSound_img = tool.get_image(tool.GFX[c.CLICKED_SOUND_IMAGE],*clickedsound_rect)
-        self.clickedSound_img_rect = self.clickedSound_img.get_rect()
-        self.clickedSound_img_rect.x = 550
-        self.clickedSound_img_rect.y = 275
+    # def ClickedSound(self):
+    #     clickedsound_rect = [0, 0, 99, 55]
+    #     self.clickedSound_img = tool.get_image(tool.GFX[c.CLICKED_SOUND_IMAGE],*clickedsound_rect)
+    #     self.clickedSound_img_rect = self.clickedSound_img.get_rect()
+    #     self.clickedSound_img_rect.x = 550
+    #     self.clickedSound_img_rect.y = 275
         
     def setupEasyMode(self):
         easyMode_rect = [0, 0, 99, 55]
@@ -160,13 +169,25 @@ class Menu(tool.State):
         x, y = mouse_pos
         if(x >= self.mutesound_img_rect.x and x <= self.mutesound_img_rect.right and
            y >= self.mutesound_img_rect.y and y <= self.mutesound_img_rect.bottom):
-            self.muteSoundClicked = True
+           if(self.soundClicked == True):
+               sound_rect = [0, 0, 99, 55]
+               self.sound_img = tool.get_image(tool.GFX[c.SOUND_IMAGE],*sound_rect)
+               self.mutesound_img = tool.get_image(tool.GFX[c.CLICKED_MUTE_IMAGE],*sound_rect)
+               pg.mixer.music.pause()
+               self.soundClicked = False
+               
 
     def checkSoundClick(self, mouse_pos):
         x, y = mouse_pos
         if(x >= self.sound_img_rect.x and x <= self.sound_img_rect.right and
            y >= self.sound_img_rect.y and y <= self.sound_img_rect.bottom):
-            self.soundClicked = True
+           if(self.soundClicked == False):
+               sound_rect = [0, 0, 99, 55]
+               self.sound_img = tool.get_image(tool.GFX[c.CLICKED_SOUND_IMAGE],*sound_rect)
+               self.mutesound_img = tool.get_image(tool.GFX[c.SOUND_MUTE_IMAGE],*sound_rect)
+               pg.mixer.music.unpause()
+               self.soundClicked = True
+
 
     def checkEasyClick(self, mouse_pos):
         x, y = mouse_pos
@@ -247,20 +268,24 @@ class Menu(tool.State):
         else:
             pg.quit()            
         
+        #이미지만 변경하므로 기본적으로 계속 그려줌
+        surface.blit(self.sound_img, self.sound_img_rect)
+        surface.blit(self.mutesound_img, self.mutesound_img_rect)
+        #여기서 사운드를 꺼주거나 켜주기를 하면 update문이기 때문에 계속 실행되는 문제
         #소리 설정
-        if(self.muteSoundClicked == False and self.soundClicked == False):
-            surface.blit(self.sound_img, self.sound_img_rect)
-            surface.blit(self.mutesound_img, self.mutesound_img_rect)
-        elif(self.muteSoundClicked == True and self.soundClicked == False):
-            surface.blit(self.clickedMutesound_img, self.clickedMutesound_img_rect)
-            surface.blit(self.sound_img, self.sound_img_rect)
-            pg.mixer.music.pause()
-            self.muteSoundClicked = False
-        elif(self.muteSoundClicked == False and self.soundClicked == True):
-            surface.blit(self.clickedSound_img, self.clickedSound_img_rect)
-            surface.blit(self.mutesound_img, self.mutesound_img_rect)
-            pg.mixer.music.unpause()
-            self.soundClicked = False
+        # if(self.muteSoundClicked == False and self.soundClicked == False):
+        #     surface.blit(self.sound_img, self.sound_img_rect)
+        #     surface.blit(self.mutesound_img, self.mutesound_img_rect)
+        # elif(self.muteSoundClicked == True and self.soundClicked == False):
+        #     surface.blit(self.clickedMutesound_img, self.clickedMutesound_img_rect)
+        #     surface.blit(self.sound_img, self.sound_img_rect)
+        #     pg.mixer.music.pause()
+        #     self.muteSoundClicked = False
+        # elif(self.muteSoundClicked == False and self.soundClicked == True):
+        #     surface.blit(self.clickedSound_img, self.clickedSound_img_rect)
+        #     surface.blit(self.mutesound_img, self.mutesound_img_rect)
+        #     pg.mixer.music.unpause()
+        #     self.soundClicked = False
 
         #난이도 설정
         if(self.easyClicked == False):
