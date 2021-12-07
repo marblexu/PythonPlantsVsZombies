@@ -6,6 +6,7 @@ from pygame.color import Color
 from .. import tool
 from .. import constants as c
 import os
+from ..state import mainmenu as main
 
 
 
@@ -39,7 +40,8 @@ class Car(pg.sprite.Sprite):
     def setWalk(self):
         if self.state == c.IDLE:
             self.state = c.WALK
-            self.drive_sound.play()
+            if(main.Menu().isClickedSound()) :
+                self.drive_sound.play()
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -67,7 +69,8 @@ class Bullet(pg.sprite.Sprite):
         self.sound_dir = os.path.join('source','sound')  #경로 추가
         self.attack_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '식물이공격하는소리.mp3'))  #식물이 공격하는 소리
         self.attack_sound.set_volume(0.2)
-        self.attack_sound.play() 
+        if(main.Menu().isClickedSound()) :
+            self.attack_sound.play() 
 
     def loadFrames(self, frames, name):
         frame_list = tool.GFX[name]
@@ -285,7 +288,8 @@ class Sun(Plant):
             return False
         if(x >= self.rect.x and x <= self.rect.right and
            y >= self.rect.y and y <= self.rect.bottom):
-            self.getSun_sound.play()
+            if(main.Menu().isClickedSound()) :
+                self.getSun_sound.play()
             self.state = c.DIE
             self.kill()
             return True
@@ -311,7 +315,8 @@ class PeaShooter(Plant):
         self.isShooter = True
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
-            self.attack_sound.play()           #소리 재생
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
@@ -324,7 +329,8 @@ class RepeaterPea(Plant):
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
-            self.attack_sound.play()           #소리 재생
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.bullet_group.add(Bullet(self.rect.right + 40, self.rect.y, self.rect.y,
@@ -341,7 +347,8 @@ class ThreePeaShooter(Plant):
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
-            self.attack_sound.play()           #소리 재생
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             offset_y = 9 # modify bullet in the same y position with bullets of other plants
             for i in range(3):
                 tmp_y = self.map_y + (i - 1)
@@ -360,7 +367,8 @@ class SnowPeaShooter(Plant):
 
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
-            self.attack_sound.play()           #소리 재생
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time

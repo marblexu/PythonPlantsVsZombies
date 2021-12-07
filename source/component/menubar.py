@@ -5,6 +5,7 @@ import random
 import pygame as pg
 from .. import tool
 from .. import constants as c
+from ..state import mainmenu as main
 
 PANEL_Y_START = 87
 PANEL_X_START = 22
@@ -82,7 +83,8 @@ class Card():
         x, y = mouse_pos
         if(x >= self.rect.x and x <= self.rect.right and
            y >= self.rect.y and y <= self.rect.bottom):
-            self.start_sound.play()                                      #소리를 재생합니다
+            if(main.Menu().isClickedSound()) :
+                self.start_sound.play()                                      #소리를 재생합니다
             return True
         return False
 
@@ -311,7 +313,8 @@ class Panel():
         x, y = mouse_pos
         if (x >= self.button_rect.x and x <= self.button_rect.right and
             y >= self.button_rect.y and y <= self.button_rect.bottom):
-           self.start_sound.play()                                        #소리를 재생합니다
+           if(main.Menu().isClickedSound()) :
+                self.start_sound.play()                                        #소리를 재생합니다
            return True
         return False
 
