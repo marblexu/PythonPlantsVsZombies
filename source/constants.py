@@ -217,3 +217,7 @@ SUN_TIME_UP = 1
 
 #Shovel for remove planted plants
 SHOVEL_IMAGE = 'Shovel'
+
+#중화 난이도
+#기본 1 메인화면에서 버튼 눌러서 변경
+LEVEL_DIFFICULTY = 1

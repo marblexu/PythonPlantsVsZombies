@@ -198,7 +198,7 @@ class Menu(tool.State):
             rect = [0, 0, 99, 55]
             self.easyMode_img = tool.get_image(tool.GFX[c.CLICKED_EASY], *rect)
             self.normalMode_img = tool.get_image(tool.GFX[c.NORMAL_IMAGE], *rect)
-            self.hardMode_img = tool.get_image(tool.GFX[c.NORMAL_IMAGE], *rect)
+            self.hardMode_img = tool.get_image(tool.GFX[c.HARD_IMAGE], *rect)
             self.easyConfig()
 
     def checkNormalClick(self, mouse_pos):
@@ -208,7 +208,7 @@ class Menu(tool.State):
             rect = [0, 0, 99, 55]
             self.easyMode_img = tool.get_image(tool.GFX[c.EASY_IMAGE], *rect)
             self.normalMode_img = tool.get_image(tool.GFX[c.CLICKED_NORMAL], *rect)
-            self.hardMode_img = tool.get_image(tool.GFX[c.NORMAL_IMAGE], *rect)
+            self.hardMode_img = tool.get_image(tool.GFX[c.HARD_IMAGE], *rect)
             self.normalConfig()
 
     def checkHardClick(self, mouse_pos):
@@ -232,7 +232,7 @@ class Menu(tool.State):
         c.CONEHEAD_HEALTH = 10
         c.BUCKETHEAD_HEALTH = 15
         c.NEWSPAPER_HEALTH = 8
-
+        c.LEVEL_DIFFICULTY = 1
     def normalConfig(self):
         c.SUN_VALUE = 25
         c.WALLNUT_HEALTH = 15
@@ -243,9 +243,11 @@ class Menu(tool.State):
         c.CONEHEAD_HEALTH = 20
         c.BUCKETHEAD_HEALTH = 30
         c.NEWSPAPER_HEALTH = 18
-        c.DELTA_TIME = 2.0
+        #다시 1로 돌아갈수있으니 이건 좀 아닌듯~
+        #c.DELTA_TIME = 2.0
 
         c.ICE_SLOW_TIME = 5000
+        c.LEVEL_DIFFICULTY = 2
 
     def hardConfig(self):
         c.SUN_VALUE = 20
@@ -257,9 +259,10 @@ class Menu(tool.State):
         c.CONEHEAD_HEALTH = 30
         c.BUCKETHEAD_HEALTH = 45
         c.NEWSPAPER_HEALTH = 22
-        c.DELTA_TIME = 2.0
+        #c.DELTA_TIME = 2.0
 
         c.ICE_SLOW_TIME = 5000
+        c.LEVEL_DIFFICULTY = 3
 
     def update(self, surface, current_time, mouse_pos, mouse_click):
         self.current_time = self.game_info[c.CURRENT_TIME] = current_time
