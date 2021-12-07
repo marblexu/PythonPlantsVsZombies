@@ -53,8 +53,12 @@ class Menu(tool.State):
 
     def setupMuteSound(self):
         mutesound_rect = [0, 0, 99, 55]
-        self.mutesound_img = tool.get_image(
-            tool.GFX[c.SOUND_MUTE_IMAGE], *mutesound_rect)
+        if(c.SOUND_ON == True):
+            self.mutesound_img = tool.get_image(
+                tool.GFX[c.SOUND_MUTE_IMAGE], *mutesound_rect)
+        else:
+            self.mutesound_img = tool.get_image(
+                tool.GFX[c.CLICKED_MUTE_IMAGE], *mutesound_rect)
         self.mutesound_img_rect = self.mutesound_img.get_rect()
         self.mutesound_img_rect.x = 440
         self.mutesound_img_rect.y = 265
@@ -73,8 +77,12 @@ class Menu(tool.State):
 
     def setupSound(self):
         sound_rect = [0, 0, 99, 55]
-        self.sound_img = tool.get_image(
-            tool.GFX[c.CLICKED_SOUND_IMAGE], *sound_rect)
+        if(c.SOUND_ON == True):
+            self.sound_img = tool.get_image(
+                tool.GFX[c.CLICKED_SOUND_IMAGE], *sound_rect)
+        else:
+            self.sound_img = tool.get_image(
+                tool.GFX[c.SOUND_IMAGE], *sound_rect)
         self.sound_img_rect = self.sound_img.get_rect()
         self.sound_img_rect.x = 550
         self.sound_img_rect.y = 275
@@ -89,8 +97,12 @@ class Menu(tool.State):
 
     def setupEasyMode(self):
         easyMode_rect = [0, 0, 99, 55]
-        self.easyMode_img = tool.get_image(
-            tool.GFX[c.CLICKED_NORMAL], *easyMode_rect)
+        if(c.LEVEL_DIFFICULTY == 1):
+            self.easyMode_img = tool.get_image(
+                tool.GFX[c.CLICKED_EASY], *easyMode_rect)
+        else:
+            self.easyMode_img = tool.get_image(
+                tool.GFX[c.EASY_IMAGE], *easyMode_rect)
         self.easyMode_img_rect = self.easyMode_img.get_rect()
         self.easyMode_img_rect.x = 410
         self.easyMode_img_rect.y = 190
@@ -105,8 +117,12 @@ class Menu(tool.State):
 
     def setupNormalMode(self):
         normalMode_rect = [0, 0, 99, 55]
-        self.normalMode_img = tool.get_image(
-            tool.GFX[c.NORMAL_IMAGE], *normalMode_rect)
+        if(c.LEVEL_DIFFICULTY == 2):
+            self.normalMode_img = tool.get_image(
+                tool.GFX[c.CLICKED_NORMAL], *normalMode_rect)
+        else:
+            self.normalMode_img = tool.get_image(
+                tool.GFX[c.NORMAL_IMAGE], *normalMode_rect)
         self.normalMode_img_rect = self.normalMode_img.get_rect()
         self.normalMode_img_rect.x = 510
         self.normalMode_img_rect.y = 200
@@ -121,8 +137,12 @@ class Menu(tool.State):
 
     def setupHardMode(self):
         hardMode_rect = [0, 0, 99, 55]
-        self.hardMode_img = tool.get_image(
-            tool.GFX[c.HARD_IMAGE], *hardMode_rect)
+        if(c.LEVEL_DIFFICULTY == 3):
+            self.hardMode_img = tool.get_image(
+                tool.GFX[c.CLICKED_HARD], *hardMode_rect)
+        else:
+            self.hardMode_img = tool.get_image(
+                tool.GFX[c.HARD_IMAGE], *hardMode_rect)
         self.hardMode_img_rect = self.hardMode_img.get_rect()
         self.hardMode_img_rect.x = 610
         self.hardMode_img_rect.y = 210
@@ -179,6 +199,7 @@ class Menu(tool.State):
             self.mutesound_img = tool.get_image(
                 tool.GFX[c.CLICKED_MUTE_IMAGE], *sound_rect)
             pg.mixer.music.pause()
+            c.SOUND_ON = False
 
     def checkSoundClick(self, mouse_pos):
         x, y = mouse_pos
@@ -190,6 +211,7 @@ class Menu(tool.State):
             self.mutesound_img = tool.get_image(
                 tool.GFX[c.SOUND_MUTE_IMAGE], *sound_rect)
             pg.mixer.music.unpause()
+            c.SOUND_ON = True
 
     def checkEasyClick(self, mouse_pos):
         x, y = mouse_pos
@@ -197,7 +219,8 @@ class Menu(tool.State):
            y >= self.easyMode_img_rect.y and y <= self.easyMode_img_rect.bottom):
             rect = [0, 0, 99, 55]
             self.easyMode_img = tool.get_image(tool.GFX[c.CLICKED_EASY], *rect)
-            self.normalMode_img = tool.get_image(tool.GFX[c.NORMAL_IMAGE], *rect)
+            self.normalMode_img = tool.get_image(
+                tool.GFX[c.NORMAL_IMAGE], *rect)
             self.hardMode_img = tool.get_image(tool.GFX[c.HARD_IMAGE], *rect)
             self.easyConfig()
 
@@ -207,7 +230,8 @@ class Menu(tool.State):
            y >= self.normalMode_img_rect.y and y <= self.normalMode_img_rect.bottom):
             rect = [0, 0, 99, 55]
             self.easyMode_img = tool.get_image(tool.GFX[c.EASY_IMAGE], *rect)
-            self.normalMode_img = tool.get_image(tool.GFX[c.CLICKED_NORMAL], *rect)
+            self.normalMode_img = tool.get_image(
+                tool.GFX[c.CLICKED_NORMAL], *rect)
             self.hardMode_img = tool.get_image(tool.GFX[c.HARD_IMAGE], *rect)
             self.normalConfig()
 
@@ -217,10 +241,10 @@ class Menu(tool.State):
            y >= self.hardMode_img_rect.y and y <= self.hardMode_img_rect.bottom):
             rect = [0, 0, 99, 55]
             self.easyMode_img = tool.get_image(tool.GFX[c.EASY_IMAGE], *rect)
-            self.normalMode_img = tool.get_image(tool.GFX[c.NORMAL_IMAGE], *rect)
+            self.normalMode_img = tool.get_image(
+                tool.GFX[c.NORMAL_IMAGE], *rect)
             self.hardMode_img = tool.get_image(tool.GFX[c.CLICKED_HARD], *rect)
             self.hardConfig()
-
 
     def easyConfig(self):
         c.SUN_VALUE = 30
@@ -233,6 +257,7 @@ class Menu(tool.State):
         c.BUCKETHEAD_HEALTH = 15
         c.NEWSPAPER_HEALTH = 8
         c.LEVEL_DIFFICULTY = 1
+
     def normalConfig(self):
         c.SUN_VALUE = 25
         c.WALLNUT_HEALTH = 15
