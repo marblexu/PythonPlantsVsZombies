@@ -4,7 +4,7 @@ import pygame as pg
 from .. import tool
 from .. import constants as c
 class Menu(tool.State):
-    isClickedSoundBtn = True 
+    isClickedSoundBtn = True
     def __init__(self):
         tool.State.__init__(self)
         self.sound_dir = os.path.join('source', 'sound')  # 경로 추가
@@ -170,7 +170,8 @@ class Menu(tool.State):
         if(x >= self.option_rect.x and x <= self.option_rect.right and
            y >= self.option_rect.y and y <= self.option_rect.bottom):
             self.option_clicked = True
-            self.start_sound.play()  # 소리재생
+            if(self.isClickedSoundBtn) :
+                self.start_sound.play()       
             self.option_timer = self.option_start = self.current_time
         return False
     def checkGameOffClick(self, mouse_pos):
@@ -189,6 +190,7 @@ class Menu(tool.State):
                 tool.GFX[c.CLICKED_MUTE_IMAGE], *sound_rect)
             pg.mixer.music.pause()
             c.SOUND_ON = False
+            Menu.isClickedSoundBtn = False
 
     def checkSoundClick(self, mouse_pos):
         x, y = mouse_pos
@@ -201,6 +203,7 @@ class Menu(tool.State):
                 tool.GFX[c.SOUND_MUTE_IMAGE], *sound_rect)
             pg.mixer.music.unpause()
             c.SOUND_ON = True
+            Menu.isClickedSoundBtn = True
 
     def checkEasyClick(self, mouse_pos):
         x, y = mouse_pos
@@ -346,3 +349,7 @@ class Menu(tool.State):
         # else:
         #     surface.blit(self.clickedHard_img, self.clickedHard_img_rect)
         #     self.hardConfig()
+    
+
+    def isClickedSound(self) :
+        return Menu.isClickedSoundBtn
