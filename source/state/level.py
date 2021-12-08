@@ -7,28 +7,82 @@ from .. import tool
 from .. import constants as c
 from ..component import map, plant, zombie, menubar
 
+#식물 선택, 맵 로드 하는 곳?
+
+
 class Level(tool.State):
     def __init__(self):
         tool.State.__init__(self)
-    
+
     def startup(self, current_time, persist):
         self.game_info = persist
         self.persist = self.game_info
         self.game_info[c.CURRENT_TIME] = current_time
         self.map_y_len = c.GRID_Y_LEN
         self.map = map.Map(c.GRID_X_LEN, self.map_y_len)
-        
+
         self.loadMap()
         self.setupBackground()
         self.initState()
+        self.setUpItemImage()
+
+    #배속버튼, 아이템들 초기화
+    def setUpItemImage(self):
+        speedup = [0, 0, 59, 54]
+        if(c.DELTA_TIME == 1):
+            self.speedupIMG = tool.get_image(
+                tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
+        elif(c.DELTA_TIME == 2):
+            self.speedupIMG = tool.get_image(
+                tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
+        elif(c.DELTA_TIME == 3):
+            self.speedupIMG = tool.get_image(
+                tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
+        self.speedupRect = self.speedupIMG.get_rect()
+        self.speedupRect.x = 540
+        self.speedupRect.y = 10
+
+        #아이템1 초기화 부분
+        item_1 = [0, 0, 59, 54]
+        self.itemImg_1 = tool.get_image(
+            tool.GFX[c.ITEM_1_1], *item_1)
+        self.itemRect_1 = self.itemImg_1.get_rect()
+        self.itemRect_1.x = 605
+        self.itemRect_1.y = 10
+        #0안클릭 1클릭이벤트 2클릭x
+        self.isItem_1_Clicked = 0
+        self.Item_1_Timer = 5000
+
+        #아이템2 초기화 부분
+        item_2 = [0, 0, 59, 54]
+        self.itemImg_2 = tool.get_image(
+            tool.GFX[c.ITEM_2_1], *item_2)
+        self.itemRect_2 = self.itemImg_2.get_rect()
+        self.itemRect_2.x = 675
+        self.itemRect_2.y = 10
+        #0안클릭 1클릭이벤트 2클릭x
+        self.isItem_2_Clicked = 0
+        self.Item_2_Timer = 5000
+
+        #추가로 삽 버튼 관련 속성 여기에 초기화함 - 12/04 홍성민
+        shovel = [0, 0, 59, 54]
+        self.shovelIMG = tool.get_image(tool.GFX[c.SHOVEL_IMAGE], *shovel)
+        self.shovelRect = self.shovelIMG.get_rect()
+        self.shovelRect.x = 740
+        self.shovelRect.y = 9
 
     def loadMap(self):
-        map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
+        if(c.LEVEL_DIFFICULTY == 1):
+            map_file = 'level_e' + str(self.game_info[c.LEVEL_NUM]) + '.json'
+        elif(c.LEVEL_DIFFICULTY == 2):
+            map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
+        elif(c.LEVEL_DIFFICULTY == 3):
+            map_file = 'level_h' + str(self.game_info[c.LEVEL_NUM]) + '.json'
         file_path = os.path.join('source', 'data', 'map', map_file)
         f = open(file_path)
         self.map_data = json.load(f)
         f.close()
-    
+
     def setupBackground(self):
         img_index = self.map_data[c.BACKGROUND_TYPE]
         self.background_type = img_index
@@ -38,28 +92,29 @@ class Level(tool.State):
         self.level = pg.Surface((self.bg_rect.w, self.bg_rect.h)).convert()
         self.viewport = tool.SCREEN.get_rect(bottom=self.bg_rect.bottom)
         self.viewport.x += c.BACKGROUND_OFFSET_X
-    
+
     def setupGroups(self):
         self.sun_group = pg.sprite.Group()
         self.head_group = pg.sprite.Group()
 
         self.plant_groups = []
         self.zombie_groups = []
-        self.hypno_zombie_groups = [] #zombies who are hypno after eating hypnoshroom
+        self.hypno_zombie_groups = []  # zombies who are hypno after eating hypnoshroom
         self.bullet_groups = []
         for i in range(self.map_y_len):
             self.plant_groups.append(pg.sprite.Group())
             self.zombie_groups.append(pg.sprite.Group())
             self.hypno_zombie_groups.append(pg.sprite.Group())
             self.bullet_groups.append(pg.sprite.Group())
-    
+
     def setupZombies(self):
         def takeTime(element):
             return element[0]
 
         self.zombie_list = []
         for data in self.map_data[c.ZOMBIE_LIST]:
-            self.zombie_list.append((data['time'], data['name'], data['map_y']))
+            self.zombie_list.append(
+                (data['time'], data['name'], data['map_y']))
         self.zombie_start_time = 0
         self.zombie_list.sort(key=takeTime)
 
@@ -76,7 +131,7 @@ class Level(tool.State):
         elif self.state == c.PLAY:
             self.play(mouse_pos, mouse_click)
 
-        self.draw(surface)
+        self.draw(surface, mouse_pos)
 
     def initBowlingMap(self):
         print('initBowlingMap')
@@ -100,7 +155,8 @@ class Level(tool.State):
 
     def initChoose(self):
         self.state = c.CHOOSE
-        self.panel = menubar.Panel(menubar.all_card_list, self.map_data[c.INIT_SUN_NAME])
+        self.panel = menubar.Panel(
+            menubar.all_card_list, self.map_data[c.INIT_SUN_NAME])
 
     def choose(self, mouse_pos, mouse_click):
         if mouse_pos and mouse_click[0]:
@@ -111,7 +167,8 @@ class Level(tool.State):
     def initPlay(self, card_list):
         self.state = c.PLAY
         if self.bar_type == c.CHOOSEBAR_STATIC:
-            self.menubar = menubar.MenuBar(card_list, self.map_data[c.INIT_SUN_NAME])
+            self.menubar = menubar.MenuBar(
+                card_list, self.map_data[c.INIT_SUN_NAME])
         else:
             self.menubar = menubar.MoveBar(card_list)
         self.drag_plant = False
@@ -127,13 +184,23 @@ class Level(tool.State):
         self.setupGroups()
         self.setupZombies()
         self.setupCars()
+        #중화 타이머
+        tool.GameManager.getInstance().reSetTimer()
+        #마우스 포인터 대신 띄워지는 삽 이미지
+        self.shovel_pointer_IMG = None
+        self.shovelActivate = False
 
     def play(self, mouse_pos, mouse_click):
+
+        #중화 타이머
+        tool.GameManager.getInstance().addTimer()
+        #print(tool.GameManager.getInstance().getTimer())
+
         if self.zombie_start_time == 0:
             self.zombie_start_time = self.current_time
         elif len(self.zombie_list) > 0:
             data = self.zombie_list[0]
-            if  data[0] <= (self.current_time - self.zombie_start_time):
+            if data[0] <= (self.current_time - self.zombie_start_time):
                 self.createZombie(data[1], data[2])
                 self.zombie_list.remove(data)
 
@@ -148,8 +215,8 @@ class Level(tool.State):
 
         self.head_group.update(self.game_info)
         self.sun_group.update(self.game_info)
-        
-        if not self.drag_plant and mouse_pos and mouse_click[0]:
+
+        if not self.drag_plant and mouse_pos and mouse_click[0] and self.shovelActivate == False:
             result = self.menubar.checkCardClick(mouse_pos)
             if result:
                 self.setupMouseImage(result[0], result[1])
@@ -163,9 +230,9 @@ class Level(tool.State):
                     self.addPlant()
             elif mouse_pos is None:
                 self.setupHintImage()
-        
+
         if self.produce_sun:
-            if(self.current_time - self.sun_timer) > c.PRODUCE_SUN_INTERVAL:
+            if(self.current_time - self.sun_timer) > c.PRODUCE_SUN_INTERVAL / c.SUN_TIME_UP:
                 self.sun_timer = self.current_time
                 map_x, map_y = self.map.getRandomMapIndex()
                 x, y = self.map.getMapGridPos(map_x, map_y)
@@ -189,20 +256,25 @@ class Level(tool.State):
     def createZombie(self, name, map_y):
         x, y = self.map.getMapGridPos(0, map_y)
         if name == c.NORMAL_ZOMBIE:
-            self.zombie_groups[map_y].add(zombie.NormalZombie(c.ZOMBIE_START_X, y, self.head_group))
+            self.zombie_groups[map_y].add(zombie.NormalZombie(
+                c.ZOMBIE_START_X, y, self.head_group))
         elif name == c.CONEHEAD_ZOMBIE:
-            self.zombie_groups[map_y].add(zombie.ConeHeadZombie(c.ZOMBIE_START_X, y, self.head_group))
+            self.zombie_groups[map_y].add(zombie.ConeHeadZombie(
+                c.ZOMBIE_START_X, y, self.head_group))
         elif name == c.BUCKETHEAD_ZOMBIE:
-            self.zombie_groups[map_y].add(zombie.BucketHeadZombie(c.ZOMBIE_START_X, y, self.head_group))
+            self.zombie_groups[map_y].add(zombie.BucketHeadZombie(
+                c.ZOMBIE_START_X, y, self.head_group))
         elif name == c.FLAG_ZOMBIE:
-            self.zombie_groups[map_y].add(zombie.FlagZombie(c.ZOMBIE_START_X, y, self.head_group))
+            self.zombie_groups[map_y].add(zombie.FlagZombie(
+                c.ZOMBIE_START_X, y, self.head_group))
         elif name == c.NEWSPAPER_ZOMBIE:
-            self.zombie_groups[map_y].add(zombie.NewspaperZombie(c.ZOMBIE_START_X, y, self.head_group))
+            self.zombie_groups[map_y].add(zombie.NewspaperZombie(
+                c.ZOMBIE_START_X, y, self.head_group))
 
     def canSeedPlant(self):
         x, y = pg.mouse.get_pos()
         return self.map.showPlant(x, y)
-        
+
     def addPlant(self):
         pos = self.canSeedPlant()
         if pos is None:
@@ -269,7 +341,7 @@ class Level(tool.State):
         pos = self.canSeedPlant()
         if pos and self.mouse_image:
             if (self.hint_image and pos[0] == self.hint_rect.x and
-                pos[1] == self.hint_rect.y):
+                    pos[1] == self.hint_rect.y):
                 return
             width, height = self.mouse_rect.w, self.mouse_rect.h
             image = pg.Surface([width, height])
@@ -298,11 +370,12 @@ class Level(tool.State):
             plant_name == c.SPIKEWEED or plant_name == c.JALAPENO or
             plant_name == c.SCAREDYSHROOM or plant_name == c.SUNSHROOM or
             plant_name == c.ICESHROOM or plant_name == c.HYPNOSHROOM or
-            plant_name == c.WALLNUTBOWLING or plant_name == c.REDWALLNUTBOWLING):
+                plant_name == c.WALLNUTBOWLING or plant_name == c.REDWALLNUTBOWLING):
             color = c.WHITE
         else:
             color = c.BLACK
-        self.mouse_image = tool.get_image(frame_list[0], x, y, width, height, color, 1)
+        self.mouse_image = tool.get_image(
+            frame_list[0], x, y, width, height, color, 1)
         self.mouse_rect = self.mouse_image.get_rect()
         pg.mouse.set_visible(False)
         self.drag_plant = True
@@ -321,11 +394,12 @@ class Level(tool.State):
         for i in range(self.map_y_len):
             for bullet in self.bullet_groups[i]:
                 if bullet.state == c.FLY:
-                    zombie = pg.sprite.spritecollideany(bullet, self.zombie_groups[i], collided_func)
+                    zombie = pg.sprite.spritecollideany(
+                        bullet, self.zombie_groups[i], collided_func)
                     if zombie and zombie.state != c.DIE:
                         zombie.setDamage(bullet.damage, bullet.ice)
                         bullet.setExplode()
-    
+
     def checkZombieCollisions(self):
         if self.bar_type == c.CHOSSEBAR_BOWLING:
             ratio = 0.6
@@ -337,7 +411,8 @@ class Level(tool.State):
             for zombie in self.zombie_groups[i]:
                 if zombie.state != c.WALK:
                     continue
-                plant = pg.sprite.spritecollideany(zombie, self.plant_groups[i], collided_func)
+                plant = pg.sprite.spritecollideany(
+                    zombie, self.plant_groups[i], collided_func)
                 if plant:
                     if plant.name == c.WALLNUTBOWLING:
                         if plant.canHit(i):
@@ -353,7 +428,7 @@ class Level(tool.State):
                 if hypno_zombie.health <= 0:
                     continue
                 zombie_list = pg.sprite.spritecollide(hypno_zombie,
-                               self.zombie_groups[i], False,collided_func)
+                                                      self.zombie_groups[i], False, collided_func)
                 for zombie in zombie_list:
                     if zombie.state == c.DIE:
                         continue
@@ -365,7 +440,8 @@ class Level(tool.State):
     def checkCarCollisions(self):
         collided_func = pg.sprite.collide_circle_ratio(0.8)
         for car in self.cars:
-            zombies = pg.sprite.spritecollide(car, self.zombie_groups[car.map_y], False, collided_func)
+            zombies = pg.sprite.spritecollide(
+                car, self.zombie_groups[car.map_y], False, collided_func)
             for zombie in zombies:
                 if zombie and zombie.state != c.DIE:
                     car.setWalk()
@@ -394,15 +470,16 @@ class Level(tool.State):
             self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
         if (plant.name == c.CHERRYBOMB or plant.name == c.JALAPENO or
             (plant.name == c.POTATOMINE and not plant.is_init) or
-            plant.name == c.REDWALLNUTBOWLING):
+                plant.name == c.REDWALLNUTBOWLING):
             self.boomZombies(plant.rect.centerx, map_y, plant.explode_y_range,
-                            plant.explode_x_range)
+                             plant.explode_x_range)
         elif plant.name == c.ICESHROOM and plant.state != c.SLEEP:
             self.freezeZombies(plant)
         elif plant.name == c.HYPNOSHROOM and plant.state != c.SLEEP:
             zombie = plant.kill_zombie
             zombie.setHypno()
-            _, map_y = self.map.getMapIndex(zombie.rect.centerx, zombie.rect.bottom)
+            _, map_y = self.map.getMapIndex(
+                zombie.rect.centerx, zombie.rect.bottom)
             self.zombie_groups[map_y].remove(zombie)
             self.hypno_zombie_groups[map_y].add(zombie)
         plant.kill()
@@ -498,7 +575,7 @@ class Level(tool.State):
             if len(self.zombie_groups[i]) > 0:
                 return False
         return True
-    
+
     def checkLose(self):
         for i in range(self.map_y_len):
             for zombie in self.zombie_groups[i]:
@@ -527,12 +604,124 @@ class Level(tool.State):
         for zombie in self.zombie_groups[i]:
             zombie.drawFreezeTrap(surface)
 
-    def draw(self, surface):
+    #중화 배속 버튼
+    def drawSpeedUpButton(self, surface):
+        surface.blit(self.speedupIMG, self.speedupRect)
+
+    def CheckSpeedUpButtonClicked(self, mouse_pos):
+        x, y = mouse_pos
+        if(x >= self.speedupRect.x and x <= self.speedupRect.right and
+           y >= self.speedupRect.y and y <= self.speedupRect.bottom):
+            self.SpeedUpButtonClickEvent()
+
+    def SpeedUpButtonClickEvent(self):
+        speedup = [0, 0, 59, 54]
+        if(c.DELTA_TIME == 1):
+            self.speedupIMG = tool.get_image(
+                tool.GFX[c.SPEED_UP_BUTTON_2], *speedup)
+            c.DELTA_TIME = 2
+        elif(c.DELTA_TIME == 2):
+            self.speedupIMG = tool.get_image(
+                tool.GFX[c.SPEED_UP_BUTTON_3], *speedup)
+            c.DELTA_TIME = 3
+        elif(c.DELTA_TIME == 3):
+            self.speedupIMG = tool.get_image(
+                tool.GFX[c.SPEED_UP_BUTTON_1], *speedup)
+            c.DELTA_TIME = 1
+        tool.GameManager.getInstance().reSetStartTimer()
+        tool.GameManager.getInstance().reSetCurrentTimer()
+
+    def drawItem(self, surface):
+        surface.blit(self.itemImg_1, self.itemRect_1)
+        surface.blit(self.itemImg_2, self.itemRect_2)
+
+    def CheckItemButtonClicked(self, mouse_pos):
+        x, y = mouse_pos
+        if(x >= self.itemRect_1.x and x <= self.itemRect_1.right and
+           y >= self.itemRect_1.y and y <= self.itemRect_1.bottom and self.isItem_1_Clicked == 0):
+            self.Item_1_StartEvent()
+        if(x >= self.itemRect_2.x and x <= self.itemRect_2.right and
+           y >= self.itemRect_2.y and y <= self.itemRect_2.bottom and self.isItem_2_Clicked == 0):
+            self.Item_2_StartEvent()
+
+    def Item_1_StartEvent(self):
+        self.isItem_1_Clicked = 1
+        self.Item_1_Timer += self.current_time
+        c.ATK_TIME_UP = 2
+        temp = [0, 0, 59, 54]
+        self.itemImg_1 = tool.get_image(
+            tool.GFX[c.ITEM_1_2], *temp)
+
+    def Item_1_EndEvent(self):
+        if(self.Item_1_Timer < self.current_time):
+           c.ATK_TIME_UP = 1
+           self.isItem_1_Clicked = 2
+
+    def Item_2_StartEvent(self):
+        self.isItem_2_Clicked = 1
+        self.Item_2_Timer += self.current_time
+        c.SUN_TIME_UP = 10
+        temp = [0, 0, 59, 54]
+        self.itemImg_2 = tool.get_image(
+            tool.GFX[c.ITEM_2_2], *temp)
+
+    def Item_2_EndEvent(self):
+        if(self.Item_2_Timer < self.current_time):
+           c.SUN_TIME_UP = 1
+           self.isItem_2_Clicked = 2
+
+    #홍성민 삽 버튼 관련 함수들
+    def drawShovelButton(self, surface):
+        surface.blit(self.shovelIMG, self.shovelRect)
+
+    def checkShovelButtonClicked(self, mouse_pos):
+        x, y = mouse_pos
+        shovel_pointer = [0, 0, 59, 54]
+        if(x >= self.shovelRect.x - 10 and x <= self.shovelRect.right + 10 and
+           y >= self.shovelRect.y - 10 and y <= self.shovelRect.bottom + 10):
+            print("shovel clicked")
+            # 이곳에 마우스포인터 삽 이미지 및 기능 활성화. 판정은 shovel pointer img가 none인지 아닌지로 한다.
+            if (self.shovel_pointer_IMG == None):
+                self.shovel_pointer_IMG = tool.get_image(
+                    tool.GFX[c.SHOVEL_IMAGE], *shovel_pointer)
+                pg.mouse.set_visible(False)
+                self.shovelActivate = True
+                print(
+                    "shovel clicked, and shovelpointer img was none. Now mouse set_visible is False, and IMG got his image")
+            # 이미지 및 기능 비활성화, 원래대로
+            elif (self.shovel_pointer_IMG != None):
+                print(
+                    "shovel clicked, and shovelpointer img was had something, Now mouse and IMG get back")
+                pg.mouse.set_visible(True)
+                self.shovel_pointer_IMG = None
+                self.shovelActivate = False
+                self.removeMouseImage()
+           # If you want to set IMG to member, use this code.
+           # self.shovel_pointer_IMG = tool.get_image(tool.GFX[c.SHOVEL_IMAGE], *shovel_pointer)
+
+    #마우스 포인터 위치에 삽 이미지를 띄우게 하는 메소드
+    def drawShovelMouseShow(self, surface):
+        surface.blit(self.shovel_pointer_IMG, pg.mouse.get_pos())
+
+    # plant를 넘겨받아 삽으로 클릭한 식물을 지우는 메소드
+    def removePlantByShovel(self, plant):
+        x, y = plant.getPosition()
+        map_x, map_y = self.map.getMapIndex(x, y)
+        if self.bar_type != c.CHOSSEBAR_BOWLING:
+            self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
+        plant.kill()
+
+    def draw(self, surface, mouse_pos):
         self.level.blit(self.background, self.viewport, self.viewport)
-        surface.blit(self.level, (0,0), self.viewport)
+        surface.blit(self.level, (0, 0), self.viewport)
         if self.state == c.CHOOSE:
             self.panel.draw(surface)
         elif self.state == c.PLAY:
+            #추가 이미지 그려주는
+            self.drawSpeedUpButton(surface)
+            self.drawItem(surface)
+            self.drawShovelButton(surface)
+
             self.menubar.draw(surface)
             for i in range(self.map_y_len):
                 self.plant_groups[i].draw(surface)
@@ -545,5 +734,29 @@ class Level(tool.State):
             self.head_group.draw(surface)
             self.sun_group.draw(surface)
 
+            if(mouse_pos != None):
+                #다른 아이템 이미지 클릭 이벤트 여기에
+                self.CheckSpeedUpButtonClicked(mouse_pos)
+                self.CheckItemButtonClicked(mouse_pos)
+                self.checkShovelButtonClicked(mouse_pos)
+            if(self.isItem_1_Clicked == 1):
+                self.Item_1_EndEvent()
+            if(self.isItem_2_Clicked == 1):
+                self.Item_2_EndEvent()
             if self.drag_plant:
                 self.drawMouseShow(surface)
+
+            # self.shovel_pointer_IMG에 이미지가 추가되어 삽 기능이 작동하는 상태. if문의 조건문은 checkShovelButtonClicekd를 참조
+            if (self.shovel_pointer_IMG != None):
+                self.drawShovelMouseShow(surface)
+                for i in range(self.map_y_len):
+                    for plant in self.plant_groups[i]:
+                        plant_pos_x, plant_pos_y = plant.getPosition()
+                        shovel_clicked_x, shovel_clicked_y = pg.mouse.get_pos()
+                        shovel_isClicked = [False, False, False]
+                        shovel_isClicked = pg.mouse.get_pressed()
+                        plant_pos_y -= 100
+                        if(shovel_isClicked[0] == True and plant_pos_x - 35 <= shovel_clicked_x and shovel_clicked_x <= plant_pos_x + 35
+                           and plant_pos_y - 20 <= shovel_clicked_y and shovel_clicked_y <= plant_pos_y + 40):
+                            print("Plants is Clicked with Shovel")
+                            self.removePlantByShovel(plant)

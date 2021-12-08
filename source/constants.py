@@ -1,6 +1,6 @@
 __author__ = 'marble_xu'
 
-START_LEVEL_NUM = 1
+START_LEVEL_NUM = 0
 
 ORIGINAL_CAPTION = 'Plant VS Zombies Game'
 
@@ -41,6 +41,33 @@ MAIN_MENU_IMAGE = 'MainMenu'
 OPTION_ADVENTURE = 'Adventure'
 GAME_LOOSE_IMAGE = 'GameLoose'
 GAME_VICTORY_IMAGE = 'GameVictory'
+OPTION_GAMEOFF = 'GameOff'
+
+SOUND_MUTE_IMAGE = 'muteSound'
+CLICKED_MUTE_IMAGE = 'ClickedMuteSound'
+SOUND_IMAGE = 'Sound'
+CLICKED_SOUND_IMAGE = 'ClickedSound'
+
+EASY_IMAGE = 'EasyMode'
+CLICKED_EASY = 'ClickedEasy'
+NORMAL_IMAGE = 'NormalMode'
+CLICKED_NORMAL = 'ClickedNormal'
+HARD_IMAGE = 'HardMode'
+CLICKED_HARD = 'ClickedHard'
+ 
+GAMEFINISHED_MAINMENU_BUTTON = 'MainMenuBtn'
+GAMEFINISHED_NEXTSTAGE_BUTTON = 'NextStageBtn'
+
+SPEED_UP_BUTTON_1 = "speedup1"
+SPEED_UP_BUTTON_2 = "speedup2"
+SPEED_UP_BUTTON_3 = "speedup3"
+
+ITEM_1_1 = "Item1_1"
+ITEM_1_2 = "Item1_2"
+
+ITEM_2_1 = "Item2_1"
+ITEM_2_2 = "Item2_2"
+
 
 #MAP COMPONENTS
 BACKGROUND_NAME = 'Background'
@@ -178,3 +205,22 @@ PLAY = 'play'
 #BACKGROUND
 BACKGROUND_DAY = 0
 BACKGROUND_NIGHT = 1
+
+#이중화 배속 기능 
+DELTA_TIME = 1.0
+#식물들 공속 업
+#기본 1 아이템 눌렀을 때 2 일정시간 지나면 다시 1
+ATK_TIME_UP = 1
+#햇빛 많이 떨어지는 아이템
+#눌렀을 때 10
+SUN_TIME_UP = 1
+
+#Shovel for remove planted plants
+SHOVEL_IMAGE = 'Shovel'
+
+#중화 난이도
+#기본 1 메인화면에서 버튼 눌러서 변경
+LEVEL_DIFFICULTY = 1
+
+#사운드 켜져있는지 아닌지
+SOUND_ON = True

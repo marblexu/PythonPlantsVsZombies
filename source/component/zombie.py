@@ -1,8 +1,11 @@
 __author__ = 'marble_xu'
 
+import os
 import pygame as pg
 from .. import tool
 from .. import constants as c
+from ..state import mainmenu as main
+
 
 class Zombie(pg.sprite.Sprite):
     def __init__(self, x, y, name, health, head_group=None, damage=1):
@@ -19,6 +22,12 @@ class Zombie(pg.sprite.Sprite):
         self.rect.centerx = x
         self.rect.bottom = y
         
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.dying_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '좀비가죽을때.mp3'))  #좀비가 죽는 소리
+        self.headDrop_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '좀비머리가떨어질때.mp3'))  #좀비 머리가 떨어질 때 소리
+        self.dying_sound.set_volume(0.5)
+        self.headDrop_sound.set_volume(0.5)
+
         self.health = health
         self.damage = damage
         self.dead = False
@@ -34,7 +43,7 @@ class Zombie(pg.sprite.Sprite):
         self.ice_slow_ratio = 1
         self.ice_slow_timer = 0
         self.hit_timer = 0
-        self.speed = 1
+        self.speed = 1 
         self.freeze_timer = 0
         self.is_hypno = False # the zombie is hypo and attack other zombies when it ate a HypnoShroom
     
@@ -78,9 +87,9 @@ class Zombie(pg.sprite.Sprite):
         if (self.current_time - self.walk_timer) > (c.ZOMBIE_WALK_INTERVAL * self.getTimeRatio()):
             self.walk_timer = self.current_time
             if self.is_hypno:
-                self.rect.x += self.speed
+                self.rect.x += self.speed * c.DELTA_TIME
             else:
-                self.rect.x -= self.speed
+                self.rect.x -= self.speed * c.DELTA_TIME
     
     def attacking(self):
         if self.health <= 0:
@@ -104,6 +113,7 @@ class Zombie(pg.sprite.Sprite):
             self.setWalk()
     
     def dying(self):
+    
         pass
 
     def freezing(self):
@@ -120,6 +130,9 @@ class Zombie(pg.sprite.Sprite):
 
     def setLostHead(self):
         self.losHead = True
+        if(main.Menu().isClickedSound()) :
+            self.headDrop_sound.play()         #소리를 재생합니다
+
         if self.head_group is not None:
             self.head_group.add(ZombieHead(self.rect.centerx, self.rect.bottom))
 
@@ -203,9 +216,12 @@ class Zombie(pg.sprite.Sprite):
             self.changeFrames(self.attack_frames)
     
     def setDie(self):
+        if(main.Menu().isClickedSound()) :
+            self.dying_sound.play()  #소리를 재생합니다
         self.state = c.DIE
         self.animate_interval = 200
         self.changeFrames(self.die_frames)
+        tool.GameManager.getInstance().addKillZombieCount()
     
     def setBoomDie(self):
         self.state = c.DIE

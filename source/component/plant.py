@@ -2,8 +2,13 @@ __author__ = 'marble_xu'
 
 import random
 import pygame as pg
+from pygame.color import Color
 from .. import tool
 from .. import constants as c
+import os
+from ..state import mainmenu as main
+
+
 
 class Car(pg.sprite.Sprite):
     def __init__(self, x, y, map_y):
@@ -19,18 +24,24 @@ class Car(pg.sprite.Sprite):
         self.state = c.IDLE
         self.dead = False
 
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.drive_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '잔디깎이돌진.mp3'))  #잔디깎이가 돌진하는 소리
+        self.drive_sound.set_volume(0.1)
+
     def update(self, game_info):
         self.current_time = game_info[c.CURRENT_TIME]
         if self.state == c.IDLE:
             pass
         elif self.state == c.WALK:
-            self.rect.x += 4
+            self.rect.x += 4 * c.DELTA_TIME
         if self.rect.x > c.SCREEN_WIDTH:
             self.dead = True
 
     def setWalk(self):
         if self.state == c.IDLE:
             self.state = c.WALK
+            if(main.Menu().isClickedSound()) :
+                self.drive_sound.play()
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -54,6 +65,12 @@ class Bullet(pg.sprite.Sprite):
         self.ice = ice
         self.state = c.FLY
         self.current_time = 0
+
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.attack_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '식물이공격하는소리.mp3'))  #식물이 공격하는 소리
+        self.attack_sound.set_volume(0.2)
+        if(main.Menu().isClickedSound()) :
+            self.attack_sound.play() 
 
     def loadFrames(self, frames, name):
         frame_list = tool.GFX[name]
@@ -87,10 +104,10 @@ class Bullet(pg.sprite.Sprite):
         self.current_time = game_info[c.CURRENT_TIME]
         if self.state == c.FLY:
             if self.rect.y != self.dest_y:
-                self.rect.y += self.y_vel
+                self.rect.y += self.y_vel * c.DELTA_TIME
                 if self.y_vel * (self.dest_y - self.rect.y) < 0:
                     self.rect.y = self.dest_y
-            self.rect.x += self.x_vel
+            self.rect.x += self.x_vel * c.DELTA_TIME
             if self.rect.x > c.SCREEN_WIDTH:
                 self.kill()
         elif self.state == c.EXPLODE:
@@ -127,6 +144,15 @@ class Plant(pg.sprite.Sprite):
         self.animate_timer = 0
         self.animate_interval = 100
         self.hit_timer = 0
+
+        
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.attack_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '식물이공격하는소리.mp3'))  #식물이 공격하는 소리
+        self.attack_sound.set_volume(0.2)
+
+        self.atkUpTimer = 0
+        self.isShooter = False
+
 
     def loadFrames(self, frames, name, scale, color=c.BLACK):
         frame_list = tool.GFX[name]
@@ -192,6 +218,14 @@ class Plant(pg.sprite.Sprite):
         else:
             self.image.set_alpha(192)
 
+        if(c.ATK_TIME_UP == 2 and self.isShooter):
+            if(self.current_time - self.atkUpTimer) >= 300:
+                self.image.set_alpha(255)
+                self.atkUpTimer = self.current_time
+            else:
+                self.image.set_alpha(192)
+            
+
     def canAttack(self, zombie):
         if (self.state != c.SLEEP and zombie.state != c.DIE and
             self.rect.x <= zombie.rect.right):
@@ -227,16 +261,20 @@ class Sun(Plant):
             scale = 0.6
             self.sun_value = 12
         Plant.__init__(self, x, y, c.SUN, 0, None, scale)
-        self.move_speed = 1
+        self.move_speed = 1 
         self.dest_x = dest_x
         self.dest_y = dest_y
         self.die_timer = 0
 
+        self.sound_dir = os.path.join('source','sound')  #경로 추가
+        self.getSun_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '빛에너지.mp3'))  #빛에너지를 먹는 소리
+
+
     def handleState(self):
         if self.rect.centerx != self.dest_x:
-            self.rect.centerx += self.move_speed if self.rect.centerx < self.dest_x else -self.move_speed
+            self.rect.centerx += self.move_speed * c.DELTA_TIME if self.rect.centerx < self.dest_x else -self.move_speed * c.DELTA_TIME
         if self.rect.bottom != self.dest_y:
-            self.rect.bottom += self.move_speed if self.rect.bottom < self.dest_y else -self.move_speed
+            self.rect.bottom += self.move_speed * c.DELTA_TIME if self.rect.bottom < self.dest_y else -self.move_speed * c.DELTA_TIME
         
         if self.rect.centerx == self.dest_x and self.rect.bottom == self.dest_y:
             if self.die_timer == 0:
@@ -250,6 +288,8 @@ class Sun(Plant):
             return False
         if(x >= self.rect.x and x <= self.rect.right and
            y >= self.rect.y and y <= self.rect.bottom):
+            if(main.Menu().isClickedSound()) :
+                self.getSun_sound.play()
             self.state = c.DIE
             self.kill()
             return True
@@ -272,9 +312,11 @@ class PeaShooter(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.PEASHOOTER, c.PLANT_HEALTH, bullet_group)
         self.shoot_timer = 0
-        
+        self.isShooter = True
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.shoot_timer = self.current_time
@@ -283,9 +325,12 @@ class RepeaterPea(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.REPEATERPEA, c.PLANT_HEALTH, bullet_group)
         self.shoot_timer = 0
+        self.isShooter = True
 
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.bullet_group.add(Bullet(self.rect.right + 40, self.rect.y, self.rect.y,
@@ -298,9 +343,12 @@ class ThreePeaShooter(Plant):
         self.shoot_timer = 0
         self.map_y = map_y
         self.bullet_groups = bullet_groups
+        self.isShooter = True
 
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             offset_y = 9 # modify bullet in the same y position with bullets of other plants
             for i in range(3):
                 tmp_y = self.map_y + (i - 1)
@@ -315,9 +363,12 @@ class SnowPeaShooter(Plant):
     def __init__(self, x, y, bullet_group):
         Plant.__init__(self, x, y, c.SNOWPEASHOOTER, c.PLANT_HEALTH, bullet_group)
         self.shoot_timer = 0
+        self.isShooter = True
 
     def attacking(self):
-        if (self.current_time - self.shoot_timer) > 2000:
+        if (self.current_time - self.shoot_timer) > 2000 / c.ATK_TIME_UP:
+            if(main.Menu().isClickedSound()) :
+                self.attack_sound.play()           #소리 재생
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y,
                                     c.BULLET_PEA_ICE, c.BULLET_DAMAGE_NORMAL, True))
             self.shoot_timer = self.current_time
@@ -446,6 +497,8 @@ class Chomper(Plant):
         elif (self.current_time - self.digest_timer) > self.digest_interval:
             self.digest_timer = 0
             self.attack_zombie.kill()
+            #식물쪽에서 좀비를 죽이는거 카운트
+            tool.GameManager.getInstance().addKillZombieCount()
             self.setIdle()
 
 class PuffShroom(Plant):
@@ -570,6 +623,8 @@ class Squash(Plant):
                 self.zombie_group.remove(self.attack_zombie)
             if (self.frame_index + 1) == self.frame_num:
                 self.attack_zombie.kill()
+                #식물쪽에서 좀비를 죽이는거 카운트
+                tool.GameManager.getInstance().addKillZombieCount()
                 self.health = 0
         elif self.aim_timer == 0:
             self.aim_timer = self.current_time
@@ -847,8 +902,8 @@ class WallNutBowling(Plant):
             self.move_timer = self.current_time
         elif (self.current_time - self.move_timer) >= self.move_interval:
             self.rotate_degree = (self.rotate_degree - 30) % 360
-            self.init_rect.x += self.vel_x
-            self.init_rect.y += self.vel_y
+            self.init_rect.x += self.vel_x * c.DELTA_TIME
+            self.init_rect.y += self.vel_y * c.DELTA_TIME
             self.handleMapYPosition()
             if self.shouldChangeDirection():
                 self.changeDirection(-1)
@@ -940,7 +995,7 @@ class RedWallNutBowling(Plant):
             self.move_timer = self.current_time
         elif (self.current_time - self.move_timer) >= self.move_interval:
             self.rotate_degree = (self.rotate_degree - 30) % 360
-            self.init_rect.x += self.vel_x
+            self.init_rect.x += self.vel_x * c.DELTA_TIME
             if self.init_rect.x > c.SCREEN_WIDTH:
                 self.health = 0
             self.move_timer += self.move_interval
