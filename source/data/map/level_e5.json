@@ -24,21 +24,6 @@
         {"time":58000, "map_y":1, "name":"FlagZombie"},
         {"time":62000, "map_y":2, "name":"Zombie"},
         {"time":64000, "map_y":1, "name":"ConeheadZombie"},
-        {"time":66000, "map_y":2, "name":"Zombie"},
-        {"time":68000, "map_y":3, "name":"NewspaperZombie"},
-        {"time":70000, "map_y":1, "name":"FlagZombie"},
-        {"time":72000, "map_y":4, "name":"BucketheadZombie"},
-        {"time":74000, "map_y":0, "name":"FlagZombie"},
-        
-        {"time":97000, "map_y":4, "name":"BucketheadZombie"},
-        {"time":97000, "map_y":2, "name":"Zombie"},
-        {"time":97000, "map_y":3, "name":"FlagZombie"},
-        {"time":98000, "map_y":1, "name":"FlagZombie"},
-        {"time":98000, "map_y":2, "name":"BucketheadZombie"},
-        {"time":98000, "map_y":0, "name":"FlagZombie"},
-        {"time":99000, "map_y":3, "name":"BucketheadZombie"},
-        {"time":99000, "map_y":4, "name":"FlagZombie"},
-        {"time":100000, "map_y":0, "name":"BucketheadZombie"},
-        {"time":101000, "map_y":1, "name":"BucketheadZombie"}
+        {"time":66000, "map_y":2, "name":"Zombie"}
     ]
 }

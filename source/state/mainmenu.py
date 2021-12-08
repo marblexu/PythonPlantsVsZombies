@@ -6,12 +6,13 @@ from .. import tool
 from .. import constants as c
 
 class Menu(tool.State):
+    isClickedSoundBtn = True               #사운드가 켜져있는지
+    
     def __init__(self):
         tool.State.__init__(self)
         self.sound_dir = os.path.join('source','sound')  #경로 추가
         self.start_sound = pg.mixer.Sound(os.path.join(self.sound_dir, '게임시작버튼.mp3'))  #버튼을 누르는 소리
         self.start_sound.set_volume(2)                                                      #소리크기 설정
-
     
     def startup(self, current_time, persist):
         self.next = c.LEVEL
@@ -146,7 +147,8 @@ class Menu(tool.State):
         if(x >= self.option_rect.x and x <= self.option_rect.right and
            y >= self.option_rect.y and y <= self.option_rect.bottom):
             self.option_clicked = True
-            self.start_sound.play()                                         #소리재생
+            if(self.isClickedSoundBtn) :
+                self.start_sound.play()                                         #소리재생
             self.option_timer = self.option_start = self.current_time
         return False
 
@@ -161,12 +163,14 @@ class Menu(tool.State):
         if(x >= self.mutesound_img_rect.x and x <= self.mutesound_img_rect.right and
            y >= self.mutesound_img_rect.y and y <= self.mutesound_img_rect.bottom):
             self.muteSoundClicked = True
+            Menu.isClickedSoundBtn = False
 
     def checkSoundClick(self, mouse_pos):
         x, y = mouse_pos
         if(x >= self.sound_img_rect.x and x <= self.sound_img_rect.right and
            y >= self.sound_img_rect.y and y <= self.sound_img_rect.bottom):
             self.soundClicked = True
+            Menu.isClickedSoundBtn = True
 
     def checkEasyClick(self, mouse_pos):
         x, y = mouse_pos
@@ -256,6 +260,7 @@ class Menu(tool.State):
             surface.blit(self.sound_img, self.sound_img_rect)
             pg.mixer.music.pause()
             self.muteSoundClicked = False
+
         elif(self.muteSoundClicked == False and self.soundClicked == True):
             surface.blit(self.clickedSound_img, self.clickedSound_img_rect)
             surface.blit(self.mutesound_img, self.mutesound_img_rect)
@@ -282,6 +287,6 @@ class Menu(tool.State):
             self.hardConfig()
 
 
-        
-        
-       
+    def isClickedSound(self) :
+        return Menu.isClickedSoundBtn
+
