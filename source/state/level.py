@@ -73,9 +73,9 @@ class Level(tool.State):
 
     def loadMap(self):
         if(c.LEVEL_DIFFICULTY == 1):
-            map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
+            map_file = 'level_e' + str(self.game_info[c.LEVEL_NUM]) + '.json'
         elif(c.LEVEL_DIFFICULTY == 2):
-            print("성민님 보통 난이도 만들어 주세요!!!!!")
+            map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
         elif(c.LEVEL_DIFFICULTY == 3):
             map_file = 'level_h' + str(self.game_info[c.LEVEL_NUM]) + '.json'
         file_path = os.path.join('source', 'data', 'map', map_file)
