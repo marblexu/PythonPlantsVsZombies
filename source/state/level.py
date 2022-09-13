@@ -293,12 +293,10 @@ class Level(tool.State):
             x, y = 0, 0
             rect = frame_list[0].get_rect()
             width, height = rect.w, rect.h
-
-        if (plant_name == c.POTATOMINE or plant_name == c.SQUASH or
-            plant_name == c.SPIKEWEED or plant_name == c.JALAPENO or
-            plant_name == c.SCAREDYSHROOM or plant_name == c.SUNSHROOM or
-            plant_name == c.ICESHROOM or plant_name == c.HYPNOSHROOM or
-            plant_name == c.WALLNUTBOWLING or plant_name == c.REDWALLNUTBOWLING):
+        suitable_params = [c.POTATOMINE, c.SQUASH, c.SPIKEWEED, c.JALAPENO,
+                           c.SCAREDYSHROOM, c.SUNSHROOM, c.ICESHROOM,
+                           c.HYPNOSHROOM, c.WALLNUTBOWLING, c.REDWALLNUTBOWLING]
+        if plant_name in suitable_params:
             color = c.WHITE
         else:
             color = c.BLACK
@@ -392,9 +390,9 @@ class Level(tool.State):
         map_x, map_y = self.map.getMapIndex(x, y)
         if self.bar_type != c.CHOSSEBAR_BOWLING:
             self.map.setMapGridType(map_x, map_y, c.MAP_EMPTY)
-        if (plant.name == c.CHERRYBOMB or plant.name == c.JALAPENO or
-            (plant.name == c.POTATOMINE and not plant.is_init) or
-            plant.name == c.REDWALLNUTBOWLING):
+        suitable_params = [c.CHERRYBOMB, c.JALAPENO, c.REDWALLNUTBOWLING]
+        if plant.name in suitable_params or (plant.name == c.POTATOMINE
+                                             and not plant.is_init):
             self.boomZombies(plant.rect.centerx, map_y, plant.explode_y_range,
                             plant.explode_x_range)
         elif plant.name == c.ICESHROOM and plant.state != c.SLEEP:
