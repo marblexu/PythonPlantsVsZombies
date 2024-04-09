@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+[project]
+name = "plants-vs-zombies"
+version = "0.0.5"
+description = "a simple PlantsVsZombies game"
+readme = "README.md"
+requires-python = ">= 3.7"
+keywords = ["pygame"]
+dependencies = ["pygame >= 1.9"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: Unix",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+[[project.authors]]
+name = "marblexu"
+email = "47616581+marblexu@users.noreply.github.com"
+
+[project.license]
+text = "MIT"
+
+[project.urls]
+Homepage = "https://github.com/marblexu/PythonPlantsVsZombies"
+Download = "https://github.com/marblexu/PythonPlantsVsZombies/releases"
+"Bug Report" = "https://github.com/marblexu/PythonPlantsVsZombies/issues"
+Source = "https://github.com/marblexu/PythonPlantsVsZombies"
+
+[project.scripts]
+plants-vs-zombies = "plants_vs_zombies.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["plants_vs_zombies*"]
+
+[tool.setuptools.package-data]
+plants_vs_zombies = ["data/**", "resources/**"]

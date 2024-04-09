@@ -13,11 +13,14 @@
 * Python-Pygame 1.9
 
 # How To Start Game
-$ python main.py
+$ python -m plants_vs_zombies
+or
+$ pip install plants-vs-zombies
+$ plants-vs-zombies
 
 # How to Play
 * use mouse to collect sun, select the plant cards and seed the plant 
-* you can set the start level by changing START_LEVEL_NUM value in source/constants.py
+* you can set the start level by changing START_LEVEL_NUM value in plants_vs_zombies/constants.py
   * level 1 and 2：day level
   * level 3: night level
   * level 4: moving card select level

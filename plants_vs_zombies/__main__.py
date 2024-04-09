@@ -12,3 +12,7 @@ def main():
                   c.LEVEL: level.Level()}
     game.setup_states(state_dict, c.MAIN_MENU)
     game.main()
+
+
+if __name__=='__main__':
+    main()

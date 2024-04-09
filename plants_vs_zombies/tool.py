@@ -154,14 +154,14 @@ def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.
     return graphics
 
 def loadZombieImageRect():
-    file_path = os.path.join('source', 'data', 'entity', 'zombie.json')
+    file_path = os.path.join(os.path.dirname(__file__), 'data', 'entity', 'zombie.json')
     f = open(file_path)
     data = json.load(f)
     f.close()
     return data[c.ZOMBIE_IMAGE_RECT]
 
 def loadPlantImageRect():
-    file_path = os.path.join('source', 'data', 'entity', 'plant.json')
+    file_path = os.path.join(os.path.dirname(__file__), 'data', 'entity', 'plant.json')
     f = open(file_path)
     data = json.load(f)
     f.close()
@@ -171,6 +171,6 @@ pg.init()
 pg.display.set_caption(c.ORIGINAL_CAPTION)
 SCREEN = pg.display.set_mode(c.SCREEN_SIZE)
 
-GFX = load_all_gfx(os.path.join("resources","graphics"))
+GFX = load_all_gfx(os.path.join(os.path.dirname(__file__), "resources","graphics"))
 ZOMBIE_RECT = loadZombieImageRect()
 PLANT_RECT = loadPlantImageRect()

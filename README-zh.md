@@ -19,7 +19,7 @@ $ python main.py
 
 # 怎样玩
 * 使用鼠标收集阳光,收集植物卡片和植物的种子。
-* 你可以通过更改 source/constants.py 中的 START＿LEVEL＿NUM 的数值来更改起始关卡：
+* 你可以通过更改 plants_vs_zombies/constants.py 中的 START＿LEVEL＿NUM 的数值来更改起始关卡：
   * 1 和 2：白昼模式
   * 3: 夜晚模式
   * 4: 传送带模式
