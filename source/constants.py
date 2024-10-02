@@ -1,3 +1,5 @@
+# source/constants.py
+
 __author__ = 'marble_xu'
 
 START_LEVEL_NUM = 1
@@ -12,7 +14,6 @@ GRID_X_LEN = 9
 GRID_Y_LEN = 5
 GRID_X_SIZE = 80
 GRID_Y_SIZE = 100
-
 
 WHITE        = (255, 255, 255)
 NAVYBLUE     = ( 60,  60, 100)
@@ -33,7 +34,7 @@ LEVEL_NUM = 'level num'
 #STATES FOR ENTIRE GAME
 MAIN_MENU = 'main menu'
 LOAD_SCREEN = 'load screen'
-GAME_LOSE = 'game los'
+GAME_LOSE = 'game lose'
 GAME_VICTORY = 'game victory'
 LEVEL = 'level'
 
