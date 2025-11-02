@@ -93,12 +93,25 @@ ICESHROOM = 'IceShroom'
 HYPNOSHROOM = 'HypnoShroom'
 WALLNUTBOWLING = 'WallNutBowling'
 REDWALLNUTBOWLING = 'RedWallNutBowling'
+# Chinese Red Theme Plants
+RED_PEONY = 'RedPeony'  # 红牡丹
+FIRECRACKER_PLANT = 'FirecrackerPlant'  # 鞭炮花
+LION_DANCE_PEA = 'LionDancePea'  # 舞狮豌豆
 
 PLANT_HEALTH = 5
 WALLNUT_HEALTH = 30
 WALLNUT_CRACKED1_HEALTH = 20
 WALLNUT_CRACKED2_HEALTH = 10
 WALLNUT_BOWLING_DAMAGE = 10
+
+# Chinese Red Theme Plant Properties
+RED_PEONY_HEALTH = 15  # 红牡丹生命值
+RED_PEONY_POLLEN_DAMAGE = 3  # 红牡丹花粉伤害
+FIRECRACKER_PLANT_HEALTH = 10  # 鞭炮花生命值
+FIRECRACKER_DAMAGE = 2  # 鞭炮伤害
+LION_DANCE_PEA_HEALTH = 5  # 舞狮豌豆生命值
+LION_DANCE_PEA_DAMAGE = 4  # 舞狮豌豆伤害
+LION_DANCE_PEA_KNOCKBACK = 50  # 舞狮豌豆击退效果
 
 PRODUCE_SUN_INTERVAL = 7000
 FLOWER_SUN_INTERVAL = 22000
@@ -129,6 +142,10 @@ CARD_SUNSHROOM = 'card_sunshroom'
 CARD_ICESHROOM = 'card_iceshroom'
 CARD_HYPNOSHROOM = 'card_hypnoshroom'
 CARD_REDWALLNUT = 'card_redwallnut'
+# Chinese Red Theme Plant Cards
+CARD_RED_PEONY = 'card_redpeony'
+CARD_FIRECRACKER_PLANT = 'card_firecrackerplant'
+CARD_LION_DANCE_PEA = 'card_liondancepea'
 
 #BULLET INFO
 BULLET_PEA = 'PeaNormal'
@@ -145,6 +162,10 @@ BUCKETHEAD_ZOMBIE = 'BucketheadZombie'
 FLAG_ZOMBIE = 'FlagZombie'
 NEWSPAPER_ZOMBIE = 'NewspaperZombie'
 BOOMDIE = 'BoomDie'
+# Chinese Red Theme Zombies
+LANTERN_ZOMBIE = 'LanternZombie'  # 灯笼僵尸
+LION_DANCE_ZOMBIE = 'LionDanceZombie'  # 舞狮僵尸
+CHINESE_NEW_YEAR_ZOMBIE = 'ChineseNewYearZombie'  # 春节僵尸
 
 LOSTHEAD_HEALTH = 5
 NORMAL_HEALTH = 10
@@ -152,6 +173,17 @@ FLAG_HEALTH = 15
 CONEHEAD_HEALTH = 20
 BUCKETHEAD_HEALTH = 30
 NEWSPAPER_HEALTH = 15
+
+# Chinese Red Theme Zombie Properties
+LANTERN_ZOMBIE_HEALTH = 15  # 灯笼僵尸生命值
+LANTERN_ZOMBIE_SPEED = 1.2  # 灯笼僵尸移动速度
+LANTERN_LIGHT_RANGE = 3  # 灯笼照亮范围
+LION_DANCE_ZOMBIE_HEALTH = 30  # 舞狮僵尸生命值
+LION_DANCE_ZOMBIE_SPEED = 0.8  # 舞狮僵尸移动速度
+LION_DANCE_ATTACK_DAMAGE = 2  # 舞狮僵尸攻击伤害
+CHINESE_NEW_YEAR_ZOMBIE_HEALTH = 25  # 春节僵尸生命值
+CHINESE_NEW_YEAR_ZOMBIE_SPEED = 1.0  # 春节僵尸移动速度
+CHINESE_NEW_YEAR_GOLD_DROP = 5  # 春节僵尸掉落金币数量
 
 ATTACK_INTERVAL = 1000
 ZOMBIE_WALK_INTERVAL = 70

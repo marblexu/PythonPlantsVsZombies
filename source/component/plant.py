@@ -54,6 +54,7 @@ class Bullet(pg.sprite.Sprite):
         self.ice = ice
         self.state = c.FLY
         self.current_time = 0
+        self.knockback = 0  # 击退效果，默认为0表示没有击退
 
     def loadFrames(self, frames, name):
         frame_list = tool.GFX[name]
@@ -824,6 +825,64 @@ class HypnoShroom(Plant):
             self.loadFrames(frame_list[i], name, 1, c.WHITE)
 
         self.frames = self.idle_frames
+
+# Chinese Red Theme Plants
+class RedPeony(Plant):
+    """红牡丹 - 中国红主题植物，能够释放花粉攻击多个僵尸"""
+    def __init__(self, x, y, zombie_groups, map_y):
+        Plant.__init__(self, x, y, c.RED_PEONY, c.RED_PEONY_HEALTH, None)
+        self.shoot_timer = 0
+        self.map_y = map_y
+        self.zombie_groups = zombie_groups
+        self.attack_range = 3  # 攻击范围为3行
+
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 3000:
+            # 释放花粉攻击范围内的所有僵尸
+            for i in range(-self.attack_range, self.attack_range + 1):
+                tmp_y = self.map_y + i
+                if tmp_y < 0 or tmp_y >= c.GRID_Y_LEN:
+                    continue
+                for zombie in self.zombie_groups[tmp_y]:
+                    if self.canAttack(zombie):
+                        zombie.setDamage(c.RED_PEONY_POLLEN_DAMAGE)
+            self.shoot_timer = self.current_time
+
+    def canAttack(self, zombie):
+        if (self.state != c.SLEEP and zombie.state != c.DIE and
+            self.rect.x <= zombie.rect.right and
+            self.rect.right + c.GRID_X_SIZE * 2 >= zombie.rect.x):
+            return True
+        return False
+
+class FirecrackerPlant(Plant):
+    """鞭炮花 - 中国红主题植物，能够发射鞭炮攻击僵尸"""
+    def __init__(self, x, y, bullet_group):
+        Plant.__init__(self, x, y, c.FIRECRACKER_PLANT, c.FIRECRACKER_PLANT_HEALTH, bullet_group)
+        self.shoot_timer = 0
+        self.bullet_speed = 6
+
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 2500:
+            # 发射鞭炮子弹
+            self.bullet_group.add(Bullet(self.rect.right, self.rect.y, self.rect.y, 
+                                        c.BULLET_PEA, c.FIRECRACKER_DAMAGE, False))
+            self.shoot_timer = self.current_time
+
+class LionDancePea(Plant):
+    """舞狮豌豆 - 中国红主题植物，能够发射具有击退效果的豌豆"""
+    def __init__(self, x, y, bullet_group):
+        Plant.__init__(self, x, y, c.LION_DANCE_PEA, c.LION_DANCE_PEA_HEALTH, bullet_group)
+        self.shoot_timer = 0
+
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 3000:
+            # 发射具有击退效果的豌豆
+            bullet = Bullet(self.rect.right, self.rect.y, self.rect.y, 
+                           c.BULLET_PEA, c.LION_DANCE_PEA_DAMAGE, False)
+            bullet.knockback = c.LION_DANCE_PEA_KNOCKBACK
+            self.bullet_group.add(bullet)
+            self.shoot_timer = self.current_time
 
 class WallNutBowling(Plant):
     def __init__(self, x, y, map_y, level):

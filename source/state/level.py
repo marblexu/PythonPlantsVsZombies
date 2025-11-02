@@ -42,6 +42,7 @@ class Level(tool.State):
     def setupGroups(self):
         self.sun_group = pg.sprite.Group()
         self.head_group = pg.sprite.Group()
+        self.gold_group = pg.sprite.Group()  # 金币组
 
         self.plant_groups = []
         self.zombie_groups = []
@@ -148,6 +149,7 @@ class Level(tool.State):
 
         self.head_group.update(self.game_info)
         self.sun_group.update(self.game_info)
+        self.gold_group.update(self.game_info)
         
         if not self.drag_plant and mouse_pos and mouse_click[0]:
             result = self.menubar.checkCardClick(mouse_pos)
@@ -174,6 +176,11 @@ class Level(tool.State):
             for sun in self.sun_group:
                 if sun.checkCollision(mouse_pos[0], mouse_pos[1]):
                     self.menubar.increaseSunValue(sun.sun_value)
+            # 收集金币
+            for gold in self.gold_group:
+                if gold.checkCollision(mouse_pos[0], mouse_pos[1]):
+                    self.menubar.increaseGoldValue(gold.gold_value)
+                    gold.kill()
 
         for car in self.cars:
             car.update(self.game_info)
@@ -198,6 +205,13 @@ class Level(tool.State):
             self.zombie_groups[map_y].add(zombie.FlagZombie(c.ZOMBIE_START_X, y, self.head_group))
         elif name == c.NEWSPAPER_ZOMBIE:
             self.zombie_groups[map_y].add(zombie.NewspaperZombie(c.ZOMBIE_START_X, y, self.head_group))
+        # Chinese Red Theme Zombies
+        elif name == c.LANTERN_ZOMBIE:
+            self.zombie_groups[map_y].add(zombie.LanternZombie(c.ZOMBIE_START_X, y, self.head_group))
+        elif name == c.LION_DANCE_ZOMBIE:
+            self.zombie_groups[map_y].add(zombie.LionDanceZombie(c.ZOMBIE_START_X, y, self.head_group))
+        elif name == c.CHINESE_NEW_YEAR_ZOMBIE:
+            self.zombie_groups[map_y].add(zombie.ChineseNewYearZombie(c.ZOMBIE_START_X, y, self.head_group, self.gold_group))
 
     def canSeedPlant(self):
         x, y = pg.mouse.get_pos()
@@ -250,6 +264,13 @@ class Level(tool.State):
             new_plant = plant.WallNutBowling(x, y, map_y, self)
         elif self.plant_name == c.REDWALLNUTBOWLING:
             new_plant = plant.RedWallNutBowling(x, y)
+        # Chinese Red Theme Plants
+        elif self.plant_name == c.RED_PEONY:
+            new_plant = plant.RedPeony(x, y, self.zombie_groups, map_y)
+        elif self.plant_name == c.FIRECRACKER_PLANT:
+            new_plant = plant.FirecrackerPlant(x, y, self.bullet_groups[map_y])
+        elif self.plant_name == c.LION_DANCE_PEA:
+            new_plant = plant.LionDancePea(x, y, self.bullet_groups[map_y])
 
         if new_plant.can_sleep and self.background_type == c.BACKGROUND_DAY:
             new_plant.setSleep()
@@ -544,6 +565,7 @@ class Level(tool.State):
                 car.draw(surface)
             self.head_group.draw(surface)
             self.sun_group.draw(surface)
+            self.gold_group.draw(surface)
 
             if self.drag_plant:
                 self.drawMouseShow(surface)
