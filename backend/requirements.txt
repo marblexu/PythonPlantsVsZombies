@@ -1,0 +1,9 @@
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Migrate==4.0.5
+Flask-JWT-Extended==4.5.3
+Flask-CORS==4.0.0
+Werkzeug==2.3.7
+itsdangerous==2.1.2
+Pillow==10.0.0
+python-dotenv==1.0.0
