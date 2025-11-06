@@ -5,7 +5,7 @@ import json
 import pygame as pg
 from .. import tool
 from .. import constants as c
-from ..component import map, plant, zombie, menubar
+from ..component import map, plant, zombie, menubar, grave
 
 class Level(tool.State):
     def __init__(self):
@@ -38,10 +38,17 @@ class Level(tool.State):
         self.level = pg.Surface((self.bg_rect.w, self.bg_rect.h)).convert()
         self.viewport = tool.SCREEN.get_rect(bottom=self.bg_rect.bottom)
         self.viewport.x += c.BACKGROUND_OFFSET_X
+        
+        # Add night blue filter for night levels
+        if self.background_type == c.BACKGROUND_NIGHT:
+            self.night_filter = pg.Surface((self.bg_rect.w, self.bg_rect.h))
+            self.night_filter.fill((0, 0, 100))  # Dark blue color
+            self.night_filter.set_alpha(80)  # Transparency level
     
     def setupGroups(self):
         self.sun_group = pg.sprite.Group()
         self.head_group = pg.sprite.Group()
+        self.grave_group = pg.sprite.Group()
 
         self.plant_groups = []
         self.zombie_groups = []
@@ -127,6 +134,10 @@ class Level(tool.State):
         self.setupGroups()
         self.setupZombies()
         self.setupCars()
+        
+        # Generate graves for night levels
+        if self.background_type == c.BACKGROUND_NIGHT:
+            self.generateGraves()
 
     def play(self, mouse_pos, mouse_click):
         if self.zombie_start_time == 0:
@@ -148,6 +159,7 @@ class Level(tool.State):
 
         self.head_group.update(self.game_info)
         self.sun_group.update(self.game_info)
+        self.grave_group.update(self.game_info)
         
         if not self.drag_plant and mouse_pos and mouse_click[0]:
             result = self.menubar.checkCardClick(mouse_pos)
@@ -186,6 +198,23 @@ class Level(tool.State):
         self.checkCarCollisions()
         self.checkGameState()
 
+    def generateGraves(self):
+        import random
+        num_graves = random.randint(5, 8)
+        
+        for _ in range(num_graves):
+            # Random column between 2 and 5 (inclusive)
+            map_x = random.randint(2, 5)
+            # Random row between 0 and 4 (inclusive)
+            map_y = random.randint(0, self.map_y_len - 1)
+            
+            # Get the position for the grave
+            x, y = self.map.getMapGridPos(map_x, map_y)
+            
+            # Create and add the grave
+            new_grave = grave.Grave(x, y)
+            self.grave_group.add(new_grave)
+    
     def createZombie(self, name, map_y):
         x, y = self.map.getMapGridPos(0, map_y)
         if name == c.NORMAL_ZOMBIE:
@@ -250,6 +279,15 @@ class Level(tool.State):
             new_plant = plant.WallNutBowling(x, y, map_y, self)
         elif self.plant_name == c.REDWALLNUTBOWLING:
             new_plant = plant.RedWallNutBowling(x, y)
+        elif self.plant_name == c.GRAVE_BUSTER:
+            # Check if there's a grave at this position
+            for g in self.grave_group:
+                if g.rect.collidepoint(x, y):
+                    new_plant = grave.GraveBuster(x, y, g)
+                    break
+            else:
+                # No grave found, can't plant
+                return
 
         if new_plant.can_sleep and self.background_type == c.BACKGROUND_DAY:
             new_plant.setSleep()
@@ -529,11 +567,19 @@ class Level(tool.State):
 
     def draw(self, surface):
         self.level.blit(self.background, self.viewport, self.viewport)
+        
+        # Apply night filter for night levels
+        if self.background_type == c.BACKGROUND_NIGHT:
+            self.level.blit(self.night_filter, (0, 0))
+            
         surface.blit(self.level, (0,0), self.viewport)
         if self.state == c.CHOOSE:
             self.panel.draw(surface)
         elif self.state == c.PLAY:
             self.menubar.draw(surface)
+            # Draw graves
+            self.grave_group.draw(surface)
+            
             for i in range(self.map_y_len):
                 self.plant_groups[i].draw(surface)
                 self.zombie_groups[i].draw(surface)

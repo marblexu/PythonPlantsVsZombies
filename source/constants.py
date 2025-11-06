@@ -178,3 +178,11 @@ PLAY = 'play'
 #BACKGROUND
 BACKGROUND_DAY = 0
 BACKGROUND_NIGHT = 1
+
+#GRAVE
+GRAVE = 'Grave'
+GRAVE_BUSTER = 'GraveBuster'
+GRAVE_BUSTER_EAT_TIME = 5000  # 5 seconds to eat grave
+
+#PLANT CARD INFO
+CARD_GRAVE_BUSTER = 'card_grave_buster'

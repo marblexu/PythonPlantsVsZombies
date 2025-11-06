@@ -453,6 +453,8 @@ class PuffShroom(Plant):
         Plant.__init__(self, x, y, c.PUFFSHROOM, c.PLANT_HEALTH, bullet_group)
         self.can_sleep = True
         self.shoot_timer = 0
+        self.life_timer = 0  # Timer for automatic disappearance
+        self.life_duration = 30000  # 30 seconds
 
     def loadImages(self, name, scale):
         self.idle_frames = []
@@ -469,6 +471,15 @@ class PuffShroom(Plant):
 
         self.frames = self.idle_frames
 
+    def handleState(self):
+        # Check if PuffShroom should disappear
+        if self.life_timer == 0:
+            self.life_timer = self.current_time
+        elif (self.current_time - self.life_timer) > self.life_duration:
+            self.health = 0  # Set health to 0 to trigger removal
+        else:
+            super().handleState()
+
     def attacking(self):
         if (self.current_time - self.shoot_timer) > 3000:
             self.bullet_group.add(Bullet(self.rect.right, self.rect.y + 10, self.rect.y + 10,
@@ -476,8 +487,9 @@ class PuffShroom(Plant):
             self.shoot_timer = self.current_time
 
     def canAttack(self, zombie):
+        # Close range attack (3 grids)
         if (self.rect.x <= zombie.rect.right and
-            (self.rect.right + c.GRID_X_SIZE * 4 >= zombie.rect.x)):
+            (self.rect.right + c.GRID_X_SIZE * 3 >= zombie.rect.x)):
             return True
         return False
 
@@ -736,15 +748,21 @@ class SunShroom(Plant):
         if not self.is_big:
             if self.change_timer == 0:
                 self.change_timer = self.current_time
-            elif (self.current_time - self.change_timer) > 25000:
+            elif (self.current_time - self.change_timer) > 60000:  # 60 seconds to grow
                 self.changeFrames(self.big_frames)
                 self.is_big = True
         
+        # Produce sun every 15 seconds
         if self.sun_timer == 0:
-            self.sun_timer = self.current_time - (c.FLOWER_SUN_INTERVAL - 6000)
-        elif (self.current_time - self.sun_timer) > c.FLOWER_SUN_INTERVAL:
-            self.sun_group.add(Sun(self.rect.centerx, self.rect.bottom, self.rect.right,
-                                   self.rect.bottom + self.rect.h // 2, self.is_big))
+            self.sun_timer = self.current_time
+        elif (self.current_time - self.sun_timer) > 15000:
+            # Small sunshroom produces 15 sun, big one produces 25
+            sun_value = 25 if self.is_big else 15
+            # Create sun with appropriate value
+            sun = Sun(self.rect.centerx, self.rect.bottom, self.rect.right, 
+                     self.rect.bottom + self.rect.h // 2, self.is_big)
+            sun.sun_value = sun_value
+            self.sun_group.add(sun)
             self.sun_timer = self.current_time
 
 class IceShroom(Plant):
