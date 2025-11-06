@@ -55,6 +55,39 @@ class Bullet(pg.sprite.Sprite):
         self.state = c.FLY
         self.current_time = 0
 
+class ParabolicBullet(pg.sprite.Sprite):
+    def __init__(self, x, y, target_x, target_y, name, damage):
+        pg.sprite.Sprite.__init__(self)
+        
+        self.name = name
+        self.frames = []
+        self.frame_index = 0
+        self.load_images()
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+        # Parabolic motion parameters
+        self.target_x = target_x
+        self.target_y = target_y
+        self.damage = damage
+        self.state = c.FLY
+        self.current_time = 0
+        
+        # Calculate initial velocities
+        dx = target_x - x
+        dy = target_y - y
+        
+        # Simple parabolic trajectory calculation
+        self.x_vel = 6  # Constant horizontal velocity
+        self.y_vel = -8  # Initial vertical velocity (upward)
+        self.gravity = c.GRAVITY
+        
+        # 3D position for visual scaling
+        self.z = 0
+        self.z_vel = 0
+
     def loadFrames(self, frames, name):
         frame_list = tool.GFX[name]
         if name in tool.PLANT_RECT:
@@ -67,6 +100,59 @@ class Bullet(pg.sprite.Sprite):
         
         for frame in frame_list:
             frames.append(tool.get_image(frame, x, y, width, height))
+
+    def load_images(self):
+        self.fly_frames = []
+        self.explode_frames = []
+        
+        fly_name = self.name
+        explode_name = 'CabbageExplode'  # Assuming we have an explosion animation
+        
+        self.loadFrames(self.fly_frames, fly_name)
+        self.loadFrames(self.explode_frames, explode_name)
+        
+        self.frames = self.fly_frames
+
+    def update(self, game_info):
+        self.current_time = game_info[c.CURRENT_TIME]
+        if self.state == c.FLY:
+            # Update position with parabolic motion
+            self.rect.x += self.x_vel
+            self.rect.y += self.y_vel
+            
+            # Apply gravity
+            self.y_vel += self.gravity
+            
+            # Update z-coordinate for visual scaling
+            self.z += self.z_vel
+            self.z_vel += self.gravity
+            
+            # Calculate scaling based on z-coordinate
+            scale = max(0.5, 1 + self.z / 100)
+            
+            # Update image with scaling
+            original_image = self.frames[self.frame_index]
+            scaled_width = int(original_image.get_width() * scale)
+            scaled_height = int(original_image.get_height() * scale)
+            self.image = pg.transform.scale(original_image, (scaled_width, scaled_height))
+            
+            # Update rect position to maintain center
+            self.rect = self.image.get_rect(center=self.rect.center)
+            
+            # Check if bullet has reached target or gone off screen
+            if self.rect.x > self.target_x or self.rect.x > c.SCREEN_WIDTH:
+                self.setExplode()
+        elif self.state == c.EXPLODE:
+            if(self.current_time - self.explode_timer) > 500:
+                self.kill()
+
+    def setExplode(self):
+        self.state = c.EXPLODE
+        self.explode_timer = self.current_time
+        self.frames = self.explode_frames
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect(center=self.rect.center)
     
     def load_images(self):
         self.fly_frames = []
@@ -290,6 +376,47 @@ class RepeaterPea(Plant):
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
             self.bullet_group.add(Bullet(self.rect.right + 40, self.rect.y, self.rect.y,
                                     c.BULLET_PEA, c.BULLET_DAMAGE_NORMAL, False))
+            self.shoot_timer = self.current_time
+
+class FlowerPot(Plant):
+    def __init__(self, x, y):
+        Plant.__init__(self, x, y, c.FLOWERPOT, c.PLANT_HEALTH, None)
+        self.contains_plant = None  # Store the plant in the pot
+
+class CabbagePult(Plant):
+    def __init__(self, x, y, bullet_group):
+        Plant.__init__(self, x, y, c.CABBAGEPULT, c.PLANT_HEALTH, bullet_group)
+        self.shoot_timer = 0
+        self.target_zombie = None
+        
+    def canAttack(self, zombie):
+        if (self.state != c.SLEEP and zombie.state != c.DIE and
+            self.rect.x <= zombie.rect.right):
+            return True
+        return False
+        
+    def attacking(self):
+        if (self.current_time - self.shoot_timer) > 2500:  # Slower fire rate than peashooter
+            # Find the first zombie in the lane
+            if self.target_zombie is None or self.target_zombie.state == c.DIE:
+                for zombie in self.bullet_group.sprites():
+                    if zombie.state != c.DIE:
+                        self.target_zombie = zombie
+                        break
+            
+            if self.target_zombie:
+                # Create a parabolic bullet targeting the zombie
+                target_x = self.target_zombie.rect.centerx
+                target_y = self.target_zombie.rect.centery
+                
+                # Adjust target position to hit the zombie's center
+                target_x -= random.randint(-10, 10)  # Add some randomness
+                target_y -= random.randint(-5, 5)
+                
+                self.bullet_group.add(ParabolicBullet(self.rect.right, self.rect.centery, 
+                                                    target_x, target_y, c.BULLET_CABBAGE, 
+                                                    c.BULLET_DAMAGE_NORMAL))
+                
             self.shoot_timer = self.current_time
 
 class ThreePeaShooter(Plant):

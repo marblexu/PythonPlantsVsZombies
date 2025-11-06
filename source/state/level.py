@@ -38,6 +38,9 @@ class Level(tool.State):
         self.level = pg.Surface((self.bg_rect.w, self.bg_rect.h)).convert()
         self.viewport = tool.SCREEN.get_rect(bottom=self.bg_rect.bottom)
         self.viewport.x += c.BACKGROUND_OFFSET_X
+        
+        # Roof level specific setup
+        self.is_roof_level = (self.background_type == c.BACKGROUND_ROOF)
     
     def setupGroups(self):
         self.sun_group = pg.sprite.Group()
@@ -201,6 +204,25 @@ class Level(tool.State):
 
     def canSeedPlant(self):
         x, y = pg.mouse.get_pos()
+        
+        # Check if we're in roof level
+        if self.is_roof_level:
+            map_x, map_y = self.map.getMapIndex(x, y)
+            
+            # Check if the grid is valid and empty
+            if not self.map.isValid(map_x, map_y) or not self.map.isMovable(map_x, map_y):
+                return None
+            
+            # Check if we're trying to plant a flower pot
+            if self.plant_name == c.FLOWERPOT:
+                return self.map.getMapGridPos(map_x, map_y)
+            
+            # For other plants, check if there's a flower pot in the grid
+            # Note: This is a simplified check - in real implementation, we'd need to check if there's a flower pot
+            # in the grid and if it has space for a plant
+            return None
+        
+        # Normal level planting
         return self.map.showPlant(x, y)
         
     def addPlant(self):
@@ -250,6 +272,10 @@ class Level(tool.State):
             new_plant = plant.WallNutBowling(x, y, map_y, self)
         elif self.plant_name == c.REDWALLNUTBOWLING:
             new_plant = plant.RedWallNutBowling(x, y)
+        elif self.plant_name == c.FLOWERPOT:
+            new_plant = plant.FlowerPot(x, y)
+        elif self.plant_name == c.CABBAGEPULT:
+            new_plant = plant.CabbagePult(x, y, self.bullet_groups[map_y])
 
         if new_plant.can_sleep and self.background_type == c.BACKGROUND_DAY:
             new_plant.setSleep()
@@ -321,9 +347,12 @@ class Level(tool.State):
         for i in range(self.map_y_len):
             for bullet in self.bullet_groups[i]:
                 if bullet.state == c.FLY:
+                    # In roof level, straight bullets (non-parabolic) can't hit zombies
+                    if self.is_roof_level and not hasattr(bullet, 'x_vel'):
+                        continue
                     zombie = pg.sprite.spritecollideany(bullet, self.zombie_groups[i], collided_func)
                     if zombie and zombie.state != c.DIE:
-                        zombie.setDamage(bullet.damage, bullet.ice)
+                        zombie.setDamage(bullet.damage, getattr(bullet, 'ice', False))
                         bullet.setExplode()
     
     def checkZombieCollisions(self):

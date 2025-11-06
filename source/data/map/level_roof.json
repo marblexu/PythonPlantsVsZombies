@@ -1,0 +1,18 @@
+{
+    "background_type":2,
+    "choosebar_type":0,
+    "init_sun_value":50,
+    "card_pool":[
+        {"name":"SunFlower"},
+        {"name":"Peashooter"},
+        {"name":"Cabbage-pult"},
+        {"name":"FlowerPot"}
+    ],
+    "zombie_list":[
+        {"time": 1000, "map_y":1, "name":"Zombie"},
+        {"time":5000, "map_y":2, "name":"ConeheadZombie"},
+        {"time":10000, "map_y":3, "name":"BucketheadZombie"},
+        {"time":15000, "map_y":0, "name":"FlagZombie"},
+        {"time":20000, "map_y":4, "name":"NewspaperZombie"}
+    ]
+}
