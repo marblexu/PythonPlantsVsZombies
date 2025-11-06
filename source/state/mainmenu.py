@@ -40,6 +40,13 @@ class Menu(tool.State):
         self.option_start = 0
         self.option_timer = 0
         self.option_clicked = False
+        
+        # 设置商店按钮
+        self.shop_button_font = pg.font.Font(None, 48)
+        self.shop_button_text = self.shop_button_font.render("商店", True, c.GOLD)
+        self.shop_button_rect = self.shop_button_text.get_rect()
+        self.shop_button_rect.x = 435
+        self.shop_button_rect.y = 180
     
     def checkOptionClick(self, mouse_pos):
         x, y = mouse_pos
@@ -47,6 +54,13 @@ class Menu(tool.State):
            y >= self.option_rect.y and y <= self.option_rect.bottom):
             self.option_clicked = True
             self.option_timer = self.option_start = self.current_time
+            return True
+        # 检查商店按钮点击
+        elif(x >= self.shop_button_rect.x and x <= self.shop_button_rect.right and
+             y >= self.shop_button_rect.y and y <= self.shop_button_rect.bottom):
+            self.next = c.SHOP
+            self.done = True
+            return True
         return False
         
     def update(self, surface, current_time, mouse_pos, mouse_click):
@@ -67,3 +81,4 @@ class Menu(tool.State):
 
         surface.blit(self.bg_image, self.bg_rect)
         surface.blit(self.option_image, self.option_rect)
+        surface.blit(self.shop_button_text, self.shop_button_rect)

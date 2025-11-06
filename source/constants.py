@@ -36,6 +36,8 @@ LOAD_SCREEN = 'load screen'
 GAME_LOSE = 'game los'
 GAME_VICTORY = 'game victory'
 LEVEL = 'level'
+SHOP = 'shop'
+ENCYCLOPEDIA = 'encyclopedia'
 
 MAIN_MENU_IMAGE = 'MainMenu'
 OPTION_ADVENTURE = 'Adventure'

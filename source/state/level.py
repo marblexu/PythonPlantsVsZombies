@@ -42,6 +42,7 @@ class Level(tool.State):
     def setupGroups(self):
         self.sun_group = pg.sprite.Group()
         self.head_group = pg.sprite.Group()
+        self.coin_group = pg.sprite.Group()  # 添加金币组
 
         self.plant_groups = []
         self.zombie_groups = []
@@ -108,6 +109,34 @@ class Level(tool.State):
             if self.panel.checkStartButtonClick(mouse_pos):
                 self.initPlay(self.panel.getSelectedCards())
 
+    def add_gold(self, amount):
+        """增加金币数量并保存"""
+        import json
+        import os
+        
+        save_file_path = 'save_data.json'
+        
+        # 加载现有数据
+        if os.path.exists(save_file_path):
+            with open(save_file_path, 'r') as f:
+                save_data = json.load(f)
+        else:
+            save_data = {
+                "gold": 0,
+                "upgrades": {
+                    "gold_shovel": False,
+                    "extra_slot": False,
+                    "zombie_encyclopedia": False
+                }
+            }
+        
+        # 增加金币
+        save_data['gold'] += amount
+        
+        # 保存数据
+        with open(save_file_path, 'w') as f:
+            json.dump(save_data, f, indent=2)
+    
     def initPlay(self, card_list):
         self.state = c.PLAY
         if self.bar_type == c.CHOOSEBAR_STATIC:
@@ -148,6 +177,7 @@ class Level(tool.State):
 
         self.head_group.update(self.game_info)
         self.sun_group.update(self.game_info)
+        self.coin_group.update(self.current_time)  # 更新金币状态
         
         if not self.drag_plant and mouse_pos and mouse_click[0]:
             result = self.menubar.checkCardClick(mouse_pos)
@@ -174,6 +204,22 @@ class Level(tool.State):
             for sun in self.sun_group:
                 if sun.checkCollision(mouse_pos[0], mouse_pos[1]):
                     self.menubar.increaseSunValue(sun.sun_value)
+            # 金币收集逻辑
+            for coin in self.coin_group:
+                if coin.rect.collidepoint(mouse_pos):
+                    coin.collected = True
+                    self.add_gold(10)  # 收集一个金币获得10金币
+                    coin.kill()
+            # 铲子功能：铲除植物
+            for map_y in range(self.map.height):
+                for plant in self.plant_groups[map_y]:
+                    if plant.rect.collidepoint(mouse_pos):
+                        # 黄金铲子功能：返还25%阳光消耗
+                        if self.game_info.get('gold_shovel', False):
+                            sun_refund = int(plant.sun_cost * 0.25)
+                            self.menubar.increaseSunValue(sun_refund)
+                        plant.kill()
+                        break
 
         for car in self.cars:
             car.update(self.game_info)
@@ -544,6 +590,7 @@ class Level(tool.State):
                 car.draw(surface)
             self.head_group.draw(surface)
             self.sun_group.draw(surface)
+            self.coin_group.draw(surface)  # 绘制金币
 
             if self.drag_plant:
                 self.drawMouseShow(surface)

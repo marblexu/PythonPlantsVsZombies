@@ -104,7 +104,14 @@ class Zombie(pg.sprite.Sprite):
             self.setWalk()
     
     def dying(self):
-        pass
+        # 15%的几率掉落金币
+        if random.random() < 0.15:
+            # 创建金币
+            from .coin import Coin
+            coin = Coin(self.rect.centerx, self.rect.bottom)
+            # 将金币添加到游戏中
+            if hasattr(self, 'game') and hasattr(self.game, 'coin_group'):
+                self.game.coin_group.add(coin)
 
     def freezing(self):
         if self.health <= 0:

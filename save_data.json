@@ -1,0 +1,8 @@
+{
+  "gold": 0,
+  "upgrades": {
+    "gold_shovel": false,
+    "extra_slot": false,
+    "zombie_encyclopedia": false
+  }
+}
