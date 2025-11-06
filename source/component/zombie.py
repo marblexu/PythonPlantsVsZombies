@@ -412,3 +412,105 @@ class NewspaperZombie(Zombie):
             self.loadFrames(frame_list[i], name, tool.ZOMBIE_RECT[name]['x'], color)
 
         self.frames = self.helmet_walk_frames
+
+class Gargantuar(Zombie):
+    def __init__(self, x, y, head_group):
+        Zombie.__init__(self, x, y, c.GARGANTUAR, c.GARGANTUAR_HEALTH, head_group)
+        self.damage = 1000  # Instantly destroy plants
+        self.has_thrown_imp = False
+        self.throw_timer = 0
+        self.throw_delay = 1000  # 1 second delay when throwing imp
+
+    def loadImages(self):
+        self.walk_frames = []
+        self.attack_frames = []
+        self.die_frames = []
+        self.boomdie_frames = []
+
+        walk_name = self.name
+        attack_name = self.name + 'Attack'
+        die_name = self.name + 'Die'
+        boomdie_name = c.BOOMDIE
+
+        frame_list = [self.walk_frames, self.attack_frames, self.die_frames, self.boomdie_frames]
+        name_list = [walk_name, attack_name, die_name, boomdie_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, tool.ZOMBIE_RECT[name]['x'])
+
+        self.frames = self.walk_frames
+
+    def handleState(self):
+        # Check if should throw imp
+        if not self.has_thrown_imp and self.health <= c.GARGANTUAR_HEALTH // 2:
+            self.has_thrown_imp = True
+            self.state = c.ATTACK  # Stop moving to throw imp
+            self.throw_timer = self.current_time
+        else:
+            super().handleState()
+
+    def attacking(self):
+        if self.has_thrown_imp and self.current_time - self.throw_timer < self.throw_delay:
+            # Waiting to throw imp
+            return
+        elif self.has_thrown_imp and self.current_time - self.throw_timer >= self.throw_delay:
+            # Throw imp and resume normal attack
+            self.has_thrown_imp = False  # Reset to allow normal attack
+            # The actual imp throwing will be handled in level.py
+            self.setWalk()
+        else:
+            # Normal attack (smash)
+            super().attacking()
+
+class Imp(Zombie):
+    def __init__(self, x, y, head_group):
+        Zombie.__init__(self, x, y, c.IMP, c.IMP_HEALTH, head_group)
+        self.speed = 2  # Fast movement
+        self.damage = 1
+        self.animate_interval = 100  # Fast animation
+
+    def loadImages(self):
+        self.walk_frames = []
+        self.attack_frames = []
+        self.die_frames = []
+        self.boomdie_frames = []
+
+        walk_name = self.name
+        attack_name = self.name + 'Attack'
+        die_name = self.name + 'Die'
+        boomdie_name = c.BOOMDIE
+
+        frame_list = [self.walk_frames, self.attack_frames, self.die_frames, self.boomdie_frames]
+        name_list = [walk_name, attack_name, die_name, boomdie_name]
+
+        for i, name in enumerate(name_list):
+            self.loadFrames(frame_list[i], name, tool.ZOMBIE_RECT[name]['x'])
+
+        self.frames = self.walk_frames
+
+    def walking(self):
+        if self.health <= 0:
+            self.setDie()
+        
+        if (self.current_time - self.walk_timer) > (c.IMP_WALK_INTERVAL * self.getTimeRatio()):
+            self.walk_timer = self.current_time
+            if self.is_hypno:
+                self.rect.x += self.speed
+            else:
+                self.rect.x -= self.speed
+
+    def attacking(self):
+        if self.health <= 0:
+            self.setDie()
+        
+        if (self.current_time - self.attack_timer) > (c.IMP_ATTACK_INTERVAL * self.getTimeRatio()):
+            if self.prey.health > 0:
+                if self.prey_is_plant:
+                    self.prey.setDamage(self.damage, self)
+                else:
+                    self.prey.setDamage(self.damage)
+            self.attack_timer = self.current_time
+
+        if self.prey.health <= 0:
+            self.prey = None
+            self.setWalk()

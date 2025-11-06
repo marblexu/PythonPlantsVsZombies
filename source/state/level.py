@@ -198,6 +198,10 @@ class Level(tool.State):
             self.zombie_groups[map_y].add(zombie.FlagZombie(c.ZOMBIE_START_X, y, self.head_group))
         elif name == c.NEWSPAPER_ZOMBIE:
             self.zombie_groups[map_y].add(zombie.NewspaperZombie(c.ZOMBIE_START_X, y, self.head_group))
+        elif name == c.GARGANTUAR:
+            self.zombie_groups[map_y].add(zombie.Gargantuar(c.ZOMBIE_START_X, y, self.head_group))
+        elif name == c.IMP:
+            self.zombie_groups[map_y].add(zombie.Imp(x, y, self.head_group))
 
     def canSeedPlant(self):
         x, y = pg.mouse.get_pos()
@@ -336,6 +340,26 @@ class Level(tool.State):
             hypo_zombies = []
             for zombie in self.zombie_groups[i]:
                 if zombie.state != c.WALK:
+                    # Check if Gargantuar needs to throw imp
+                    if isinstance(zombie, zombie.Gargantuar) and zombie.has_thrown_imp:
+                        # Calculate where to throw the imp
+                        map_x = random.randint(3, 5)  # Columns 3-5
+                        imp_x, imp_y = self.map.getMapGridPos(map_x, i)
+                        # Create imp
+                        self.createZombie(c.IMP, i)
+                        # Get the newly created imp and set its position
+                        imp = self.zombie_groups[i].sprites()[-1]
+                        imp.rect.x = imp_x
+                        imp.rect.bottom = imp_y
+                        # Check if there's a plant at that position
+                        plant = None
+                        for p in self.plant_groups[i]:
+                            p_map_x, _ = self.map.getMapIndex(p.rect.centerx, p.rect.bottom)
+                            if p_map_x == map_x:
+                                plant = p
+                                break
+                        if plant:
+                            imp.setAttack(plant)
                     continue
                 plant = pg.sprite.spritecollideany(zombie, self.plant_groups[i], collided_func)
                 if plant:
@@ -374,12 +398,11 @@ class Level(tool.State):
                 self.cars.remove(car)
 
     def boomZombies(self, x, map_y, y_range, x_range):
-        for i in range(self.map_y_len):
-            if abs(i - map_y) > y_range:
-                continue
+        # Calculate 3x3 range
+        for i in range(max(0, map_y - y_range), min(self.map_y_len, map_y + y_range + 1)):
             for zombie in self.zombie_groups[i]:
                 if abs(zombie.rect.centerx - x) <= x_range:
-                    zombie.setBoomDie()
+                    zombie.setDamage(1800)  # Cherry Bomb deals 1800 damage
 
     def freezeZombies(self, plant):
         for i in range(self.map_y_len):

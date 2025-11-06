@@ -1,0 +1,10 @@
+{
+    "background_type":0,
+    "init_sun_value":300,
+    "zombie_list":[
+        {"time":10000, "map_y":2, "name":"Gargantuar"},
+        {"time":20000, "map_y":1, "name":"Zombie"},
+        {"time":30000, "map_y":3, "name":"Imp"}
+    ],
+    "card_pool":["SunFlower", "Peashooter", "CherryBomb", "WallNut"]
+}

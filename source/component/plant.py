@@ -353,8 +353,8 @@ class CherryBomb(Plant):
         self.state = c.ATTACK
         self.start_boom = False
         self.bomb_timer = 0
-        self.explode_y_range = 1
-        self.explode_x_range = c.GRID_X_SIZE
+        self.explode_y_range = 1  # 3x3 range (current row and adjacent rows)
+        self.explode_x_range = c.GRID_X_SIZE * 3  # 3x3 range (current column and adjacent columns)
     
     def setBoom(self):
         frame = tool.GFX[c.CHERRY_BOOM_IMAGE]
